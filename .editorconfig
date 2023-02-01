@@ -1,0 +1,51 @@
+root = true
+
+# Should apply to all code and header files.
+# Done for better interoperability with Devpac.
+[*.c]
+end_of_line = crlf
+insert_final_newline = false
+indent_style = tab
+indent_size = 4
+
+[*.s]
+end_of_line = crlf
+insert_final_newline = false
+indent_style = tab
+indent_size = 4
+
+[*.i]
+end_of_line = crlf
+insert_final_newline = false
+indent_style = tab
+indent_size = 4
+
+[*.h]
+end_of_line = crlf
+insert_final_newline = false
+indent_style = tab
+indent_size = 4
+
+[*.C]
+end_of_line = crlf
+insert_final_newline = false
+indent_style = tab
+indent_size = 4
+
+[*.S]
+end_of_line = crlf
+insert_final_newline = false
+indent_style = tab
+indent_size = 4
+
+[*.I]
+end_of_line = crlf
+insert_final_newline = false
+indent_style = tab
+indent_size = 4
+
+[*.H]
+end_of_line = crlf
+insert_final_newline = false
+indent_style = tab
+indent_size = 4

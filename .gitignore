@@ -1,0 +1,35 @@
+# Prerequisites
+*.[dD]
+
+# Object files
+*.[oO]
+*.[kK][oO]
+*.[oO][bB][jJ]
+*.[eE][lL][fF]
+
+# Linker output
+*.[iI][lL][kK]
+*.[mM][aA][pP]
+*.[eE][xX][pP]
+
+# Precompiled Headers
+*.[gG][cC][hH]
+*.[pP][cC][hH]
+
+# Libraries
+*.[lL][iI][bB]
+*.[aA]
+*.[lL][aA]
+*.[lL][oO]
+
+# Executables
+*.[eE][xX][eE]
+*.[oO][uU][tT]
+*.[tT][oO][sS]
+*.[tT][tT][pP]
+*.[pP][rR][gG]
+
+# Debug files
+*.[sS][uU]
+*.[iI][dD][bB]
+*.[pP][dD][bB]
