@@ -179,7 +179,6 @@ void enable_channel(Channel channel, Toggle tone_on, Toggle noise_on);
  * @brief Silences all PSG sound production.
  * @details Due to the way the PSG's registers work, the bits have to be set to
  * one in order to disable the channels.
- * @note Requires super privileges.
  */
 void stop_sound();
 

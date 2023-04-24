@@ -1,10 +1,48 @@
-all: acaddom tst_mse
+all: acaddom tests
+
+tests: tst_mdl tst_mse tst_mus tst_psg tst_rast tst_sfx
+
+tst_bmp.o: tst_bmp.c tst_bmp.h scrn.h types.h
+	cc68x -g -c tst_bmp.c
+
+tst_mdl: model.o effects.o events.o ints.o psg.o rast_asm.o tst_mdl.o test.o types.h
+	cc68x -g model.o effects.o events.o ints.o psg.o rast_asm.o tst_mdl.o test.o -o tst_mdl.tos
+
+tst_mdl.o: tst_mdl.c effects.h model.h test.h
+	cc68x -g -c tst_mdl.c
 
 tst_mse: tst_mse.o in_asm.o input.o ints.o vector.o
 	cc68x -g tst_mse.o in_asm.o input.o ints.o vector.o -o tst_mse.tos
 
 tst_mse.o: tst_mse.c bool.h input.h types.h
 	cc68x -g -c tst_mse.c
+
+tst_mus: tst_mus.o ints.o music.o psg.o rast_asm.o test.o
+	cc68x -g tst_mus.o ints.o music.o psg.o rast_asm.o test.o -o tst_mus.tos
+
+tst_mus.o: tst_mus.c music.h psg.h test.h types.h
+	cc68x -g -c tst_mus.c
+
+tst_psg: psg.o raster.o rast_asm.o test.o tst_psg.o
+	cc68x -g psg.o raster.o rast_asm.o test.o tst_psg.o -o tst_psg.tos
+
+tst_psg.o: tst_psg.c psg.h raster.h test.h types.h
+	cc68x -g -c tst_psg.c
+
+tst_rast: test.o tst_bmp.o tst_rast.o raster.o rast_asm.o
+	cc68x -g test.o tst_bmp.o tst_rast.o raster.o rast_asm.o -o tst_rast.tos
+
+tst_rast.o: tst_rast.c raster.h tst_bmp.h scrn.h types.h
+	cc68x -g -c tst_rast.c
+
+tst_sfx: tst_sfx.o psg.o effects.o rast_asm.o test.o
+	cc68x -g tst_sfx.o psg.o rast_asm.o effects.o test.o -o tst_sfx.tos
+
+tst_sfx.o: tst_sfx.c psg.h effects.h test.h
+	cc68x -g -c tst_sfx.c
+
+test.o: test.c test.h bool.h raster.h types.h
+	cc68x -g -c test.c
 
 acaddom: acaddom.o bitmaps.o effects.o events.o font16.o input.o in_asm.o ints.o model.o music.o psg.o raster.o rast_asm.o renderer.o vbl.o vector.o
 	cc68x -g acaddom.o bitmaps.o effects.o events.o font16.o input.o in_asm.o ints.o model.o music.o psg.o raster.o rast_asm.o renderer.o vbl.o vector.o -o acaddom.tos

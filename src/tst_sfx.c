@@ -17,6 +17,7 @@ void testDeath();
 void testWalk();
 void testTrain();
 void testCollect();
+void testBeep();
 
 /**
  * @brief Waits for enter to be pressed after a function call and causes all
@@ -38,6 +39,7 @@ int main()
 	run_test(testWalk());
 	run_test(testTrain());
 	run_test(testCollect());
+	run_test(testBeep());
 
 	stop_sound();
 	on_curs();
@@ -48,7 +50,9 @@ int main()
  */
 void testPain()
 {
-	haltAfterEnter(play_pain());
+	UINT32 oldSsp;
+
+	haltAfterEnter(doSu(play_pain(), oldSsp));
 }
 
 /**
@@ -56,7 +60,9 @@ void testPain()
  */
 void testDeath()
 {
-	haltAfterEnter(play_death());
+	UINT32 oldSsp;
+
+	haltAfterEnter(doSu(play_death(), oldSsp));
 }
 
 /**
@@ -64,7 +70,9 @@ void testDeath()
  */
 void testWalk()
 {
-	haltAfterEnter(play_walk());
+	UINT32 oldSsp;
+
+	haltAfterEnter(doSu(play_walk(), oldSsp));
 }
 
 /**
@@ -72,7 +80,9 @@ void testWalk()
  */
 void testTrain()
 {
-	haltAfterEnter(play_train());
+	UINT32 oldSsp;
+
+	haltAfterEnter(doSu(play_train(), oldSsp));
 }
 
 /**
@@ -81,5 +91,17 @@ void testTrain()
  */
 void testCollect()
 {
-	haltAfterEnter(play_collect());
+	UINT32 oldSsp;
+
+	haltAfterEnter(doSu(play_collect(), oldSsp));
+}
+
+/**
+ * @brief Plays the beeping sound and waits for enter to continue.
+ */
+void testBeep()
+{
+	UINT32 oldSsp;
+
+	haltAfterEnter(doSu(play_beep(), oldSsp));
 }

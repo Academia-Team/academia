@@ -19,6 +19,8 @@ UINT32 getTime();
 
 int main()
 {
+	UINT32 oldSsp;
+
 	off_curs();
 	stop_sound();
 
@@ -33,7 +35,9 @@ int main()
  */
 void playSong()
 {
+	UINT32 curTime;
 	UINT32 timeMusUpdated;
+	UINT32 oldSsp;
 
 	printf("Press q to stop playing the song\n");
 	start_music();
@@ -41,7 +45,8 @@ void playSong()
 	
 	do
 	{
-		update_music(getTime() - timeMusUpdated);
+		curTime = getTime();
+		doSu(update_music(curTime - timeMusUpdated), oldSsp);
 		timeMusUpdated = getTime();
 	} while (Cconis() ? (Cnecin() & 0xFF) != 'q' : TRUE);
 }

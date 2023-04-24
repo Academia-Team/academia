@@ -175,9 +175,9 @@ void testScoreBox()
  */
 void testLivesBox()
 {
-	CorePlayer tstPlayer;
+	Player     tstPlayer;
 	BoolName   boolName;
-	initCorePlayer(&tstPlayer, 1);
+	initPlayer(&tstPlayer, 1);
 
 	printf
 	(
@@ -196,7 +196,8 @@ void testLivesBox()
 
 	while (tstPlayer.alive)
 	{
-		lostCoreLife(&tstPlayer);
+		lostLife(&tstPlayer);
+		toggleImmunity(tstPlayer);
 		printf("After Life Loss:\n");
 
 		printf

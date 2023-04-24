@@ -55,6 +55,8 @@ void testReadWritePsg()
 	const UINT8 INITIAL_VOLUME = 0;
 	const UINT8 FINAL_VOLUME   = 31;
 
+	UINT32      oldSsp;
+
 	printf
 	(
 		"Going to write %u to register %i of the PSG (the volume of Channel A)\n",
@@ -62,9 +64,11 @@ void testReadWritePsg()
 		A_LEVEL_REG
 	);
 
-	write_psg(A_LEVEL_REG, INITIAL_VOLUME);
+	doSu(write_psg(A_LEVEL_REG, INITIAL_VOLUME), oldSsp);
 
+	oldSsp = Super(0);
 	printf("Value read back: %u\n\n", read_psg(A_LEVEL_REG));
+	Super(oldSsp);
 
 
 	printf
@@ -74,9 +78,11 @@ void testReadWritePsg()
 		A_LEVEL_REG
 	);
 
-	write_psg(A_LEVEL_REG, FINAL_VOLUME);
+	doSu(write_psg(A_LEVEL_REG, FINAL_VOLUME), oldSsp);
 
+	oldSsp = Super(0);
 	printf("Value read back: %u\n\n", read_psg(A_LEVEL_REG));
+	Super(oldSsp);
 
 	Cconin();
 }
@@ -92,8 +98,12 @@ void testReadWritePsg()
  */
 void testSetTone(Channel channel)
 {
+	UINT32 oldSsp;
+
 	if (channel >= MIN_CHANNEL_VAL && channel <= MAX_CHANNEL_VAL)
 	{
+		oldSsp = Super(0);
+
 		printf("Mixer register before disabling: %u\n", read_psg(MIXER_REG));
 		disable_channel(channel);
 		printf("Mixer register after disabling: %u\n", read_psg(MIXER_REG));
@@ -104,10 +114,13 @@ void testSetTone(Channel channel)
 		putchar('\n');
 
 		outChannelInfo(channel);
+
+		Super(oldSsp);
+
 		putchar('\n');
 		Cconin();
 
-		disable_channel(channel);
+		doSu(disable_channel(channel), oldSsp);
 	}
 	else
 	{
@@ -137,10 +150,14 @@ void testSetTone(Channel channel)
  */
 void testMultipleTones(Channel firstChannel, Channel secondChannel)
 {
+	UINT32 oldSsp;
+
 	if (firstChannel >= MIN_CHANNEL_VAL && secondChannel <= MAX_CHANNEL_VAL
 		&& secondChannel >= MIN_CHANNEL_VAL && secondChannel <= MAX_CHANNEL_VAL
 		&& firstChannel != secondChannel)
 	{
+		oldSsp = Super(0);
+
 		disable_channel(firstChannel);
 		disable_channel(secondChannel);
 		set_tone(firstChannel, 248);
@@ -150,22 +167,24 @@ void testMultipleTones(Channel firstChannel, Channel secondChannel)
 		set_volume(firstChannel, 11);
 		set_volume(secondChannel, 11);
 
-		outChannelInfo(firstChannel);
+		Super(oldSsp);
+
+		doSu(outChannelInfo(firstChannel), oldSsp);
 		putchar('\n');
 
-		outChannelInfo(secondChannel);
-		putchar('\n');
-
-		Cconin();
-
-		disable_channel(firstChannel);
-
-		outChannelInfo(secondChannel);
+		doSu(outChannelInfo(secondChannel), oldSsp);
 		putchar('\n');
 
 		Cconin();
 
-		disable_channel(secondChannel);
+		doSu(disable_channel(firstChannel), oldSsp);
+
+		doSu(outChannelInfo(secondChannel), oldSsp);
+		putchar('\n');
+
+		Cconin();
+
+		doSu(disable_channel(secondChannel), oldSsp);
 	}
 	else
 	{
@@ -212,17 +231,21 @@ void outChannelInfo(Channel channel)
  */
 void testEnvelope()
 {
+	UINT32 oldSsp = Super(0);
+
 	disable_channel(A_CHANNEL);
 	set_tone(A_CHANNEL, 248);
 	enable_channel(A_CHANNEL, ON, OFF);
 	set_volume(A_CHANNEL, 11);
+
+	Super(oldSsp);
 	putchar('\n');
 
-	outChannelInfo(A_CHANNEL);
+	doSu(outChannelInfo(A_CHANNEL), oldSsp);
 	putchar('\n');
 	Cconin();
 
-	set_envelope(MAX_ENVELOPE_SHAPE_VAL, UINT16_MAX);
+	doSu(set_envelope(MAX_ENVELOPE_SHAPE_VAL, UINT16_MAX), oldSsp);
 	printf
 	(
 		"The envelope is set to a shape parameter of 15 and a sustain of %u.\n",
@@ -231,15 +254,15 @@ void testEnvelope()
 	puts("Press any key to enable the envelope for Channel A.");
 	Cconin();
 
-	enable_envelope(A_CHANNEL);
+	doSu(enable_envelope(A_CHANNEL), oldSsp);
 	puts("Press enter to use a different tone for Channel A.");
 	Cconin();
 
-	set_tone(A_CHANNEL, 0x264);
-	set_envelope(MAX_ENVELOPE_SHAPE_VAL, ULONG_MAX);
+	doSu(set_tone(A_CHANNEL, 0x264), oldSsp);
+	doSu(set_envelope(MAX_ENVELOPE_SHAPE_VAL, ULONG_MAX), oldSsp);
 	Cconin();
 
-	disable_channel(A_CHANNEL);
+	doSu(disable_channel(A_CHANNEL), oldSsp);
 }
 
 /**
@@ -248,14 +271,18 @@ void testEnvelope()
  */
 void testRepeatingEnvelope()
 {
+	UINT32 oldSsp = Super(0);
+
 	disable_channel(A_CHANNEL);
 	set_tone(A_CHANNEL, 0x264);
 	enable_channel(A_CHANNEL, ON, OFF);
 	enable_envelope(A_CHANNEL);
 	set_envelope(12, 0x0500);
+
+	Super(oldSsp);
 	Cconin();
 
-	disable_channel(A_CHANNEL);
+	doSu(disable_channel(A_CHANNEL), oldSsp);
 }
 
 /**
@@ -265,14 +292,18 @@ void testRepeatingEnvelope()
  */
 void testNoise()
 {
+	UINT32 oldSsp = Super(0);
+
 	disable_channel(A_CHANNEL);
 	set_noise(0x1F);
 	enable_channel(A_CHANNEL, OFF, ON);
 	enable_envelope(A_CHANNEL);
 	set_envelope(0x0, 0x3800);
+
+	Super(oldSsp);
 	Cconin();
 
-	disable_channel(A_CHANNEL);
+	doSu(disable_channel(A_CHANNEL), oldSsp);
 }
 
 /**
@@ -287,13 +318,17 @@ void testNoise()
  */
 void testNoiseWTone()
 {
+	UINT32 oldSsp = Super(0);
+
 	disable_channel(A_CHANNEL);
 	set_tone(A_CHANNEL, 0x264);
 	set_noise(0x1F);
 	enable_channel(A_CHANNEL, ON, ON);
 	enable_envelope(A_CHANNEL);
 	set_envelope(0x0, 0x3800);
+
+	Super(oldSsp);
 	Cconin();
 
-	disable_channel(A_CHANNEL);
+	doSu(disable_channel(A_CHANNEL), oldSsp);
 }
