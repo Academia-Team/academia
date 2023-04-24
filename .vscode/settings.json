@@ -1,13 +1,7 @@
 {
-    "C_Cpp.default.systemIncludePath": [
-        "C:\\C\\c68\\INCLUDE"
-    ],
-    "C_Cpp.default.cStandard": "c89",
-    "c-cpp-flylint.cppcheck.language": "c89",
-    "editor.rulers": [
-    80
-    ],
-    "c-cpp-flylint.cppcheck.extraArgs": [
-    "--project=.cppcheck/project.cppcheck"
-    ]
+	"C_Cpp.default.cStandard": "c89",
+	"editor.rulers": [
+		80
+	],
+	"C_Cpp.errorSquiggles": "enabled"
 }
