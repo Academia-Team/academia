@@ -2,11 +2,12 @@
 * text eol=lf
 
 # Declare files that will always have CRLF line endings on checkout.
-*.c text eol=crlf
-*.C text eol=crlf
-*.h text eol=crlf
-*.H text eol=crlf
-*.s text eol=crlf
-*.S text eol=crlf
-*.i text eol=crlf
-*.I text eol=crlf
+*.c   text eol=crlf
+*.C   text eol=crlf
+*.h   text eol=crlf
+*.H   text eol=crlf
+*.s   text eol=crlf
+*.S   text eol=crlf
+*.i   text eol=crlf
+*.I   text eol=crlf
+*.txt text eol=crlf
