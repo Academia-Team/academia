@@ -1,0 +1,145 @@
+= Asset Origins and Licenses
+Academia Team <techpowerawaits@outlook.com>
+2023-05-11
+:imagesdir: ./img
+
+NOTE: Some of the assets are under an unknown or non-commercial license. Help
+would be appreciated to reduce the number of assets that are *not* open source.
+
+[%autowidth,frame=none,grid=none,cols="2*<"]
+|===
+
+|Name:
+|Raven
+
+|Image(s):
+|
+image:sprites/LFEATH.PNG[Sprite facing left]
+image:sprites/RFEATH.PNG[Sprite facing right]
+
+|Purpose:
+|To serve as Mr. Feather's sprite.
+
+|Modification(s):
+|Raven sprite was coloured black.
+
+|Author:
+|Tuomo Untinen
+
+|License:
+|GPL 2.0
+
+|Attribution:
+|Raven and Seagull by Tuomo Untinen
+
+|Source:
+|https://opengameart.org/content/lpc-raven-and-seagull
+
+||
+
+|Name:
+|Car
+
+|Image(s):
+|
+image:sprites/LCAR.PNG[Sprite facing left]
+image:sprites/RCAR.PNG[Sprite facing right]
+
+|Purpose:
+|To serve as the sprite for the car enemy.
+
+|Modification(s):
+|The green car was separated from the sprite sheet, made black and white, and
+scaled down.
+
+|Author:
+|Amir027
+
+|License:
+|Creative Commons Zero License
+
+|Source:
+|https://opengameart.org/content/car
+
+||
+
+|Name:
+|Player
+
+|Image(s):
+|
+image:sprites/FPLAYER.PNG[Sprite facing South]
+image:sprites/BPLAYER.PNG[Sprite facing North]
+image:sprites/LPLAYER.PNG[Sprite facing Left]
+image:sprites/RPLAYER.PNG[Sprite facing Right]
+
+|Purpose:
+|To serve as the sprites for the player.
+|Modification(s):
+|The images were heavily modified. The middle images of the man wearing a fedora
+were used from the sprite sheet. They were converted to black and white. The
+fedora was removed and the suit was simplified.
+
+|Author:
+|Tekepon, Mar 29th
+
+|License:
+|Unknown
+
+|Source:
+|https://vxresource.wordpress.com/page/2/#jp-carousel-611
+
+||
+
+|Name:
+|Train
+
+|Image(s):
+|
+image:sprites/TRAIN1.PNG[First part of train sprite] image:sprites/TRAIN2.PNG[Second part of train sprite] image:sprites/TRAIN3.PNG[Third part of train sprite]
+
+|Purpose:
+|To serve as a sprite for the train.
+
+|Modification(s):
+|Heavily modified. It was converted to black and white and made more symmetric.
+It was also split into three images to make it more manageable within the game.
+
+|Author:
+|Turbo Development Team
+
+|License:
+|Public Domain Declaration
+
+|Source:
+|https://turbo-developement-team.itch.io/2d-top-down-freight-train-assets
+
+||
+
+|Name:
+|Dimitri Swank
+
+|Examples:
+|image:menu/TITLE.PNG["Academia: Dreams of Madness" on Title Screen]
+
+image:menu/GAMEOVER.PNG["Game Over" on Game Over Screen]
+
+|Purpose:
+|To be used as the font for the Title and Game Over messages on the Title Screen
+and Game Over Screen respectively.
+
+|Author:
+|Fontalicious
+
+|License:
+|Non-Commercial License
+
+|Attribution:
+|We acknowledge the donation of the product (value of $99) from Fontalicious.
+(*NOTE:* This attribution is required to use the font and it is not an
+indication that the people behind Fontalicious are associated with the project.)
+
+|Source:
+|http://www.fontalicious.com/project/dimitri-swank/
+
+|===
