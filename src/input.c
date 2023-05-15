@@ -769,6 +769,29 @@ void enableKybdInterrupt()
 	Super(old_ssp);
 }
 
+void flushKybd()
+{
+	int index;
+	int oldSsp  = Super(0);
+	long kybdVal;
+
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	for (index = 0; index < SIZE_KEY_BUFF; index++)
+	{
+		kybdKeyBuffer[index] = 0;
+	}
+
+	kybdShiftBuffer = 0;
+	keyFindPos      = 0;
+	keyPlacePos     = 0;
+
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+}
+
 void restoreKybd(Vector sysKybdVec)
 {
 	disableKybdInterrupt();

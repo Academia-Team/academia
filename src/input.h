@@ -98,6 +98,11 @@ void disableMidiInterrupt();
 void enableMidiInterrupt();
 
 /**
+ * @brief Empties all the keyboard buffers.
+ */
+void flushKybd();
+
+/**
  * @brief Initializes everything required for the keyboard to work.
  * @details The MIDI device is disabled as part of the initialization, as it
  * can interfere with the operation of the keyboard.
