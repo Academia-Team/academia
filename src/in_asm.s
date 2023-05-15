@@ -20,6 +20,8 @@ IKBD_STATUS_REG:		equ		$FFFFFC00
 IKBD_RDR_REG:			equ		$FFFFFC02
 RDRF_BIT:				equ		0
 IKBD_BREAK_BIT:			equ		7
+IKBD_MAX_SCANCODE:		equ		$72
+IKBD_MIN_SCANCODE:		equ		$01
 
 IKBD_MIN_MOUSE_PKT_VAL:	equ		$F8
 IKBD_RCLICK_BIT:		equ		0
@@ -179,6 +181,12 @@ IKBD_Y_TOO_LARGE:		move.w	#SCRN_MAX_Y,MOUSE_Y(a3)
 IKBD_HANDLE_KEYS:		bclr.l	#IKBD_BREAK_BIT,d0
 						beq		IKBD_HANDLE_MAKE_CODE
 
+						; Check if the scancode is valid.
+						cmpi.b	#IKBD_MAX_SCANCODE,d0
+						bhi		IKBD_RETURN
+						cmpi.b	#IKBD_MIN_SCANCODE,d0
+						blo		IKBD_RETURN
+
 						; Check if something should be removed from the shift
 						; buffer.
 						cmpi.b	#IKBD_CTRL_KEY,d0
@@ -207,9 +215,15 @@ IKBD_NOT_RSHIFT_BREAK:	cmpi.b	#IKBD_CAPS_KEY,d0
 						bra		IKBD_RETURN
 
 
+						; Check if the scancode is valid.
+IKBD_HANDLE_MAKE_CODE:	cmpi.b	#IKBD_MAX_SCANCODE,d0
+						bhi		IKBD_RETURN
+						cmpi.b	#IKBD_MIN_SCANCODE,d0
+						blo		IKBD_RETURN
+
 						; Check if something should be added to the shift
 						; buffer.
-IKBD_HANDLE_MAKE_CODE:	cmpi.b	#IKBD_CTRL_KEY,d0
+						cmpi.b	#IKBD_CTRL_KEY,d0
 						bne		IKBD_NOT_CTRL_MAKE
 						ori.b	#IKBD_CTRL_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
