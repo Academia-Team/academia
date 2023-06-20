@@ -145,7 +145,7 @@
 /**
  * @brief The maximum number of characters that can be in a label.
  */
-#define MAX_LABEL_LEN 20
+#define MAX_LABEL_LEN 32
 
 
 #define MAX_OBSTACLE_IN_ROW 6

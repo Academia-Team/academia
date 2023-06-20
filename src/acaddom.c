@@ -22,6 +22,12 @@
 #include "vector.h"
 #include "vbl.h"
 
+#define COPR_INFO                  "(C) 2023 Academia Team"
+#define INFO_BAR_HEIGHT             48
+#define INFO_BAR_ENTRY_HEIGHT       16
+#define LICENSE_INFO               "Licensed under the GPL-2.0-only"
+#define VER_INFO                   "v2023.05.15-NEXT"
+
 #define MIN_NUM_TICKS               14
 #define MIN_NUM_TICKS_IN_SEC         5
 #define MIN_NUM_TICKS_IN_0_8_SEC     4
@@ -177,7 +183,7 @@ int main()
 void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 {
 	const int X_TITLE           =  27;
-	const int Y_TITLE           =  57;
+	const int Y_TITLE           =  77;
 
 	const int X_1P_BUTTON       = 178;
 	const int Y_1P_BUTTON       = 269;
@@ -198,6 +204,21 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 
 	const int BORDER_HEIGHT      =   3;
 	const int BORDER_WIDTH       =   3;
+	const int Y_INFO_BAR_START   =   BORDER_HEIGHT;
+
+	const int X_COPR             =   0;
+	const int Y_COPR             =   Y_INFO_BAR_START;
+	Label     coprLabel;
+
+	const int X_VER              =   0;
+	const int Y_VER              =   Y_COPR + INFO_BAR_ENTRY_HEIGHT;
+	Label     verLabel;
+
+	const int X_LICENSE          =   0;
+	const int Y_LICENSE          =   Y_VER + INFO_BAR_ENTRY_HEIGHT;
+	Label     licenseLabel;
+	LabelStr  strLicense;
+
 
 	Button       onePlayer;
 	Button       twoPlayer;
@@ -223,9 +244,18 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 	initButton(&flee, X_FLEE_BUTTON, Y_FLEE_BUTTON,
 			   HEIGHT_FLEE_BUTTON, WIDTH_FLEE_BUTTON, "FLEE");
 
+	initLabel(&coprLabel, X_COPR, Y_COPR, COPR_INFO);
+	initLabel(&verLabel, X_VER, Y_VER, VER_INFO);
+	initLabel(&licenseLabel, X_LICENSE, Y_LICENSE, LICENSE_INFO);
+
 	fill_scrn(screenBuffer);
-	clr_area(screenBuffer, BORDER_WIDTH, SCRN_LEN - (BORDER_WIDTH * 2),
-			 BORDER_HEIGHT, SCRN_HEIGHT - (BORDER_HEIGHT * 2));
+	clr_area(screenBuffer, BORDER_WIDTH, SCRN_LEN - BORDER_WIDTH * 2,
+			 BORDER_HEIGHT + INFO_BAR_HEIGHT,
+			 SCRN_HEIGHT - BORDER_HEIGHT * 2 - INFO_BAR_HEIGHT);
+
+	renderLabel((UINT16 *)screenBuffer, &coprLabel, TRUE);
+	renderLabel((UINT16 *)screenBuffer, &verLabel, TRUE);
+	renderLabel((UINT16 *)screenBuffer, &licenseLabel, TRUE);
 
 	renderTitle(screenBuffer, X_TITLE, Y_TITLE);
 	renderButton(screenBuffer, &onePlayer, FALSE);
