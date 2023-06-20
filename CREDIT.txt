@@ -1,10 +1,7 @@
 = Asset Origins and Licenses
 Academia Team <techpowerawaits@outlook.com>
-2023-05-11
+2023-06-20
 :imagesdir: ./img
-
-NOTE: Some of the assets are under an unknown or non-commercial license. Help
-would be appreciated to reduce the number of assets that are *not* open source.
 
 [%autowidth,frame=none,grid=none,cols="2*<"]
 |===
@@ -117,7 +114,7 @@ It was also split into three images to make it more manageable within the game.
 ||
 
 |Name:
-|Dimitri Swank
+|Nemoy Bold
 
 |Examples:
 |image:menu/TITLE.PNG["Academia: Dreams of Madness" on Title Screen]
@@ -129,17 +126,19 @@ image:menu/GAMEOVER.PNG["Game Over" on Game Over Screen]
 and Game Over Screen respectively.
 
 |Author:
-|Fontalicious
+|BSozoo
 
 |License:
-|Non-Commercial License
+|SIL Open Font License 1.1
 
 |Attribution:
-|We acknowledge the donation of the product (value of $99) from Fontalicious.
-(*NOTE:* This attribution is required to use the font and it is not an
-indication that the people behind Fontalicious are associated with the project.)
+|The font Nemoy Bold (by BSozoo) was utilized in the making of the title screen
+and game over screen text bitmaps.
+
+(*NOTE:* Only a subset of the font was embedded within the bitmaps so the
+license does not need to be distributed with this program.)
 
 |Source:
-|http://www.fontalicious.com/project/dimitri-swank/
+|https://fontlibrary.org/en/font/nemoy
 
 |===
