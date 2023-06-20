@@ -31,8 +31,8 @@
 #define HAZARD_HEIGHT 32
 #define NUM_HORZ_ORIENTATIONS 2
 
-#define TITLE_HEIGHT     132
-#define NUM_TITLE_PARTS   18
+#define TITLE_HEIGHT     122
+#define NUM_TITLE_PARTS   19
 #define TITLE_PART_WIDTH  32
 
 #define TRAIN_HEIGHT 30

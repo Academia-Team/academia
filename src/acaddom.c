@@ -176,8 +176,8 @@ int main()
  */
 void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 {
-	const int X_TITLE           =  43;
-	const int Y_TITLE           =  47;
+	const int X_TITLE           =  27;
+	const int Y_TITLE           =  57;
 
 	const int X_1P_BUTTON       = 178;
 	const int Y_1P_BUTTON       = 269;
