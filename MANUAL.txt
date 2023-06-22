@@ -295,7 +295,7 @@ image::scrnshot/1P_SCRN.PNG[]
 
 * 2-Player Screen
 
-image::mockups/2P_SCRN.PNG[]
+image::scrnshot/2P_SCRN.PNG[]
 
 
 | World (Row Array)
