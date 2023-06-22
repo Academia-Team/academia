@@ -291,11 +291,11 @@ and lives for both players.
 |
 * 1-Player Screen
 
-image::mockups/1P_SCRN.PNG[]
+image::scrnshot/1P_SCRN.PNG[]
 
 * 2-Player Screen
 
-image::mockups/2P_SCRN.PNG[]
+image::scrnshot/2P_SCRN.PNG[]
 
 
 | World (Row Array)
@@ -409,7 +409,7 @@ player's score box.
 * Updates Score.
 
 |
-* image:mockups/SCOREBOX.PNG[]
+* image:scrnshot/SCOREBOX.PNG[]
 
 
 | Health Box
@@ -428,7 +428,7 @@ player's score box.
 * Updates Health.
 
 |
-* image:mockups/HLTHBOX.PNG[]
+* image:scrnshot/HLTHBOX.PNG[]
 
 
 | Label
