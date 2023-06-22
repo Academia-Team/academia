@@ -73,18 +73,19 @@ image:sprites/RPLAYER.PNG[Sprite facing Right]
 |Purpose:
 |To serve as the sprites for the player.
 |Modification(s):
-|The images were heavily modified. The middle images of the man wearing a fedora
-were used from the sprite sheet. They were converted to black and white. The
-fedora was removed and the suit was simplified.
+|The images were heavily modified from the original. All of the images were
+derived from the top-leftmost sprite in the sprite sheet. It was converted to
+black and white, and was manually edited so it could fit within the bounds of a
+32x32 px area.
 
 |Author:
-|Tekepon, Mar 29th
+|diamonddmgirl
 
 |License:
-|Unknown
+|Creative Commons Zero License
 
 |Source:
-|https://vxresource.wordpress.com/page/2/#jp-carousel-611
+|https://opengameart.org/content/school-girl
 
 ||
 
