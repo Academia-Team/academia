@@ -428,7 +428,7 @@ player's score box.
 * Updates Health.
 
 |
-* image:mockups/HLTHBOX.PNG[]
+* image:scrnshot/HLTHBOX.PNG[]
 
 
 | Label
