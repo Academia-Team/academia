@@ -291,7 +291,7 @@ and lives for both players.
 |
 * 1-Player Screen
 
-image::mockups/1P_SCRN.PNG[]
+image::scrnshot/1P_SCRN.PNG[]
 
 * 2-Player Screen
 
