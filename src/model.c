@@ -464,7 +464,8 @@ void coordToIndex(const World* const world, int* row, int* column, int x, int y)
 		   world->usableRows;
 }
 
-initButton(Button* button, int x, int y, int height, int width, LabelStr text)
+void initButton(Button* button, int x, int y, int height, int width,
+				LabelStr text)
 {
 	int textX;
 	int textY;
