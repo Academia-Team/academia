@@ -6,6 +6,7 @@
  * @copyright Copyright Academia Team 2023
  */
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -41,6 +42,63 @@ int random(int rangeMax)
 	} while (value == 0);
 	
 	return (value % (rangeMax + 1));
+}
+
+void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels, ...)
+{
+	const int FINAL_Y = y + (numLabels * (FONT16_HEIGHT + spacing) -
+						spacing - 1);
+
+	va_list argList;
+	int     index;
+
+	infoBar->numLabels = 0;
+	
+	if (numLabels > 0 && numLabels <= MAX_INFO_LABELS &&
+		y >= 0 && y <= SCRN_MAX_Y && FINAL_Y <= SCRN_MAX_Y)
+	{
+		infoBar->y = y;
+		infoBar->spacingBetweenLabels = spacing;
+		va_start(argList, numLabels);
+
+		for (index = 0; index < numLabels; index++)
+		{
+			addInfoText(infoBar, va_arg(argList, char *));
+		}
+	}
+
+	va_end(argList);
+}
+
+void addInfoText(InfoBar* infoBar, char* string)
+{
+	const int NEW_X = SCRN_MID_X - ((strlen(string) * FONT16_WIDTH) >> 1);
+	const int NEW_Y = (infoBar->numLabels == 0 ? infoBar->y :
+					   infoBar->labels[infoBar->numLabels - 1].y +
+					   FONT16_HEIGHT + infoBar->spacingBetweenLabels);
+	const int END_Y = NEW_Y + FONT16_HEIGHT - 1;
+
+	if (infoBar->numLabels < MAX_INFO_LABELS - 1 && END_Y <= SCRN_MAX_Y)
+	{
+		initLabel(&infoBar->labels[infoBar->numLabels++],
+				  (NEW_X < 0 ? 0 : NEW_X), NEW_Y, string);
+	}
+}
+
+void removeInfoText(InfoBar* infoBar, int index)
+{
+	int replaceIndex;
+
+	if (index >= 0 && index < infoBar->numLabels)
+	{
+		for (replaceIndex = index; replaceIndex < infoBar->numLabels - 1;
+			 replaceIndex++)
+		{
+			infoBar->labels[replaceIndex] = infoBar->labels[replaceIndex + 1];
+		}
+
+		infoBar->numLabels--;
+	}
 }
 
 void initWorld (World* world, int numPlayers)

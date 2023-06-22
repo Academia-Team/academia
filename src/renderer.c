@@ -237,6 +237,16 @@ void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen)
 	}
 }
 
+void renderInfoBar(UINT16* base, const InfoBar* const infoBar)
+{
+	int index;
+
+	for (index = 0; index < infoBar->numLabels; index++)
+	{
+		renderLabel(base, &infoBar->labels[index], TRUE);
+	}
+}
+
 void renderScore(UINT16* base, const Score* const score)
 {
 	const int LABEL_HEIGHT = 16;

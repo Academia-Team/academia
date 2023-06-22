@@ -204,21 +204,10 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 
 	const int BORDER_HEIGHT      =   3;
 	const int BORDER_WIDTH       =   3;
+	const int INFO_BAR_VSPACE    =   0;
+	const int NUM_INFO_BAR_TEXT  =   3;
 	const int Y_INFO_BAR_START   =   BORDER_HEIGHT;
-
-	const int X_COPR             =   0;
-	const int Y_COPR             =   Y_INFO_BAR_START;
-	Label     coprLabel;
-
-	const int X_VER              =   0;
-	const int Y_VER              =   Y_COPR + INFO_BAR_ENTRY_HEIGHT;
-	Label     verLabel;
-
-	const int X_LICENSE          =   0;
-	const int Y_LICENSE          =   Y_VER + INFO_BAR_ENTRY_HEIGHT;
-	Label     licenseLabel;
-	LabelStr  strLicense;
-
+	InfoBar   topInfoBar;
 
 	Button       onePlayer;
 	Button       twoPlayer;
@@ -243,20 +232,15 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 			   HEIGHT_2P_BUTTON, WIDTH_2P_BUTTON, "2-Player");
 	initButton(&flee, X_FLEE_BUTTON, Y_FLEE_BUTTON,
 			   HEIGHT_FLEE_BUTTON, WIDTH_FLEE_BUTTON, "FLEE");
-
-	initLabel(&coprLabel, X_COPR, Y_COPR, COPR_INFO);
-	initLabel(&verLabel, X_VER, Y_VER, VER_INFO);
-	initLabel(&licenseLabel, X_LICENSE, Y_LICENSE, LICENSE_INFO);
+	initInfoBar(&topInfoBar, Y_INFO_BAR_START, INFO_BAR_VSPACE,
+				NUM_INFO_BAR_TEXT, COPR_INFO, VER_INFO, LICENSE_INFO);
 
 	fill_scrn(screenBuffer);
 	clr_area(screenBuffer, BORDER_WIDTH, SCRN_LEN - BORDER_WIDTH * 2,
 			 BORDER_HEIGHT + INFO_BAR_HEIGHT,
 			 SCRN_HEIGHT - BORDER_HEIGHT * 2 - INFO_BAR_HEIGHT);
 
-	renderLabel((UINT16 *)screenBuffer, &coprLabel, TRUE);
-	renderLabel((UINT16 *)screenBuffer, &verLabel, TRUE);
-	renderLabel((UINT16 *)screenBuffer, &licenseLabel, TRUE);
-
+	renderInfoBar((UINT16 *)screenBuffer, &topInfoBar);
 	renderTitle(screenBuffer, X_TITLE, Y_TITLE);
 	renderButton(screenBuffer, &onePlayer, FALSE);
 	renderButton(screenBuffer, &twoPlayer, FALSE);
