@@ -409,7 +409,7 @@ player's score box.
 * Updates Score.
 
 |
-* image:mockups/SCOREBOX.PNG[]
+* image:scrnshot/SCOREBOX.PNG[]
 
 
 | Health Box
