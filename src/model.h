@@ -89,6 +89,7 @@
 #define MAX_HAZARD_IN_ROW 5
 #define MAX_HEDGES 3
 #define MAX_SPIKES 3
+#define MAX_INFO_LABELS 5
 
 #define PLAYER_START_X 304
 #define PLAYER_START_Y 288
@@ -145,7 +146,7 @@
 /**
  * @brief The maximum number of characters that can be in a label.
  */
-#define MAX_LABEL_LEN 20
+#define MAX_LABEL_LEN 32
 
 
 #define MAX_OBSTACLE_IN_ROW 6
@@ -241,6 +242,14 @@ typedef struct
 	Label label;
 	BOOL selected;
 } Button;
+
+typedef struct
+{
+	int y;
+	int spacingBetweenLabels;
+	int numLabels;
+	Label labels[MAX_INFO_LABELS];
+} InfoBar;
 
 typedef struct
 {
@@ -384,6 +393,50 @@ typedef struct
  * @return An integral number between 0 and rangeMax, inclusive.
  */
 int random(int rangeMax);
+
+/**
+ * @brief Initializes a InfoBar object.
+ * @details The InfoBar will generate and manage labels corresponding to the
+ * given text. All the labels will be given values such that they will be
+ * horizontally centered on screen. Any invalid values entered will result in
+ * the given object entering an undefined state.
+ * 
+ * @param infoBar A pointer to the InfoBar object to be initialized.
+ * @param y The starting y pixel coordinate for the InfoBar object. Any value
+ * that results in coordinates that are out of bounds is invalid.
+ * @param spacing The amount of vertical space (in pixels) between each label
+ * in the infoBar. Any value that results in coordinates that are out of bounds
+ * in invalid.
+ * @param numLabels The number of labels to place into the object. It must be a
+ * positive number that is less than the currently defined MAX_INFO_LABELS.
+ * @param ... The null-terminated strings that will be stored within the
+ * infoBar. The number of strings must correspond to the value of numLabels.
+ */
+void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels, ...);
+
+/**
+ * @brief Adds the given text to the InfoBar object.
+ * @details The text must not cause the InfoBar object to exceed the confines of
+ * the screen. The object will not be modified if there is no more room to add
+ * the text.
+ * 
+ * @param infoBar A pointer to the InfoBar object to be given more text.
+ * @param string The text that should be added to the InfoBar object. Must be
+ * null-terminated.
+ */
+void addInfoText(InfoBar* infoBar, char* string);
+
+/**
+ * @brief Removes the label at the given index from the InfoBar object.
+ * @details The object will not be modified if the index is out of range.
+ * 
+ * @param infoBar A pointer to the InfoBar object that needs to have text
+ * removed.
+ * @param index The zero-indexed value corresponding to text that was previously
+ * added to the object. The largest index always corresponds to the most
+ * recently added text. Any negative index is invalid.
+ */
+void removeInfoText(InfoBar* infoBar, int index);
 
 /**
  * @brief Initializes a CorePlayer object.

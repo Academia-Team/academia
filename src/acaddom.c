@@ -22,6 +22,12 @@
 #include "vector.h"
 #include "vbl.h"
 
+#define COPR_INFO                  "(C) 2023 Academia Team"
+#define INFO_BAR_HEIGHT             48
+#define INFO_BAR_ENTRY_HEIGHT       16
+#define LICENSE_INFO               "Licensed under the GPL-2.0-only"
+#define VER_INFO                   "v2023.05.15-NEXT"
+
 #define MIN_NUM_TICKS               14
 #define MIN_NUM_TICKS_IN_SEC         5
 #define MIN_NUM_TICKS_IN_0_8_SEC     4
@@ -177,7 +183,7 @@ int main()
 void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 {
 	const int X_TITLE           =  27;
-	const int Y_TITLE           =  57;
+	const int Y_TITLE           =  77;
 
 	const int X_1P_BUTTON       = 178;
 	const int Y_1P_BUTTON       = 269;
@@ -198,6 +204,10 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 
 	const int BORDER_HEIGHT      =   3;
 	const int BORDER_WIDTH       =   3;
+	const int INFO_BAR_VSPACE    =   0;
+	const int NUM_INFO_BAR_TEXT  =   3;
+	const int Y_INFO_BAR_START   =   BORDER_HEIGHT;
+	InfoBar   topInfoBar;
 
 	Button       onePlayer;
 	Button       twoPlayer;
@@ -222,11 +232,15 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 			   HEIGHT_2P_BUTTON, WIDTH_2P_BUTTON, "2-Player");
 	initButton(&flee, X_FLEE_BUTTON, Y_FLEE_BUTTON,
 			   HEIGHT_FLEE_BUTTON, WIDTH_FLEE_BUTTON, "FLEE");
+	initInfoBar(&topInfoBar, Y_INFO_BAR_START, INFO_BAR_VSPACE,
+				NUM_INFO_BAR_TEXT, COPR_INFO, VER_INFO, LICENSE_INFO);
 
 	fill_scrn(screenBuffer);
-	clr_area(screenBuffer, BORDER_WIDTH, SCRN_LEN - (BORDER_WIDTH * 2),
-			 BORDER_HEIGHT, SCRN_HEIGHT - (BORDER_HEIGHT * 2));
+	clr_area(screenBuffer, BORDER_WIDTH, SCRN_LEN - BORDER_WIDTH * 2,
+			 BORDER_HEIGHT + INFO_BAR_HEIGHT,
+			 SCRN_HEIGHT - BORDER_HEIGHT * 2 - INFO_BAR_HEIGHT);
 
+	renderInfoBar((UINT16 *)screenBuffer, &topInfoBar);
 	renderTitle(screenBuffer, X_TITLE, Y_TITLE);
 	renderButton(screenBuffer, &onePlayer, FALSE);
 	renderButton(screenBuffer, &twoPlayer, FALSE);

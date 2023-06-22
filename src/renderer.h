@@ -126,6 +126,17 @@ void renderMainPlayer(UINT32* base, const Player* const player);
 void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen);
 
 /**
+ * @brief Renders a InfoBar to the screen.
+ * @details Every character stored in the infoBar are rendered as 16x16
+ * character sprites. Each string stored within the object is horizontally
+ * centered on the screen at the object's provided y pixel position.
+ * 
+ * @param base The location in memory to plot at.
+ * @param infoBar The infoBar that is to be rendered to the screen.
+ */
+void renderInfoBar(UINT16* base, const InfoBar* const infoBar);
+
+/**
  * @brief Renders a score to the screen.
  * @details Renders the score value (the actual number to be displayed), at the 
  * scores x and y position on screen, top-left corner justified.
