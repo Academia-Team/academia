@@ -621,6 +621,7 @@ void coordToIndex(const World* const world, int* row, int* column, int x, int y)
  * @param width The width of the Button (in pixels).
  * @param text The text that should be a part of the Button.
  */
-initButton(Button* button, int x, int y, int height, int width, LabelStr text);
+void initButton(Button* button, int x, int y, int height, int width,
+				LabelStr text);
 
 #endif
