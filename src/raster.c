@@ -50,7 +50,7 @@ void hline(UINT32 *base, int x1, int x2, int y)
 		if (minXLong == maxXLong)
 		{	
 			*line |= ((0xFFFFFFFF >> (minPX & 31)) & 
-						    (0xFFFFFFFF << (31 - (maxPX & 31))));
+					  (0xFFFFFFFF << (31 - (maxPX & 31))));
 		}
 		else
 		{
