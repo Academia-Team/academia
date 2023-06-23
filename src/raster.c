@@ -577,10 +577,15 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 				BOOL destructive, BOOL blackScreen)
 {
 	int bitmapEndY = y + height - 1;
-	int currentRow = 0;
-	int modX = 0;
-	UINT8 value = 0;
-	UINT8 *scrnPlotPos = 0;
+	int currentRow;
+	int modX;
+	int numPxFromRight;
+	UINT8 *scrnPlotPos;
+
+	UINT8 clrMaskVal;
+	UINT8 leftClrMaskVal;
+	UINT8 rightClrMaskVal;
+	UINT8 xorMaskVal;
 
 	if (bitmapEndY > SCRN_MAX_Y)
 	{
@@ -608,21 +613,25 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 		{
 			if (blackScreen && destructive)
 			{
+				clrMaskVal = 0xFF >> 8 + x;
+				xorMaskVal = 0xFF << modX;
+
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					value = (*scrnPlotPos) & (0xFF >> 8 + x);
-					*scrnPlotPos = value | ((*(bitmap) << modX) ^
-											(0xFF << modX));
+					*scrnPlotPos = (*scrnPlotPos & clrMaskVal) | ((*bitmap <<
+								   modX) ^ xorMaskVal);
 				}
 			}
 			else if (destructive)
 			{
+				clrMaskVal = 0xFF >> modX;
+
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
-				{
-					value = (*scrnPlotPos) & (0xFF >> modX); 
-					*scrnPlotPos = value | (*(bitmap) << modX);
+				{ 
+					*scrnPlotPos = (*scrnPlotPos & clrMaskVal) |
+								   (*bitmap << modX);
 				}
 			}
 			else if (blackScreen)
@@ -630,7 +639,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					*scrnPlotPos ^= *(bitmap) << modX;
+					*scrnPlotPos ^= *bitmap << modX;
 				}
 			}
 			else
@@ -638,7 +647,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					*scrnPlotPos |= *(bitmap) << modX;
+					*scrnPlotPos |= *bitmap << modX;
 				}
 			}
 		}
@@ -646,21 +655,25 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 		{
 			if (blackScreen && destructive)
 			{
+				clrMaskVal = 0xFF << (8 - modX);
+				xorMaskVal = 0xFF >> modX;
+
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					value = (*scrnPlotPos) & (0xFF << (8 - modX));
-					*scrnPlotPos = value | ((*(bitmap) >> modX) ^
-											(0xFF >> modX));
+					*scrnPlotPos = (*scrnPlotPos & clrMaskVal) | ((*bitmap >>
+								   modX) ^ xorMaskVal);
 				}
 			}
 			else if (destructive)
 			{
+				clrMaskVal = 0xFF << (8 - modX);
+
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					value = (*scrnPlotPos) & (0xFF << (8 - modX));
-					*scrnPlotPos = value | (*(bitmap) >> modX);
+					*scrnPlotPos = (*scrnPlotPos & clrMaskVal) | (*bitmap >>
+								   modX);
 				}
 			}
 			else if (blackScreen)
@@ -668,7 +681,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					*scrnPlotPos ^= *(bitmap) >> modX;
+					*scrnPlotPos ^= *bitmap >> modX;
 				}
 			}
 			else
@@ -676,7 +689,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					*scrnPlotPos |= *(bitmap) >> modX;
+					*scrnPlotPos |= *bitmap >> modX;
 				}
 			}
 		}
@@ -687,7 +700,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					*scrnPlotPos = (*(bitmap) ^ 0xFF);
+					*scrnPlotPos = (*bitmap ^ 0xFF);
 				}
 			}
 			else if (destructive)
@@ -695,7 +708,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					*scrnPlotPos = *(bitmap);
+					*scrnPlotPos = *bitmap;
 				}
 			}
 			else if (blackScreen)
@@ -703,7 +716,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					*scrnPlotPos ^= *(bitmap);
+					*scrnPlotPos ^= *bitmap;
 				}
 			}
 			else
@@ -711,35 +724,44 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					*scrnPlotPos |= *(bitmap);
+					*scrnPlotPos |= *bitmap;
 				}
 			}
 		}
 		else
 		{
+			numPxFromRight = 8 - modX;
+
 			if (blackScreen && destructive)
 			{
+				leftClrMaskVal  = 0xFF << numPxFromRight;
+				rightClrMaskVal = 0xFF >> modX;
+
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					value = (*scrnPlotPos) & (0xFF << (8 - modX));
-					*scrnPlotPos = value | ((*bitmap >> modX) ^ (0xFF >> modX));
+					*scrnPlotPos = (*scrnPlotPos & leftClrMaskVal) | (
+									(*bitmap >> modX) ^ rightClrMaskVal);
 
-					value = (*(scrnPlotPos + 1)) & (0xFF >> modX);
-					*(scrnPlotPos + 1) = value | ((*(bitmap) << (8 - modX)) ^
-												  (0xFF << (8 - modX)));
+					*(scrnPlotPos + 1) = (*(scrnPlotPos + 1) &
+										  rightClrMaskVal) | ((*bitmap <<
+										  numPxFromRight) ^ leftClrMaskVal);
 				}
 			}
 			else if (destructive)
 			{
+				leftClrMaskVal  = 0xFF << numPxFromRight;
+				rightClrMaskVal = 0xFF >> modX;
+
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					value = (*scrnPlotPos) & (0xFF << (8 - modX));
-					*scrnPlotPos = value | (*bitmap >> modX);
+					*scrnPlotPos = (*scrnPlotPos & leftClrMaskVal) |
+								   (*bitmap >> modX);
 
-					value = (*(scrnPlotPos + 1)) & (0xFF >> modX);
-					*(scrnPlotPos + 1) = value | (*(bitmap) << (8 - modX));
+					*(scrnPlotPos + 1) = (*(scrnPlotPos + 1) &
+										  rightClrMaskVal) | (*bitmap <<
+										  numPxFromRight);
 				}
 			}
 			else if (blackScreen)
@@ -748,7 +770,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
 					*scrnPlotPos ^= *bitmap >> modX;
-					*(scrnPlotPos + 1) ^= *(bitmap) << (8 - modX);
+					*(scrnPlotPos + 1) ^= *bitmap << numPxFromRight;
 				}
 			}
 			else
@@ -757,7 +779,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
 					*scrnPlotPos |= *bitmap >> modX;
-					*(scrnPlotPos + 1) |= *(bitmap) << (8 - modX);
+					*(scrnPlotPos + 1) |= *bitmap << numPxFromRight;
 				}
 			}
 		}
