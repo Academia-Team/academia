@@ -361,99 +361,136 @@ void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
 
 		if (x < 0)
 		{
-			for (currentRow = y; currentRow <= bitmapEndY;
-				 currentRow++, bitmap++)
+			if (blackScreen && destructive)
 			{
-				if (blackScreen && destructive)
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					value = (*scrnPlotPos) & (0xFFFF >> 16 + x);
 					*scrnPlotPos = value | ((*(bitmap) << modX) ^
-						(0xFFFF << modX));
-
+											(0xFFFF << modX));
 				}
-				else if (destructive)
+			}
+			else if (destructive)
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					value = (*scrnPlotPos) & (0xFFFF >> modX); 
 					*scrnPlotPos = value | (*(bitmap) << modX);
 				}
-				else if (blackScreen)
+			}
+			else if (blackScreen)
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					*scrnPlotPos ^= *(bitmap) << modX;
-				} 
-				else
+				}
+			}
+			else
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					*scrnPlotPos |= *(bitmap) << modX;
 				}
-				scrnPlotPos += SCRN_LEN_WORDS;
 			}
 		}
 		else if (x > RAST16_MAX_VIS_X)
 		{
-			for (currentRow = y; currentRow <= bitmapEndY;
-				 currentRow++, bitmap++)
+			if (blackScreen && destructive)
 			{
-				if (blackScreen && destructive)
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					value = (*scrnPlotPos) & (0xFFFF << (16 - modX));
 					*scrnPlotPos = value | ((*(bitmap) >> modX) ^
-						(0xFFFF >> modX));
+											(0xFFFF >> modX));
 				}
-				else if (destructive)
+			}
+			else if (destructive)
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					value = (*scrnPlotPos) & (0xFFFF << (16 - modX));
 					*scrnPlotPos = value | (*(bitmap) >> modX);
 				}
-				else if (blackScreen)
+			}
+			else if (blackScreen)
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					*scrnPlotPos ^= *(bitmap) >> modX;
-				} 
-				else
+				}
+			} 
+			else
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					*scrnPlotPos |= *(bitmap) >> modX;
 				}
-				scrnPlotPos += SCRN_LEN_WORDS;
 			}
 		}
 		else if (modX == 0)
 		{
-			for (currentRow = y; currentRow <= bitmapEndY;
-				 currentRow++, bitmap++)
+			if (blackScreen && destructive)
 			{
-				if (blackScreen && destructive)
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					*scrnPlotPos = (*(bitmap) ^ 0xFFFF);
 				}
-				else if (destructive)
+			}
+			else if (destructive)
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					*scrnPlotPos = *(bitmap);
 				}
-				else if (blackScreen)
+			}
+			else if (blackScreen)
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					*scrnPlotPos ^= *(bitmap);
-				} 
-				else
+				}
+			} 
+			else
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					*scrnPlotPos |= *(bitmap);
 				}
-				scrnPlotPos += SCRN_LEN_WORDS;
 			}
 		}
 		else
 		{
-			for (currentRow = y; currentRow <= bitmapEndY;
-				 currentRow++, bitmap++)
+			if (blackScreen && destructive)
 			{
-				if (blackScreen && destructive)
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					value = (*scrnPlotPos) & (0xFFFF << (16 - modX));
 					*scrnPlotPos = value | ((*bitmap >> modX) ^
-						(0xFFFF >> modX));
+											(0xFFFF >> modX));
 
 					value = (*(scrnPlotPos + 1)) & (0xFFFF >> modX);
-					*(scrnPlotPos + 1) = value | ((*(bitmap) << (16 - modX)) ^
-						(0xFFFF << (16 - modX)));
+					*(scrnPlotPos + 1) = value | ((*(bitmap) <<
+												  (16 - modX)) ^
+												  (0xFFFF << (16 - modX)));
 				}
-				else if (destructive)
+			}
+			else if (destructive)
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					value = (*scrnPlotPos) & (0xFFFF << (16 - modX));
 					*scrnPlotPos = value | (*bitmap >> modX);
@@ -461,17 +498,24 @@ void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
 					value = (*(scrnPlotPos + 1)) & (0xFFFF >> modX);
 					*(scrnPlotPos + 1) = value | (*(bitmap) << (16 - modX));
 				}
-				else if (blackScreen)
+			}
+			else if (blackScreen)
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					*scrnPlotPos ^= *bitmap >> modX;
 					*(scrnPlotPos + 1) ^= *(bitmap) << (16 - modX);
-				} 
-				else
+				}
+			}
+			else
+			{
+				for (currentRow = y; currentRow <= bitmapEndY;
+					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
 					*scrnPlotPos |= *bitmap >> modX;
 					*(scrnPlotPos + 1) |= *(bitmap) << (16 - modX);
 				}
-				scrnPlotPos += SCRN_LEN_WORDS;
 			}
 		}
 	}
