@@ -282,11 +282,20 @@ void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap,
 
 void plot_alpha(UINT32 *base, int x, int y, int height, const UINT32 *bitmap)
 {
-	const int bitmapEndY = y + height - 1;
-	int currentRow = 0;
-	int modX = 0;
-	UINT32 value = 0;
-	UINT32 *scrnPlotPos = 0;
+	int bitmapEndY = y + height - 1;
+	int currentRow;
+	int modX;
+	int numPxFromRight;
+	UINT32 *scrnPlotPos;
+
+	UINT32 clrMaskVal;
+	UINT32 leftClrMaskVal;
+	UINT32 rightClrMaskVal;
+
+	if (bitmapEndY > SCRN_MAX_Y)
+	{
+		bitmapEndY = SCRN_MAX_Y;
+	}
 
 	if (x >= RAST32_MIN_X && x < (SCRN_LEN)
 	&& bitmapEndY >= 0 && y <= SCRN_MAX_Y 
@@ -307,43 +316,45 @@ void plot_alpha(UINT32 *base, int x, int y, int height, const UINT32 *bitmap)
 
 		if (x < 0)
 		{
+			clrMaskVal = 0xFFFFFFFF >> modX;
+
 			for (currentRow = y; currentRow <= bitmapEndY;
-				 currentRow++, bitmap++)
+				 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
 			{
-				value = (*scrnPlotPos) & (0xFFFFFFFF >> modX); 
-				*scrnPlotPos &= value | (*(bitmap) << modX);
-				scrnPlotPos += SCRN_LEN_LONG;
+				*scrnPlotPos &= (*scrnPlotPos & clrMaskVal) | (*bitmap << modX);
 			}
 		}
 		else if (x > RAST32_MAX_VIS_X)
 		{
+			clrMaskVal = 0xFFFFFFFF << (32 - modX);
+
 			for (currentRow = y; currentRow <= bitmapEndY;
-				 currentRow++, bitmap++)
+				 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
 			{
-				value = (*scrnPlotPos) & (0xFFFFFFFF << (32 - modX));
-				*scrnPlotPos &= value | (*(bitmap) >> modX);
-				scrnPlotPos += SCRN_LEN_LONG;
+				*scrnPlotPos &= (*scrnPlotPos & clrMaskVal) | (*bitmap >> modX);
 			}
 		}
 		else if (modX == 0)
 		{
 			for (currentRow = y; currentRow <= bitmapEndY;
-				 currentRow++, bitmap++)
+				 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
 			{
 				*scrnPlotPos &= *(bitmap);
-				scrnPlotPos += SCRN_LEN_LONG;
 			}
 		}
 		else
 		{
+			numPxFromRight  = 32 - modX;
+			leftClrMaskVal  = 0xFFFFFFFF << numPxFromRight;
+			rightClrMaskVal = 0xFFFFFFFF >> modX;
+
 			for (currentRow = y; currentRow <= bitmapEndY;
-				 currentRow++, bitmap++)
+				 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
 			{
-				value = (*scrnPlotPos) & (0xFFFFFFFF << (32 - modX));
-				*scrnPlotPos &= value | (*bitmap >> modX);
-				value = (*(scrnPlotPos + 1)) & (0xFFFFFFFF >> modX);
-				*(scrnPlotPos + 1) &= value | (*(bitmap) << (32 - modX));
-				scrnPlotPos += SCRN_LEN_LONG;
+				*scrnPlotPos &= (*scrnPlotPos & leftClrMaskVal) |
+								(*bitmap >> modX);
+				*(scrnPlotPos + 1) &= (*(scrnPlotPos + 1) & rightClrMaskVal) |
+									  (*bitmap << numPxFromRight);
 			}
 		}
 	}
