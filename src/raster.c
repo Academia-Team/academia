@@ -7,17 +7,8 @@
  * @copyright Copyright Academia Team 2023
  */
 
+#include <stdlib.h>
 #include "raster.h"
-
-/**
- * @brief Absolutes the value passed in.
- * @param val The value to be absoluted.
- * @return int The returned absoluted value.
- */
-int abs(int val)
-{
-	return (val < 0) ? (val * -1) : val;
-}
 
 void plot_px(UINT8 *base, int x, int y)
 {
