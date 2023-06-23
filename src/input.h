@@ -170,6 +170,8 @@ BOOL mouseRclick(Mouse * const mouse);
 /**
  * @brief Checks if the given mouse has moved since last getting the position of
  * it.
+ * @details Once the mouse has been moved, the subroutine will always indicate
+ * the mouse has moved until the actual values have been read.
  * 
  * @param mouse The mouse to check the movement of.
  * @return TRUE if the mouse has been moved; FALSE otherwise.

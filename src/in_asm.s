@@ -396,7 +396,8 @@ _mouseRclick:			link	a6,#0
 ;
 ; Brief: Checks if the given mouse has moved since last getting the position of
 ; it.
-; Details: The mouse's right click status will be reset after being checked.
+; Details: Once the mouse has been moved, the subroutine will always indicate
+; the mouse has moved until the actual values have been read.
 ;
 ; Param: mouse The mouse to check the movement of.
 ; Return TRUE if the mouse has been moved; FALSE otherwise.
