@@ -26,7 +26,7 @@
 #define INFO_BAR_HEIGHT             48
 #define INFO_BAR_ENTRY_HEIGHT       16
 #define LICENSE_INFO               "Licensed under the GPL-2.0-only"
-#define VER_INFO                   "v2023.05.15-NEXT"
+#define VER_INFO                   "v2023.06.27"
 
 #define MIN_NUM_TICKS               14
 #define MIN_NUM_TICKS_IN_SEC         5
