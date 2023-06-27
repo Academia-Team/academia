@@ -396,6 +396,21 @@ image:menu/WHTE_CUR.PNG[]
 * image:scrnshot/2P_BTN.PNG[]
 * image:scrnshot/FLEE_BTN.PNG[]
 
+| Info Bar
+|
+* y integer pixel location.
+* Holds labels.
+* Is visible.
+* Takes up the entire length of the screen.
+
+|
+* Can add a label.
+* Can remove a label.
+* Horizontally centers all labels it manages on screen.
+
+|
+* image:scrnshot/INFO_BAR.PNG[]
+
 | Score Box
 |
 * Static integer location 1-player: (16,8)px, 2-Player: (128,8)px score box
