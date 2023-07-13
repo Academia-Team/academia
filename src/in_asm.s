@@ -4,6 +4,7 @@
 
 						include	bool_asm.i
 						include mouse.i
+						include scde_asm.i
 						include scrn_asm.i
 
 						xdef	_IKBD_isr
@@ -26,19 +27,10 @@ IKBD_MIN_MOUSE_PKT_VAL:	equ		$F8
 IKBD_RCLICK_BIT:		equ		0
 IKBD_LCLICK_BIT:		equ		1
 
-IKBD_CAPS_KEY:			equ		$3A
 IKBD_CAPS_BITMASK:		equ		$10
-
-IKBD_CTRL_KEY:			equ		$1D
 IKBD_CTRL_BITMASK:		equ		$04
-
-IKBD_ALT_KEY:			equ		$38
 IKBD_ALT_BITMASK:		equ		$08
-
-IKBD_LSHIFT_KEY:		equ		$2A
 IKBD_LSHIFT_BITMASK:	equ		$02
-
-IKBD_RSHIFT_KEY:		equ		$36
 IKBD_RSHIFT_BITMASK:	equ		$01
 
 IKBD_CHANNEL_LEV:		equ		6
@@ -207,27 +199,27 @@ IKBD_HANDLE_KEYS:		bclr.l	#IKBD_BREAK_BIT,d0
 
 						; Check if something should be removed from the shift
 						; buffer.
-						cmpi.b	#IKBD_CTRL_KEY,d0
+						cmpi.b	#IKBD_CTRL_SCANCODE,d0
 						bne		IKBD_NOT_CTRL_BREAK
 						eori.b	#IKBD_CTRL_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_CTRL_BREAK:	cmpi.b	#IKBD_ALT_KEY,d0
+IKBD_NOT_CTRL_BREAK:	cmpi.b	#IKBD_ALT_SCANCODE,d0
 						bne		IKBD_NOT_ALT_BREAK
 						eori.b	#IKBD_ALT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_ALT_BREAK:		cmpi.b	#IKBD_LSHIFT_KEY,d0
+IKBD_NOT_ALT_BREAK:		cmpi.b	#IKBD_LSHIFT_SCANCODE,d0
 						bne		IKBD_NOT_LSHIFT_BREAK
 						eori.b	#IKBD_LSHIFT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_LSHIFT_BREAK:	cmpi.b	#IKBD_RSHIFT_KEY,d0
+IKBD_NOT_LSHIFT_BREAK:	cmpi.b	#IKBD_RSHIFT_SCANCODE,d0
 						bne		IKBD_NOT_RSHIFT_BREAK
 						eori.b	#IKBD_RSHIFT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_RSHIFT_BREAK:	cmpi.b	#IKBD_CAPS_KEY,d0
+IKBD_NOT_RSHIFT_BREAK:	cmpi.b	#IKBD_CAPS_SCANCODE,d0
 						bne		IKBD_RETURN
 						eori.b	#IKBD_CAPS_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
@@ -241,27 +233,27 @@ IKBD_HANDLE_MAKE_CODE:	cmpi.b	#IKBD_MAX_SCANCODE,d0
 
 						; Check if something should be added to the shift
 						; buffer.
-						cmpi.b	#IKBD_CTRL_KEY,d0
+						cmpi.b	#IKBD_CTRL_SCANCODE,d0
 						bne		IKBD_NOT_CTRL_MAKE
 						ori.b	#IKBD_CTRL_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_CTRL_MAKE:		cmpi.b	#IKBD_ALT_KEY,d0
+IKBD_NOT_CTRL_MAKE:		cmpi.b	#IKBD_ALT_SCANCODE,d0
 						bne		IKBD_NOT_ALT_MAKE
 						ori.b	#IKBD_ALT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_ALT_MAKE:		cmpi.b	#IKBD_LSHIFT_KEY,d0
+IKBD_NOT_ALT_MAKE:		cmpi.b	#IKBD_LSHIFT_SCANCODE,d0
 						bne		IKBD_NOT_LSHIFT_MAKE
 						ori.b	#IKBD_LSHIFT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_LSHIFT_MAKE:	cmpi.b	#IKBD_RSHIFT_KEY,d0
+IKBD_NOT_LSHIFT_MAKE:	cmpi.b	#IKBD_RSHIFT_SCANCODE,d0
 						bne		IKBD_NOT_RSHIFT_MAKE
 						ori.b	#IKBD_RSHIFT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_RSHIFT_MAKE:	cmpi.b	#IKBD_CAPS_KEY,d0
+IKBD_NOT_RSHIFT_MAKE:	cmpi.b	#IKBD_CAPS_SCANCODE,d0
 						bne		IKBD_REG_KEY
 						ori.b	#IKBD_CAPS_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
