@@ -12,6 +12,7 @@
 #include "bool.h"
 #include "events.h"
 #include "input.h"
+#include "ikbdcode.h"
 #include "ints.h"
 #include "model.h"
 #include "raster.h"
@@ -35,20 +36,6 @@
 #define NUM_TICKS_IN_0_5_SEC        35
 #define NUM_TICKS_IN_TWO_SEC       140
 #define SCRN_ALIGN                 256
-
-typedef enum
-{
-	LEFT_ARROW_KEY  = 0x4B,
-	RIGHT_ARROW_KEY = 0x4D,
-	UP_ARROW_KEY    = 0x48,
-	DOWN_ARROW_KEY  = 0x50,
-	Q_KEY           = 0x10,
-	ESC_KEY         = 0x01,
-	TAB_KEY         = 0x0F,
-	SPACE_KEY       = 0x39,
-	RETURN_KEY      = 0x1C,
-	ENTER_KEY       = 0x72,
-} AcceptedKeys;
 
 typedef enum
 {
@@ -209,17 +196,17 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 	const int Y_INFO_BAR_START   =   BORDER_HEIGHT;
 	InfoBar   topInfoBar;
 
-	Button       onePlayer;
-	Button       twoPlayer;
-	Button       flee;
-	AcceptedKeys kybdKey;
-	BOOL         btnActivated 	= FALSE;
-	BOOL         tabCycle     	= FALSE;
-	ButtonSelVal selBtnNum    	= NONE_SEL;
-	ButtonSelVal prevBtnNum   	= NONE_SEL;
-	BOOL         btnSelected  	= FALSE;
-	BOOL         mouseUnselect  = FALSE;
-	BOOL		 useMouse  		= TRUE;
+	Button        onePlayer;
+	Button        twoPlayer;
+	Button        flee;
+	IKBD_Scancode kybdKey;
+	BOOL          btnActivated 	= FALSE;
+	BOOL          tabCycle     	= FALSE;
+	ButtonSelVal  selBtnNum    	= NONE_SEL;
+	ButtonSelVal  prevBtnNum   	= NONE_SEL;
+	BOOL          btnSelected  	= FALSE;
+	BOOL          mouseUnselect = FALSE;
+	BOOL		  useMouse      = TRUE;
 
 	int          mouseX;
 	int          mouseY;
@@ -258,18 +245,18 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 		{
 			switch(kybdKey)
 			{
-				case ESC_KEY:
-				case Q_KEY:
+				case IKBD_ESC_SCANCODE:
+				case IKBD_Q_SCANCODE:
 					*exitPgrm = TRUE;
 					break;
 
-				case SPACE_KEY:
-				case RETURN_KEY:
-				case ENTER_KEY:
+				case IKBD_SPACE_SCANCODE:
+				case IKBD_RETURN_SCANCODE:
+				case IKBD_KP_ENTER_SCANCODE:
 					btnActivated = (selBtnNum != NONE_SEL);
 					break;
 
-				case TAB_KEY:
+				case IKBD_TAB_SCANCODE:
 					tabCycle = TRUE;
 					break;
 				default:
@@ -436,20 +423,22 @@ void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
  */
 void processAsync(BOOL *quitToTitleScrn, World *gameWorld)
 {
-	AcceptedKeys kybdKey;
+	IKBD_Scancode kybdKey;
+
 	kybdKey = getKey();
 
 	if (kybdKey != NO_KEY)
 	{
 		switch(kybdKey)
 		{
-			case ESC_KEY:
+			case IKBD_ESC_SCANCODE:
 				pause_music();
 				game_pause();
 
-				while ((kybdKey = getKey()) != Q_KEY && kybdKey != ESC_KEY);
+				while ((kybdKey = getKey()) != IKBD_Q_SCANCODE &&
+						kybdKey != IKBD_ESC_SCANCODE);
 				
-				if (kybdKey == Q_KEY)
+				if (kybdKey == IKBD_Q_SCANCODE)
 				{
 					*quitToTitleScrn = TRUE;
 				}
@@ -461,19 +450,19 @@ void processAsync(BOOL *quitToTitleScrn, World *gameWorld)
 
 				break;
 				
-			case Q_KEY:
+			case IKBD_Q_SCANCODE:
 				*quitToTitleScrn = TRUE;
 				break;
-			case UP_ARROW_KEY:
+			case IKBD_UP_SCANCODE:
 				setPlayerDir(gameWorld, &gameWorld->mainPlayer, UP);
 				break;
-			case LEFT_ARROW_KEY:
+			case IKBD_LEFT_SCANCODE:
 				setPlayerDir(gameWorld, &gameWorld->mainPlayer, LEFT);
 				break;
-			case RIGHT_ARROW_KEY:
+			case IKBD_RIGHT_SCANCODE:
 				setPlayerDir(gameWorld, &gameWorld->mainPlayer, RIGHT);
 				break;
-			case DOWN_ARROW_KEY:
+			case IKBD_DOWN_SCANCODE:
 				setPlayerDir(gameWorld, &gameWorld->mainPlayer, DOWN);
 				break;
 			default:
@@ -717,7 +706,7 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 	Button 			playAgainButton;
 	Button 			retreatButton;
 	Label 			winner;
-	AcceptedKeys 	kybdKey;
+	IKBD_Scancode 	kybdKey;
 	BOOL 			btnActivated    = FALSE;
 	BOOL 			tabCycle        = FALSE;
 	BOOL 			quitToTitleScrn = FALSE;
@@ -742,18 +731,18 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 		{
 			switch(kybdKey)
 			{
-				case ESC_KEY:
-				case Q_KEY:
+				case IKBD_ESC_SCANCODE:
+				case IKBD_Q_SCANCODE:
 					quitToTitleScrn = TRUE;
 					break;
 
-				case SPACE_KEY:
-				case RETURN_KEY:
-				case ENTER_KEY:
+				case IKBD_SPACE_SCANCODE:
+				case IKBD_RETURN_SCANCODE:
+				case IKBD_KP_ENTER_SCANCODE:
 					btnActivated = (selBtnNum != NONE_SEL);
 					break;
 
-				case TAB_KEY:
+				case IKBD_TAB_SCANCODE:
 					tabCycle = TRUE;
 					break;
 				default:
