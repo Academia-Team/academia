@@ -3,5 +3,10 @@
 	"editor.rulers": [
 		80
 	],
-	"C_Cpp.errorSquiggles": "enabled"
+	"C_Cpp.errorSquiggles": "enabled",
+	"mesonbuild.configureOnOpen": true,
+	"mesonbuild.configureOptions": [
+		"--cross-file", "atari-st.ini"
+	],
+	"C_Cpp.default.compileCommands": "builddir\\compile_commands.json"
 }
