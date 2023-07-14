@@ -9,17 +9,24 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "bitmaps.h"
 #include "bool.h"
 #include "font16.h"
 #include "model.h"
+#include "move.h"
 #include "raster.h"
 #include "renderer.h"
 #include "types.h"
 
+#define MAX_NUM_DIGITS_IN_SCORE UINT32_MAX_DIGITS
+
 void clrPlayAreaSect(UINT32 *base, int numPlayers, int x, int length,
 					 int y, int height);
+void renderCar(UINT32 *base, int x, int y, Direction orientation);
+void renderFeathers(UINT32 *base, int x, int y, Direction orientation);
+void renderTrain(UINT32 *base, int x, int y);
 
 void renderUpdate(UINT32* base, const World* const world)
 {
@@ -82,83 +89,143 @@ void renderRow(UINT32* base, const Row* const row)
 
 void renderCell(UINT32* base, const Cell* const cell, int y)
 {
-	plot_rast32(base, cell->x, y, CELL_HEIGHT, cellBitmap[cell->cellType], TRUE,
-				FALSE);
+	UINT32 cellBitmap[CELL_HEIGHT];
+	UINT32 collectableBitmap[COLLECTABLE_HEIGHT];
+
+	switch(cell->cellType)
+	{
+		case GRASS_CELL:
+			getGrassBitmap(cellBitmap);
+			break;
+		case HEDGE_CELL:
+			getHedgeBitmap(cellBitmap);
+			break;
+		case ROAD_CELL:
+			getRoadBitmap(cellBitmap);
+			break;
+		case SPIKE_CELL:
+			getSpikeBitmap(cellBitmap);
+			break;
+		case TRACK_CELL:
+			getTrackBitmap(cellBitmap);
+			break;
+		default:
+			memset(cellBitmap, 0, UINT32_BYTES * CELL_HEIGHT);
+	}
+
+	plot_rast32(base, cell->x, y, CELL_HEIGHT, cellBitmap, TRUE, FALSE);
 	
 	switch(cell->collectableValue)
 	{
 		case A_COLLECT_VAL:
-			plot_rast32(base, cell->x, y, COLLECTABLE_HEIGHT,
-						collectableBitmap[0], FALSE, FALSE);
+			getACollectBitmap(collectableBitmap);
 			break;
 		case B_COLLECT_VAL:
-			plot_rast32(base, cell->x, y, COLLECTABLE_HEIGHT,
-						collectableBitmap[1], FALSE, FALSE);
+			getBCollectBitmap(collectableBitmap);
 			break;
 		case C_COLLECT_VAL:
-			plot_rast32(base, cell->x, y, COLLECTABLE_HEIGHT,
-						collectableBitmap[2], FALSE, FALSE);
+			getCCollectBitmap(collectableBitmap);
 			break;
+		default:
+			memset(collectableBitmap, 0, UINT32_BYTES * COLLECTABLE_HEIGHT);
 	}
+
+	plot_rast32(base, cell->x, y, COLLECTABLE_HEIGHT, collectableBitmap,
+				FALSE, FALSE);
 }
 
 void renderHazards(UINT32* base, const Row* const row)
 {
+	const Hazard *hazard;
+
 	int index;
-	int trainPart;
-	int trainX;
 
 	for (index = 0; index < row->hazardCount; index++)
 	{
-		switch(row->hazards[index].hazardType)
+		hazard = &row->hazards[index];
+		switch(hazard->hazardType)
 		{
 			case CAR_HAZ:
-				clrPlayAreaSect(base, 1, row->hazards[index].x, CAR_LEN,
-						 		row->y + CAR_Y_OFFSET, CAR_HEIGHT);
-				
-				plot_rast32
-				(
-					base, row->hazards[index].x, row->y, HAZARD_HEIGHT,
-					carBitmap
-					[
-						(row->hazards[index].orientation == WEST ? 0 : 1)
-					], FALSE, FALSE
-				);
+				renderCar(base, hazard->x, row->y, hazard->orientation);
 				break;
 			case FEATHERS_HAZ:
-				plot_rast32
-				(
-					base, row->hazards[index].x, row->y, HAZARD_HEIGHT,
-					feathersBitmap
-					[
-						(row->hazards[index].orientation == WEST ? 0 : 1)
-					], FALSE, FALSE
-				);
+				renderFeathers(base, hazard->x, row->y, hazard->orientation);
 				break;
 			case TRAIN_HAZ:
-				clrPlayAreaSect
-				(
-					base, 1, row->hazards[index].x + TRAIN_X_OFFSET,
-					TRAIN_LEN, row->y + TRAIN_Y_OFFSET, TRAIN_HEIGHT
-				);
-
-				for
-				(
-					trainPart = 0, trainX = row->hazards[index].x;
-					trainPart < NUM_TRAIN_PARTS;
-					trainX += CELL_LEN, trainPart++
-				)
-				{
-					if (trainX <= MAX_CELL_X && trainX >= MIN_CELL_X)
-					{
-						plot_rast32
-						(
-							base, trainX, row->y, HAZARD_HEIGHT,
-							trainBitmap[trainPart], FALSE, FALSE
-						);
-					}
-				}
+				renderTrain(base, hazard->x, row->y);
 				break;
+			case NO_HAZ:
+				break;
+		}
+	}
+}
+
+/**
+ * @brief Renders a car at the given x and y position in the area of memory
+ * pointed to by base.
+ * @details Nothing will be rendered if the orientation is not horizontal.
+ * 
+ * @param base The location in memory to plot at.
+ * @param x The x pixel location (starting at zero) to start rendering the car.
+ * @param y The y pixel location (starting at zero) to start rendering the car.
+ * @param orientation The horizontal orientation of the car.
+ */
+void renderCar(UINT32 *base, int x, int y, Direction orientation)
+{
+	UINT32 carBitmap[CAR_HEIGHT];
+
+	clrPlayAreaSect(base, 1, x, CAR_LEN, y + CAR_Y_OFFSET, CAR_SMALLEST_HEIGHT);
+
+	if (getCarBitmap(orientation, carBitmap) != NULL)
+	{
+		plot_rast32(base, x, y, CAR_HEIGHT, carBitmap, FALSE, FALSE);
+	}
+}
+
+/**
+ * @brief Renders a Mr. Feathers at the given x and y position in the area of
+ * memory pointed to by base.
+ * @details Nothing will be rendered if the orientation is not horizontal.
+ * 
+ * @param base The location in memory to plot at.
+ * @param x The x pixel location (starting at zero) to start rendering
+ * Mr. Feathers.
+ * @param y The y pixel location (starting at zero) to start rendering
+ * Mr. Feathers.
+ * @param orientation The horizontal orientation of Mr. Feathers.
+ */
+void renderFeathers(UINT32 *base, int x, int y, Direction orientation)
+{
+	UINT32 feathersBitmap[FEATHERS_HEIGHT];
+
+	if (getFeathersBitmap(orientation, feathersBitmap) != NULL)
+	{
+		plot_rast32(base, x, y, FEATHERS_HEIGHT, feathersBitmap, FALSE, FALSE);
+	}
+}
+
+/**
+ * @brief Renders a train at the given x and y position in the area of memory
+ * pointed to by base.
+ * 
+ * @param base The location in memory to plot at.
+ * @param x The x pixel location (starting at zero) to start rendering the
+ * train.
+ * @param y The y pixel location (starting at zero) to start rendering the
+ * train.
+ */
+void renderTrain(UINT32 *base, int x, int y)
+{
+	UINT32 trainBitmap[TRAIN_HEIGHT];
+
+	clrPlayAreaSect(base, 1, x + TRAIN_X_OFFSET, TRAIN_LEN, y + TRAIN_Y_OFFSET,
+					TRAIN_SMALLEST_HEIGHT);
+
+	for(; getTrainBitmap(trainBitmap) != NULL; x += CELL_LEN)
+	{
+		if (x <= MAX_CELL_X && x >= MIN_CELL_X)
+		{
+			plot_rast32(base, x, y, TRAIN_HEIGHT, trainBitmap, FALSE, FALSE);
 		}
 	}
 }
@@ -178,45 +245,19 @@ void renderPlayers(UINT32* base, const World* const world)
 
 void renderMainPlayer(UINT32* base, const Player* const player)
 {
-	switch(player->orientation)
+	UINT32 playerAlpha[PLAYER_HEIGHT];
+	UINT32 playerBitmap[PLAYER_HEIGHT];
+
+	if (getPlayerAlpha(player->orientation, playerAlpha) == NULL ||
+		getPlayerBitmap(player->orientation, playerBitmap) == NULL)
 	{
-		case NORTH:
-			plot_alpha(base, player->x, player->y, PLAYER_HEIGHT, 
-					   playerAlpha[0]);
-			plot_rast32
-			(
-				base, player->x, player->y, PLAYER_HEIGHT, playerBitmap[0],
-				FALSE, FALSE
-			);
-			break;
-		case WEST:
-			plot_alpha(base, player->x, player->y, PLAYER_HEIGHT, 
-					   playerAlpha[1]);
-			plot_rast32
-			(
-				base, player->x, player->y, PLAYER_HEIGHT, playerBitmap[1],
-				FALSE, FALSE
-			);
-			break;
-		case SOUTH:
-			plot_alpha(base, player->x, player->y, PLAYER_HEIGHT, 
-					   playerAlpha[0]);
-			plot_rast32
-			(
-				base, player->x, player->y, PLAYER_HEIGHT, playerBitmap[2],
-				FALSE, FALSE
-			);
-			break;
-		case EAST:
-			plot_alpha(base, player->x, player->y, PLAYER_HEIGHT, 
-					   playerAlpha[2]);
-			plot_rast32
-			(
-				base, player->x, player->y, PLAYER_HEIGHT, playerBitmap[3],
-				FALSE, FALSE
-			);
-			break;
+		memset(playerAlpha, 0, UINT32_BYTES * PLAYER_HEIGHT);
+		memset(playerBitmap, 0, UINT32_BYTES * PLAYER_HEIGHT);
 	}
+
+	plot_alpha(base, player->x, player->y, PLAYER_HEIGHT, playerAlpha);
+	plot_rast32(base, player->x, player->y, PLAYER_HEIGHT, playerBitmap, FALSE,
+				FALSE);
 }
 
 void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen)
@@ -224,16 +265,17 @@ void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen)
 	const int LABEL_HEIGHT = 16;
 	const int LABEL_WIDTH = 16;
 
+	const UINT16 *currFont16Char;
+
 	int index;
 	int x;
-	int charToPrint = 0;
 
 	for (index = 0, x = 0; label->text[index] != '\0'; 
-		 index++, (x += LABEL_WIDTH))
+		 index++, x += LABEL_WIDTH)
 	{
-		charToPrint = getFont16PrintableChar(label->text[index]);
-		plot_rast16(base, (label->x + x), label->y, LABEL_HEIGHT,
-					&font16[charToPrint], TRUE, blackScreen);
+		currFont16Char = getFont16Char(label->text[index], NULL);
+		plot_rast16(base, label->x + x, label->y, LABEL_HEIGHT, currFont16Char,
+					TRUE, blackScreen);
 	}
 }
 
@@ -251,25 +293,23 @@ void renderScore(UINT16* base, const Score* const score)
 {
 	const int LABEL_HEIGHT = 16;
 	const int LABEL_WIDTH = 16;
-	const int MAX_DIGIT_INDEX = 9;
 
 	UINT32 value = score->value;
-	int index = MAX_DIGIT_INDEX;
-	int digits[10];
+	int index = MAX_NUM_DIGITS_IN_SCORE - 1;
+	int digits[MAX_NUM_DIGITS_IN_SCORE];
 	int x;
 
 	do
 	{
-		digits[index] = getFont16Digit(value % 10UL);
+		digits[index--] = value % 10UL;
 		value /= 10;
-		index--;
 	} while (value != 0);
 
-	index++;
-	for(x = 0; index <= MAX_DIGIT_INDEX; index++, (x += LABEL_WIDTH))
+	for(x = 0, index += 1; index < MAX_NUM_DIGITS_IN_SCORE;
+		index++, x += LABEL_WIDTH)
 	{
-		plot_rast16(base, (score->x + x), score->y, LABEL_HEIGHT,
-					&font16[digits[index]], TRUE, TRUE);
+		plot_rast16(base, score->x + x, score->y, LABEL_HEIGHT,
+					getFont16Digit(digits[index], NULL), TRUE, TRUE);
 	}
 }
 
@@ -277,10 +317,8 @@ void renderLives(UINT16* base, const Lives* const lives)
 {
 	const int LABEL_HEIGHT = 16;
 
-	int fontIndex = getFont16Digit(lives->value);
-	
 	plot_rast16(base, lives->x, lives->y, LABEL_HEIGHT,
-				&font16[fontIndex], TRUE, TRUE);
+				getFont16Digit(lives->value, NULL), TRUE, TRUE);
 }
 
 void renderButton(UINT32* base, Button* button, BOOL blackScreen)
@@ -326,30 +364,32 @@ void renderButton(UINT32* base, Button* button, BOOL blackScreen)
 
 void renderTitle(UINT32* base, int x, int y)
 {
-	int index;
+	UINT32 titleBitmap[TITLE_HEIGHT];
 
-	for (index = 0; index < NUM_TITLE_PARTS; index++)
+	for (; getTitleBitmap(titleBitmap) != NULL; x += TITLE_PART_LEN)
 	{
-		plot_rast32(base, x, y, TITLE_HEIGHT, titleBitmap[index], TRUE, FALSE);
-		x += TITLE_PART_WIDTH;
+		plot_rast32(base, x, y, TITLE_HEIGHT, titleBitmap, TRUE, FALSE);
 	}
 }
 
 void renderGameOver(UINT32* base, int x, int y)
 {
-	int index;
+	UINT32 goverBitmap[GAME_OVER_HEIGHT];
 
-	for (index = 0; index < NUM_GAME_OVER_PARTS; index++)
+	for (; getGameOverBitmap(goverBitmap) != NULL; x += GAME_OVER_PART_LEN)
 	{
-		plot_rast32(base, x, y, GAME_OVER_HEIGHT, gameOverBitmap[index], FALSE,
-					TRUE);
-		x += GAME_OVER_PART_WIDTH;
+		plot_rast32(base, x, y, GAME_OVER_HEIGHT, goverBitmap, FALSE, TRUE);
 	}
 }
 
 void renderCursor(UINT16* base, int x, int y)
 {
-	plot_rast16(base, x, y, CURSOR_HEIGHT, mouseCursor, FALSE, TRUE);
+	UINT16 mouseCursor[CURSOR_HEIGHT];
+
+	if (getMouseCursor(mouseCursor) != NULL)
+	{
+		plot_rast16(base, x, y, CURSOR_HEIGHT, mouseCursor, FALSE, TRUE);
+	}
 }
 
 /**

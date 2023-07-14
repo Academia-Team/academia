@@ -16,6 +16,7 @@
 #include "ints.h"
 #include "model.h"
 #include "raster.h"
+#include "move.h"
 #include "music.h"
 #include "psg.h"
 #include "renderer.h"
@@ -454,16 +455,16 @@ void processAsync(BOOL *quitToTitleScrn, World *gameWorld)
 				*quitToTitleScrn = TRUE;
 				break;
 			case IKBD_UP_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, UP);
+				setPlayerDir(gameWorld, &gameWorld->mainPlayer, M_UP);
 				break;
 			case IKBD_LEFT_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, LEFT);
+				setPlayerDir(gameWorld, &gameWorld->mainPlayer, M_LEFT);
 				break;
 			case IKBD_RIGHT_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, RIGHT);
+				setPlayerDir(gameWorld, &gameWorld->mainPlayer, M_RIGHT);
 				break;
 			case IKBD_DOWN_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, DOWN);
+				setPlayerDir(gameWorld, &gameWorld->mainPlayer, M_DOWN);
 				break;
 			default:
 				handleInvalidKeyPress();

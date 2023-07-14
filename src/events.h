@@ -10,8 +10,9 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
-#include "model.h"
 #include "effects.h"
+#include "model.h"
+#include "move.h"
 
 /**
  * @brief Handles all the tasks needed in the event where a player dies.

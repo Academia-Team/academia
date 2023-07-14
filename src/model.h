@@ -10,6 +10,7 @@
 #define MODEL_H
 
 #include "bool.h"
+#include "move.h"
 #include "types.h"
 
 /**
@@ -77,7 +78,8 @@
 #define CELL_LEN    32
 #define CELL_HEIGHT 32
 
-#define NUM_SAFE_ROWS 3
+#define INFO_BAR_FONT_WIDTH 16
+#define INFO_BAR_FONT_HEIGHT 16
 
 #define MAX_CARS 5
 #define MAX_TRAINS 2
@@ -90,6 +92,8 @@
 #define MAX_HEDGES 3
 #define MAX_SPIKES 3
 #define MAX_INFO_LABELS 5
+
+#define NUM_SAFE_ROWS 3
 
 #define PLAYER_START_X 304
 #define PLAYER_START_Y 288
@@ -190,24 +194,6 @@ typedef enum
 	CAR_HAZ = 3
 } HazType;
 
-typedef enum
-{
-	UP     =  2,
-	DOWN   = -2,
-	NO_DIR =  0,
-	RIGHT  =  1,
-	LEFT   = -1
-} Direction;
-
-typedef enum
-{
-	NORTH     =  2,
-	SOUTH     = -2,
-	SYMMETRIC =  0,
-	EAST      =  1,
-	WEST      = -1
-} Orientation;
-
 typedef char LabelStr[MAX_LABEL_LEN + 1];
 
 typedef struct
@@ -255,7 +241,7 @@ typedef struct
 {
 	int x;
 	HazType hazardType;
-	Orientation orientation;
+	Direction orientation;
 } Hazard;
 
 typedef struct
@@ -281,7 +267,7 @@ typedef struct
 {
 	int x;
 	int y;
-	Orientation orientation;
+	Direction orientation;
 
 	int destX;
 	int destY;
@@ -554,7 +540,7 @@ void initScore (int x, int y, Score* scoreBox);
  * @param y The y coordinate of the label (in pixels).
  * @param text The text that should be a part of the label.
  */
-void initLabel(Label* label, int x, int y, LabelStr text);
+void initLabel(Label* label, int x, int y, char *text);
 
 /**
  * @brief Increments the score by a given amount.

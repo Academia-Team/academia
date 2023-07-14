@@ -13,6 +13,7 @@
 
 #include "bool.h"
 #include "model.h"
+#include "move.h"
 #include "types.h"
 
 /**

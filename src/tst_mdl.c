@@ -13,6 +13,7 @@
 #include "events.h"
 #include "ikbdcode.h"
 #include "model.h"
+#include "move.h"
 #include "test.h"
 #include "types.h"
 
@@ -41,7 +42,7 @@ void outHazInfo(const Hazard* const hazard);
 void testPlayerMove();
 void outObjInPos(const World* const world, int x, int y);
 IKBD_Scancode getKeyBlocking();
-char* getOrientName(Orientation orient, char orientName[]);
+char* getOrientName(Direction orient, char orientName[]);
 void outCellInfo(const Cell* const cell, int id, int index);
 
 int main()
@@ -315,19 +316,19 @@ char* getDirName(Direction dir, char dirName[])
 {
 	switch(dir)
 	{
-		case UP:
+		case M_UP:
 			dirName = "UP";
 			break;
-		case DOWN:
+		case M_DOWN:
 			dirName = "DOWN";
 			break;
-		case LEFT:
+		case M_LEFT:
 			dirName = "LEFT";
 			break;
-		case RIGHT:
+		case M_RIGHT:
 			dirName = "RIGHT";
 			break;
-		case NO_DIR:
+		case M_NONE:
 			dirName = "NO DIRECTION";
 			break;
 		default:
@@ -434,9 +435,9 @@ void testHazAdd()
 	int rowIndex;
 	int iter;
 
-	prepRow(&tstRows[0], 0, GRASS_CELL, RIGHT);
-	prepRow(&tstRows[1], 0, TRACK_CELL, LEFT);
-	prepRow(&tstRows[2], 0, ROAD_CELL,  RIGHT);
+	prepRow(&tstRows[0], 0, GRASS_CELL, M_RIGHT);
+	prepRow(&tstRows[1], 0, TRACK_CELL, M_LEFT);
+	prepRow(&tstRows[2], 0, ROAD_CELL,  M_RIGHT);
 
 	for (iter = 1; iter <= MAX_ITER; iter++)
 	{
@@ -649,16 +650,16 @@ by one second.");
 					initWorld(&tstWorld, 1);
 					break;
 				case IKBD_UP_SCANCODE:
-					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, UP);
+					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, M_UP);
 					break;
 				case IKBD_LEFT_SCANCODE:
-					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, LEFT);
+					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, M_LEFT);
 					break;
 				case IKBD_RIGHT_SCANCODE:
-					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, RIGHT);
+					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, M_RIGHT);
 					break;
 				case IKBD_DOWN_SCANCODE:
-					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, DOWN);
+					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, M_DOWN);
 					break;
 				default:
 					keyValid = FALSE;
@@ -752,23 +753,23 @@ IKBD_Scancode getKeyBlocking()
  * @param orientName The character array to store the result in.
  * @return char* The name of the orientation as a string.
  */
-char* getOrientName(Orientation orient, char orientName[])
+char* getOrientName(Direction orient, char orientName[])
 {
 	switch(orient)
 	{
-		case NORTH:
+		case M_NORTH:
 			orientName = "NORTH";
 			break;
-		case DOWN:
+		case M_DOWN:
 			orientName = "SOUTH";
 			break;
-		case WEST:
+		case M_WEST:
 			orientName = "WEST";
 			break;
-		case EAST:
+		case M_EAST:
 			orientName = "EAST";
 			break;
-		case SYMMETRIC:
+		case M_NONE:
 			orientName = "SYMMETRIC";
 			break;
 		default:

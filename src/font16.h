@@ -13,22 +13,38 @@
 
 #include "types.h"
 
-extern const UINT16 font16[];
-
-#define FONT16_HEIGHT 16
-#define FONT16_WIDTH  16
+#define FONT16_NUM_CHARS  95
+#define FONT16_HEIGHT     16
+#define FONT16_WIDTH      16
+#define FONT16_BYTE_SIZE 256
 
 /**
- * @brief Returns the index corresponding to the digit in the font16 array.
+ * @brief Returns the address of the font16 bitmap corresponding to the given
+ * digit.
+ * @details The bitmap is copied to the dest memory location unless the
+ * provided digit is out of range or the destination is NULL.
  * 
- * @param digit The digit to get the index for.
+ * @param digit The digit to get the font16 character of. Must be between 0 and
+ * 9.
+ * @param dest The pointer to copy the font16 character bitmap to.
+ * @return The address of the font16 bitmap corresponding to the given digit or
+ * NULL if the provided digit is out of range.
  */
-#define getFont16Digit(digit) (FONT16_HEIGHT * ((digit) + 16))
+const UINT16 *getFont16Digit(int digit, UINT16 *dest);
 
 /**
- * @brief Returns the index corresponding to the printable character
- * corresponding to the character in the font16 array.
+ * @brief Returns the address of the font16 bitmap corresponding to the given
+ * ascii character.
+ * @details The bitmap is copied to the dest memory location unless the
+ * provided character is out of range or the destination is NULL.
+ * 
+ * @param digit The printable ascii character to get the font16 character of.
+ * Extended ASCII characters are not supported.
+ * @param dest The pointer to copy the font16 character bitmap to.
+ * @return The address of the font16 bitmap corresponding to the given
+ * printable ascii character or NULL if the character is not printable or
+ * ASCII.
  */
-#define getFont16PrintableChar(character) (FONT16_HEIGHT * (character - ' '))
+const UINT16 *getFont16Char(char character, UINT16 *dest);
 
 #endif

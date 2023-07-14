@@ -13,6 +13,7 @@
 #include "events.h"
 #include "ints.h"
 #include "model.h"
+#include "move.h"
 
 int handleHazardCollision(World* world, Player* player)
 {
@@ -126,7 +127,7 @@ void addHazard(Row* row)
 	{
 		if (probPlaceHazard(FEATHERS_HAZ))
 		{
-			startingX = (row->horzDirection == LEFT ?
+			startingX = (row->horzDirection == M_LEFT ?
 						 MAX_CELL_X : MIN_VIS_X_FEATHERS);
 			
 			row->hazards[row->hazardCount].hazardType = FEATHERS_HAZ;
@@ -137,7 +138,7 @@ void addHazard(Row* row)
 	{
 		if (probPlaceHazard(TRAIN_HAZ))
 		{
-			startingX = (row->horzDirection == LEFT ?
+			startingX = (row->horzDirection == M_LEFT ?
 						 MAX_CELL_X : MIN_VIS_X_TRAIN);
 
 			row->hazards[row->hazardCount].hazardType = TRAIN_HAZ;
@@ -149,7 +150,7 @@ void addHazard(Row* row)
 	{
 		if (probPlaceHazard(CAR_HAZ))
 		{
-			startingX = (row->horzDirection == LEFT ?
+			startingX = (row->horzDirection == M_LEFT ?
 						 MAX_CELL_X : MIN_VIS_X_CAR);
 
 			row->hazards[row->hazardCount].hazardType = CAR_HAZ;
@@ -185,6 +186,8 @@ void handleCollectableCollision(World* world, Player* player)
 				break;
 			case C_COLLECT_VAL:
 				world->cCount--;
+				break;
+			case NO_COLLECT:
 				break;
 		}
 		world->rows[row].cells[column].collectableValue = NO_COLLECT;
@@ -229,7 +232,7 @@ void moveHazard(Row* row)
 
 	for(index = 0; index < row->hazardCount; index++)
 	{
-		row->hazards[index].x += (row->horzDirection == RIGHT ?
+		row->hazards[index].x += (row->horzDirection == M_RIGHT ?
 								  CELL_LEN : -CELL_LEN);
 	}
 }
@@ -277,19 +280,19 @@ void removeHazard(Row* row)
 	switch(row->cellType)
 	{
 		case GRASS_CELL:
-			endingX = (row->horzDirection == LEFT ?
+			endingX = (row->horzDirection == M_LEFT ?
 					   MIN_VIS_X_FEATHERS - CELL_LEN : MAX_CELL_X + CELL_LEN);
 			break;
 		case ROAD_CELL:
-			endingX = (row->horzDirection == LEFT ?
+			endingX = (row->horzDirection == M_LEFT ?
 					   MIN_VIS_X_CAR - CELL_LEN : MAX_CELL_X + CELL_LEN);
 			break;
 		case TRACK_CELL:
-			endingX = (row->horzDirection == LEFT ?
+			endingX = (row->horzDirection == M_LEFT ?
 					   MIN_VIS_X_TRAIN - CELL_LEN : MAX_CELL_X + CELL_LEN);
 			break;
 		default:
-			endingX = (row->horzDirection == LEFT ?
+			endingX = (row->horzDirection == M_LEFT ?
 					   MIN_CELL_X - CELL_LEN : MAX_CELL_X + CELL_LEN);
 	}
 
@@ -323,20 +326,20 @@ void setPlayerDir(World* world, Player* player, Direction dir)
 	{
 		switch(dir)
 		{
-			case UP:
-				player->orientation = NORTH;
+			case M_UP:
+				player->orientation = M_NORTH;
 				desiredY = player->y - ROW_HEIGHT;
 				break;
-			case DOWN:
-				player->orientation = SOUTH;
+			case M_DOWN:
+				player->orientation = M_SOUTH;
 				desiredY = player->y + ROW_HEIGHT;
 				break;
-			case RIGHT:
-				player->orientation = EAST;
+			case M_RIGHT:
+				player->orientation = M_EAST;
 				desiredX = player->x + CELL_LEN;
 				break;
-			case LEFT:
-				player->orientation = WEST;
+			case M_LEFT:
+				player->orientation = M_WEST;
 				desiredX = player->x - CELL_LEN;
 				break;
 			default:
@@ -348,7 +351,7 @@ void setPlayerDir(World* world, Player* player, Direction dir)
 			if (!chkBorderCollision(desiredX, desiredY) &&
 				!chkHedgeCollision(world, desiredX, desiredY))
 			{
-				if (dir == UP && player->y == WSHIFT_Y_BOUNDARY)
+				if (dir == M_UP && player->y == WSHIFT_Y_BOUNDARY)
 				{
 					world->shiftWorld = TRUE;
 				}
