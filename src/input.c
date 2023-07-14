@@ -7,6 +7,7 @@
  */
 
 #include <osbind.h>
+#include <stddef.h>
 
 #include "bool.h"
 #include "input.h"
@@ -709,64 +710,34 @@ const KybdTransTables DEFAULT_KYBD_TRANS_TABLES =
 
 const KybdTransTables *currTransTables = &DEFAULT_KYBD_TRANS_TABLES;
 
+typedef struct
+{
+	int  x;
+	int  y;
+	BOOL leftClick;
+	BOOL rightClick;
+	BOOL posChange;
+} Mouse;
+
 Mouse mouse = {INITIAL_MOUSE_X, INITIAL_MOUSE_Y, FALSE, FALSE, FALSE};
 
 void IKBD_isr();
-void disableKybdInterrupt();
-void enableKybdInterrupt();
 
 Vector initKybd()
 {
 	Vector sysKybdVec;
 
-	disableMidiInterrupt();
-	disableKybdInterrupt();
+	int oldSsp  = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
 
 	sysKybdVec = install_vector(KYBD_VECTOR, IKBD_isr);
 
-	enableKybdInterrupt();
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
 
 	return sysKybdVec;
-}
-
-void disableMidiInterrupt()
-{
-	volatile UINT8* const MIDI_control = 0x00FFFC04;
-	UINT32 old_ssp = Super(0);
-
-	*MIDI_control = DISABLE_MIDI_INTERRUPT;
-
-	Super(old_ssp);
-}
-
-void enableMidiInterrupt()
-{
-	volatile UINT8* const MIDI_control = 0x00FFFC04;
-	UINT32 old_ssp = Super(0);
-
-	*MIDI_control = DEFAULT_MIDI_CTRL_REG;
-
-	Super(old_ssp);
-}
-
-void disableKybdInterrupt()
-{
-	volatile UINT8* const IKBD_control = 0x00FFFC00;
-	UINT32 old_ssp = Super(0);
-
-	*IKBD_control = DISABLE_KYBD_INTERRUPT;
-
-	Super(old_ssp);
-}
-
-void enableKybdInterrupt()
-{
-	volatile UINT8* const IKBD_control = 0x00FFFC00;
-	UINT32 old_ssp = Super(0);
-
-	*IKBD_control = DEFAULT_KYBD_CTRL_REG;
-
-	Super(old_ssp);
 }
 
 void flushKybd()
@@ -793,10 +764,7 @@ void flushKybd()
 
 void restoreKybd(Vector sysKybdVec)
 {
-	disableKybdInterrupt();
 	install_vector(KYBD_VECTOR, sysKybdVec);
-	enableKybdInterrupt();
-	enableMidiInterrupt();
 }
 
 /**
@@ -842,9 +810,9 @@ void addToKeyBuffer(UINT8 scancode)
 
 UINT32 getKybdRaw()
 {
-	int oldSsp  = Super(0);
 	long kybdVal;
 
+	int oldSsp  = Super(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 	Super(oldSsp);
 
@@ -881,4 +849,80 @@ int getKey()
 	}
 
 	return (int)(keyNum);
+}
+
+BOOL mouseLclick()
+{
+	BOOL mouseLclickStatus;
+
+	int oldSsp  = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	mouseLclickStatus = mouse.leftClick;
+	mouse.leftClick = FALSE;
+
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	return mouseLclickStatus;
+}
+
+BOOL mouseRclick()
+{
+	BOOL mouseRclickStatus;
+
+	int oldSsp  = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	mouseRclickStatus = mouse.rightClick;
+	mouse.rightClick = FALSE;
+
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	return mouseRclickStatus;
+}
+
+BOOL mouseMoved()
+{
+	BOOL mouseMovedStatus;
+
+	int oldSsp  = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	mouseMovedStatus = mouse.posChange;
+
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	return mouseMovedStatus;
+}
+
+void getMousePos(int *x, int *y)
+{
+	int oldSsp  = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	if (x != NULL)
+	{
+		*x = mouse.x;
+	}
+
+	if (y != NULL)
+	{
+		*y = mouse.y;
+	}
+
+	mouse.posChange = FALSE;
+
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
 }
