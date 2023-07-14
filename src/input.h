@@ -186,6 +186,6 @@ BOOL mouseMoved(const Mouse * const mouse);
  * @param x Returns the current x position of the mouse.
  * @param y Returns the current y position of the mouse.
  */
-void getMousePos(Mouse const *mouse, int *x, int *y);
+void getMousePos(Mouse * const mouse, int *x, int *y);
 
 #endif

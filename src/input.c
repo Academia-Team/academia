@@ -7,6 +7,7 @@
  */
 
 #include <osbind.h>
+#include <stddef.h>
 
 #include "bool.h"
 #include "input.h"
@@ -842,9 +843,9 @@ void addToKeyBuffer(UINT8 scancode)
 
 UINT32 getKybdRaw()
 {
-	int oldSsp  = Super(0);
 	long kybdVal;
 
+	int oldSsp  = Super(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 	Super(oldSsp);
 
@@ -881,4 +882,80 @@ int getKey()
 	}
 
 	return (int)(keyNum);
+}
+
+BOOL mouseLclick(Mouse * const mouse)
+{
+	BOOL mouseLclickStatus;
+
+	int oldSsp  = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	mouseLclickStatus = mouse->leftClick;
+	mouse->leftClick = FALSE;
+
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	return mouseLclickStatus;
+}
+
+BOOL mouseRclick(Mouse * const mouse)
+{
+	BOOL mouseRclickStatus;
+
+	int oldSsp  = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	mouseRclickStatus = mouse->rightClick;
+	mouse->rightClick = FALSE;
+
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	return mouseRclickStatus;
+}
+
+BOOL mouseMoved(const Mouse * const mouse)
+{
+	BOOL mouseMovedStatus;
+
+	int oldSsp  = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	mouseMovedStatus = mouse->posChange;
+
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	return mouseMovedStatus;
+}
+
+void getMousePos(Mouse * const mouse, int *x, int *y)
+{
+	int oldSsp  = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
+
+	if (x != NULL)
+	{
+		*x = mouse->x;
+	}
+
+	if (y != NULL)
+	{
+		*y = mouse->y;
+	}
+
+	mouse->posChange = FALSE;
+
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
 }
