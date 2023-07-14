@@ -722,61 +722,22 @@ typedef struct
 Mouse mouse = {INITIAL_MOUSE_X, INITIAL_MOUSE_Y, FALSE, FALSE, FALSE};
 
 void IKBD_isr();
-void disableKybdInterrupt();
-void enableKybdInterrupt();
 
 Vector initKybd()
 {
 	Vector sysKybdVec;
 
-	disableMidiInterrupt();
-	disableKybdInterrupt();
+	int oldSsp  = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
 
 	sysKybdVec = install_vector(KYBD_VECTOR, IKBD_isr);
 
-	enableKybdInterrupt();
+	oldSsp = Super(0);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	Super(oldSsp);
 
 	return sysKybdVec;
-}
-
-void disableMidiInterrupt()
-{
-	volatile UINT8* const MIDI_control = 0x00FFFC04;
-	UINT32 old_ssp = Super(0);
-
-	*MIDI_control = DISABLE_MIDI_INTERRUPT;
-
-	Super(old_ssp);
-}
-
-void enableMidiInterrupt()
-{
-	volatile UINT8* const MIDI_control = 0x00FFFC04;
-	UINT32 old_ssp = Super(0);
-
-	*MIDI_control = DEFAULT_MIDI_CTRL_REG;
-
-	Super(old_ssp);
-}
-
-void disableKybdInterrupt()
-{
-	volatile UINT8* const IKBD_control = 0x00FFFC00;
-	UINT32 old_ssp = Super(0);
-
-	*IKBD_control = DISABLE_KYBD_INTERRUPT;
-
-	Super(old_ssp);
-}
-
-void enableKybdInterrupt()
-{
-	volatile UINT8* const IKBD_control = 0x00FFFC00;
-	UINT32 old_ssp = Super(0);
-
-	*IKBD_control = DEFAULT_KYBD_CTRL_REG;
-
-	Super(old_ssp);
 }
 
 void flushKybd()
@@ -803,10 +764,7 @@ void flushKybd()
 
 void restoreKybd(Vector sysKybdVec)
 {
-	disableKybdInterrupt();
 	install_vector(KYBD_VECTOR, sysKybdVec);
-	enableKybdInterrupt();
-	enableMidiInterrupt();
 }
 
 /**

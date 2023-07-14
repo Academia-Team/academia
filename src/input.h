@@ -77,16 +77,6 @@ typedef struct
 #define mouseClick() (mouseLclick() || mouseRclick())
 
 /**
- * @brief Disables any interrupts coming from the MIDI.
- */
-void disableMidiInterrupt();
-
-/**
- * @brief Enables any interrupts coming from the MIDI.
- */
-void enableMidiInterrupt();
-
-/**
  * @brief Empties all the keyboard buffers.
  */
 void flushKybd();
