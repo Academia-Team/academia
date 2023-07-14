@@ -773,7 +773,6 @@ void flushKybd()
 {
 	int index;
 	int oldSsp  = Super(0);
-	long kybdVal;
 
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 	Super(oldSsp);
