@@ -286,9 +286,9 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 			useMouse    = FALSE;
 		}
 
-		if(mouseMoved(&mouse))
+		if(mouseMoved())
 		{
-			getMousePos(&mouse, &mouseX, &mouseY);
+			getMousePos(&mouseX, &mouseY);
 
 			if (btnCollision(mouseX, mouseY, onePlayer))
 			{
@@ -318,7 +318,7 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 			useMouse = TRUE;
 		}
 
-		if (mouseClick(mouse) && useMouse)
+		if (mouseClick() && useMouse)
 		{
 			btnActivated = (selBtnNum != NONE_SEL);
 		}
@@ -770,9 +770,9 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 			useMouse    = FALSE;
 		}
 
-		if(mouseMoved(&mouse))
+		if(mouseMoved())
 		{
-			getMousePos(&mouse, &mouseX, &mouseY);
+			getMousePos(&mouseX, &mouseY);
 
 			if (btnCollision(mouseX, mouseY, playAgainButton))
 			{
@@ -796,7 +796,7 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 			useMouse = TRUE;
 		}
 
-		if (mouseClick(mouse) && useMouse)
+		if (mouseClick() && useMouse)
 		{
 			btnActivated = (selBtnNum != NONE_SEL);
 		}

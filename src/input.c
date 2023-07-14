@@ -710,6 +710,15 @@ const KybdTransTables DEFAULT_KYBD_TRANS_TABLES =
 
 const KybdTransTables *currTransTables = &DEFAULT_KYBD_TRANS_TABLES;
 
+typedef struct
+{
+	int  x;
+	int  y;
+	BOOL leftClick;
+	BOOL rightClick;
+	BOOL posChange;
+} Mouse;
+
 Mouse mouse = {INITIAL_MOUSE_X, INITIAL_MOUSE_Y, FALSE, FALSE, FALSE};
 
 void IKBD_isr();
@@ -884,7 +893,7 @@ int getKey()
 	return (int)(keyNum);
 }
 
-BOOL mouseLclick(Mouse * const mouse)
+BOOL mouseLclick()
 {
 	BOOL mouseLclickStatus;
 
@@ -892,8 +901,8 @@ BOOL mouseLclick(Mouse * const mouse)
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 	Super(oldSsp);
 
-	mouseLclickStatus = mouse->leftClick;
-	mouse->leftClick = FALSE;
+	mouseLclickStatus = mouse.leftClick;
+	mouse.leftClick = FALSE;
 
 	oldSsp = Super(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
@@ -902,7 +911,7 @@ BOOL mouseLclick(Mouse * const mouse)
 	return mouseLclickStatus;
 }
 
-BOOL mouseRclick(Mouse * const mouse)
+BOOL mouseRclick()
 {
 	BOOL mouseRclickStatus;
 
@@ -910,8 +919,8 @@ BOOL mouseRclick(Mouse * const mouse)
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 	Super(oldSsp);
 
-	mouseRclickStatus = mouse->rightClick;
-	mouse->rightClick = FALSE;
+	mouseRclickStatus = mouse.rightClick;
+	mouse.rightClick = FALSE;
 
 	oldSsp = Super(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
@@ -920,7 +929,7 @@ BOOL mouseRclick(Mouse * const mouse)
 	return mouseRclickStatus;
 }
 
-BOOL mouseMoved(const Mouse * const mouse)
+BOOL mouseMoved()
 {
 	BOOL mouseMovedStatus;
 
@@ -928,7 +937,7 @@ BOOL mouseMoved(const Mouse * const mouse)
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 	Super(oldSsp);
 
-	mouseMovedStatus = mouse->posChange;
+	mouseMovedStatus = mouse.posChange;
 
 	oldSsp = Super(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
@@ -937,7 +946,7 @@ BOOL mouseMoved(const Mouse * const mouse)
 	return mouseMovedStatus;
 }
 
-void getMousePos(Mouse * const mouse, int *x, int *y)
+void getMousePos(int *x, int *y)
 {
 	int oldSsp  = Super(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
@@ -945,15 +954,15 @@ void getMousePos(Mouse * const mouse, int *x, int *y)
 
 	if (x != NULL)
 	{
-		*x = mouse->x;
+		*x = mouse.x;
 	}
 
 	if (y != NULL)
 	{
-		*y = mouse->y;
+		*y = mouse.y;
 	}
 
-	mouse->posChange = FALSE;
+	mouse.posChange = FALSE;
 
 	oldSsp = Super(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);

@@ -20,18 +20,18 @@ int main()
 
 	do
 	{
-		if (mouseMoved(&mouse))
+		if (mouseMoved())
 		{
-			getMousePos(&mouse, &x, &y);
+			getMousePos(&x, &y);
 			printf("Mouse has moved to (%i, %i).\n", x, y);
 		}
 
-		if (mouseLclick(&mouse))
+		if (mouseLclick())
 		{
 			puts("Mouse has been left clicked.");
 		}
 
-		if (mouseRclick(&mouse))
+		if (mouseRclick())
 		{
 			puts("Mouse has been right clicked.");
 		}

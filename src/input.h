@@ -59,23 +59,12 @@
 
 typedef struct
 {
-	int  x;
-	int  y;
-	BOOL leftClick;
-	BOOL rightClick;
-	BOOL posChange;
-} Mouse;
-
-typedef struct
-{
 	const UINT8 *unshift;
 	const UINT8 *shift;
 	const UINT8 *capslock;
 	const UINT8 *ctrl;
 	const UINT8 *alt;
 } KybdTransTables;
-
-extern Mouse mouse;
 
 /**
  * @brief Checks if a left or right mouse click has happened with the given
@@ -85,7 +74,7 @@ extern Mouse mouse;
  * @param mouse The mouse object to check for clicking.
  * @return TRUE if the mouse has been clicked; FALSE otherwise.
  */
-#define mouseClick(mouse) (mouseLclick(&mouse) || mouseRclick(&mouse))
+#define mouseClick() (mouseLclick() || mouseRclick())
 
 /**
  * @brief Disables any interrupts coming from the MIDI.
@@ -148,44 +137,38 @@ UINT8 getAscii();
 int getKey();
 
 /**
- * @brief Checks if a left mouse click has happened with the given
- * mouse.
+ * @brief Checks if a left mouse click has happened.
  * @details The mouse's left click status will be reset after being checked.
  * 
  * @param mouse The mouse object to check for clicking.
  * @return TRUE if the mouse has been clicked; FALSE otherwise.
  */
-BOOL mouseLclick(Mouse * const mouse);
+BOOL mouseLclick();
 
 /**
- * @brief Checks if a right mouse click has happened with the given
- * mouse.
+ * @brief Checks if a right mouse click has happened.
  * @details The mouse's right click status will be reset after being checked.
  * 
- * @param mouse The mouse object to check for clicking.
  * @return TRUE if the mouse has been clicked; FALSE otherwise.
  */
-BOOL mouseRclick(Mouse * const mouse);
+BOOL mouseRclick();
 
 /**
- * @brief Checks if the given mouse has moved since last getting the position of
- * it.
+ * @brief Checks if the mouse has moved since last getting the position of it.
  * @details Once the mouse has been moved, the subroutine will always indicate
  * the mouse has moved until the actual values have been read.
  * 
- * @param mouse The mouse to check the movement of.
  * @return TRUE if the mouse has been moved; FALSE otherwise.
  */
-BOOL mouseMoved(const Mouse * const mouse);
+BOOL mouseMoved();
 
 /**
- * @brief Returns the given mouse's current position by reference.
+ * @brief Returns the mouse's current position by reference.
  * @details The boolean specifying if movement has occurred will be reset.
  * 
- * @param mouse The mouse to get the position of.
  * @param x Returns the current x position of the mouse.
  * @param y Returns the current y position of the mouse.
  */
-void getMousePos(Mouse * const mouse, int *x, int *y);
+void getMousePos(int *x, int *y);
 
 #endif
