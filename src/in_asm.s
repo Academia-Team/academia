@@ -18,7 +18,11 @@
 
 IKBD_STATUS_REG:		equ		$FFFFFC00
 IKBD_RDR_REG:			equ		$FFFFFC02
+MIDI_STATUS_REG:		equ		$FFFFFC04
+MIDI_RDR_REG:			equ		$FFFFFC06
 RDRF_BIT:				equ		0
+OVRN_BIT:				equ		5
+IRQ_BIT:				equ		7
 IKBD_BREAK_BIT:			equ		7
 IKBD_MAX_SCANCODE:		equ		$72
 IKBD_MIN_SCANCODE:		equ		$01
@@ -45,6 +49,7 @@ IKBD_RSHIFT_BITMASK:	equ		$01
 IKBD_CHANNEL_LEV:		equ		6
 
 MFP_IN_SERVICE_B_REG:	equ		$FFFFFA11
+IKBD_MFP_SERVICE_BIT:	equ		6
 
 
 ; void IKBD_isr()
@@ -55,6 +60,8 @@ MFP_IN_SERVICE_B_REG:	equ		$FFFFFA11
 ; ---------------
 ; d0	-	Holds the value recieved by the keyboard.
 ; a0	-	Holds the keyboard status register for reading.
+; a1	-	Holds the MIDI status register for reading.
+;		-	Holds the address of the receiver register of the MIDI.
 ; a2	-	Holds the address of the receiver register of the keyboard.
 ; a3	-	Holds the address of the mouse struct.
 _IKBD_isr:				movem.l	d0-d7/a0-a6,-(sp)
@@ -63,10 +70,26 @@ _IKBD_isr:				movem.l	d0-d7/a0-a6,-(sp)
 						; get out of dodge.
 						movea.l	#IKBD_STATUS_REG,a0
 						btst.b	#RDRF_BIT,(a0)
-						beq		IKBD_RETURN
+						bne		IKBD_GET_VAL
+						btst.b	#OVRN_BIT,(a0)
+						bne		IKBD_GET_VAL
+
+						; Check if MIDI is causing an interrupt.
+						movea.l	#MIDI_STATUS_REG,a0
+						btst.b	#IRQ_BIT,(a0)
+						beq		IKBD_READ_MIDI
+						; A spurious interupt is not good. Time to fail
+						; ungracefully.
+						illegal
+
+						; Don't need to store value. Just read it and get out
+						; of there.
+IKBD_READ_MIDI:			movea.l	#MIDI_RDR_REG,a1
+						tst.b	(a1)
+						bra IKBD_RETURN
 
 						; Get the value held by the keyboard.
-						clr.l	d0
+IKBD_GET_VAL:			clr.l	d0
 						movea.l	#IKBD_RDR_REG,a2
 						move.b	(a2),d0
 
@@ -252,8 +275,14 @@ IKBD_REG_KEY:			move.w	d0,-(sp)
 						jsr 	_addToKeyBuffer
 						addq.l	#2,sp
 
+						; Ensure the MIDI or keyboard aren't still interrupting.
+						; Otherwise, the ISR won't run anymore.
 IKBD_RETURN:			movem.l	(sp)+,d0-d7/a0-a6
-						andi.b	#$BF,MFP_IN_SERVICE_B_REG
+						btst.b	#IRQ_BIT,IKBD_STATUS_REG
+						bne		_IKBD_isr
+						btst.b	#IRQ_BIT,MIDI_STATUS_REG
+						bne		_IKBD_isr
+						bclr.b	#IKBD_MFP_SERVICE_BIT,MFP_IN_SERVICE_B_REG
 						rte
 
 ; BOOL mouseLclick(Mouse * const mouse);
