@@ -12,6 +12,7 @@
 #include "bool.h"
 #include "input.h"
 #include "ints.h"
+#include "ikbdcode.h"
 #include "types.h"
 #include "vector.h"
 
@@ -835,7 +836,7 @@ UINT8 getAscii()
 	return (UINT8)(getKybdRaw());
 }
 
-int getKey()
+IKBD_Scancode getKey()
 {
 	long keyNum = getKybdRaw();
 

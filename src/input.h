@@ -10,6 +10,7 @@
 #define INPUT_H
 
 #include "bool.h"
+#include "ikbdcode.h"
 #include "scrn.h"
 #include "types.h"
 #include "vector.h"
@@ -124,7 +125,7 @@ UINT8 getAscii();
  * keyboard if a key was pressed. Otherwise, a negative integral 16-bit number
  * will be returned (NO_KEY).
  */
-int getKey();
+IKBD_Scancode getKey();
 
 /**
  * @brief Checks if a left mouse click has happened.

@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include "events.h"
+#include "ikbdcode.h"
 #include "model.h"
 #include "test.h"
 #include "types.h"
@@ -27,18 +28,6 @@ typedef char HazName[MAX_HAZ_NAME_LEN + 1];
 #define MAX_ORIENT_NAME_LEN 10
 typedef char OrientName[MAX_ORIENT_NAME_LEN + 1];
 
-typedef enum
-{
-	SPACE_KEY,
-	LEFT_ARROW_KEY,
-	RIGHT_ARROW_KEY,
-	UP_ARROW_KEY,
-	DOWN_ARROW_KEY,
-	R_KEY,
-	Q_KEY,
-	INVAL_KEY
-} AcceptedKeys;
-
 void testScoreBox();
 void testLivesBox();
 void testRowGen();
@@ -51,7 +40,7 @@ void testHazAdd();
 void outHazInfo(const Hazard* const hazard);
 void testPlayerMove();
 void outObjInPos(const World* const world, int x, int y);
-AcceptedKeys getKeyBlocking();
+IKBD_Scancode getKeyBlocking();
 char* getOrientName(Orientation orient, char orientName[]);
 void outCellInfo(const Cell* const cell, int id, int index);
 
@@ -534,13 +523,14 @@ void outHazInfo(const Hazard* const hazard)
  */
 void testPlayerMove()
 {
+	BOOL   keyValid;
 	BOOL   quitter;
 	World  tstWorld;
 
 	int rowIdx;
 	int cellIdx;
 
-	AcceptedKeys keyIn;
+	IKBD_Scancode keyIn;
 
 	BoolName immunityStatus;
 
@@ -646,34 +636,35 @@ void testPlayerMove()
 			puts("Press the Space Bar to stay in place while the time advances \
 by one second.");
 
-			if ((keyIn = getKeyBlocking()) == INVAL_KEY)
-			{
-				puts("\nThe provided key is invalid. Please try again.\n");
-			}
-		} while (keyIn == INVAL_KEY);
+			keyIn = getKeyBlocking();
+			keyValid = TRUE;
 
-		switch(keyIn)
-		{
-			case Q_KEY:
-				quitter = TRUE;
-				break;
-			case R_KEY:
-				puts("\nThe World has been reset.\n");
-				initWorld(&tstWorld, 1);
-				break;
-			case UP_ARROW_KEY:
-				setPlayerDir(&tstWorld, &tstWorld.mainPlayer, UP);
-				break;
-			case LEFT_ARROW_KEY:
-				setPlayerDir(&tstWorld, &tstWorld.mainPlayer, LEFT);
-				break;
-			case RIGHT_ARROW_KEY:
-				setPlayerDir(&tstWorld, &tstWorld.mainPlayer, RIGHT);
-				break;
-			case DOWN_ARROW_KEY:
-				setPlayerDir(&tstWorld, &tstWorld.mainPlayer, DOWN);
-				break;
-		}
+			switch(keyIn)
+			{
+				case IKBD_Q_SCANCODE:
+					quitter = TRUE;
+					break;
+				case IKBD_R_SCANCODE:
+					puts("\nThe World has been reset.\n");
+					initWorld(&tstWorld, 1);
+					break;
+				case IKBD_UP_SCANCODE:
+					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, UP);
+					break;
+				case IKBD_LEFT_SCANCODE:
+					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, LEFT);
+					break;
+				case IKBD_RIGHT_SCANCODE:
+					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, RIGHT);
+					break;
+				case IKBD_DOWN_SCANCODE:
+					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, DOWN);
+					break;
+				default:
+					keyValid = FALSE;
+					puts("\nThe provided key is invalid. Please try again.\n");
+			}
+		} while (!keyValid);
 
 		while (isPlayerMoving(tstWorld, tstWorld.mainPlayer))
 		{
@@ -747,41 +738,11 @@ void outObjInPos(const World* const world, int x, int y)
 /**
  * @brief Holds everything hostage while awaiting a key press.
  * 
- * @return A valid key or INVAL_KEY if an unrecognized key was pressed.
+ * @return An IKBD scancode.
  */
-AcceptedKeys getKeyBlocking()
+IKBD_Scancode getKeyBlocking()
 {
-	AcceptedKeys keyToReturn = INVAL_KEY;
-	UINT8        keyNum;
-
-	keyNum = Cnecin() >> 16;
-
-	switch(keyNum)
-	{
-		case 0x48:
-			keyToReturn = UP_ARROW_KEY;
-			break;
-		case 0x4B:
-			keyToReturn = LEFT_ARROW_KEY;
-			break;
-		case 0x4D:
-			keyToReturn = RIGHT_ARROW_KEY;
-			break;
-		case 0x50:
-			keyToReturn = DOWN_ARROW_KEY;
-			break;
-		case 0x39:
-			keyToReturn = SPACE_KEY;
-			break;
-		case 0x10:
-			keyToReturn = Q_KEY;
-			break;
-		case 0x13:
-			keyToReturn = R_KEY;
-			break;
-	}
-
-	return keyToReturn;
+	return Cnecin() >> 16;
 }
 
 /**
