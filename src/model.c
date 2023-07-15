@@ -423,11 +423,7 @@ void initPlayer(Player* player, int numPlayers)
 
 BOOL playerMayMove(const Player * const player)
 {
-	MoveFrame nextMovement;
-
-	peekAtMoveFrame(&nextMovement, &player->moveQueue);
-
-	return (getMoveDir(&nextMovement) || getMoveOrient(&nextMovement));
+	return (!isMoveQueueEmpty(&player->moveQueue));
 }
 
 void getPlayerNextMove(const Player * const player, MoveFrame *nextMovement)

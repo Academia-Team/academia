@@ -8,6 +8,7 @@
 
 #include <stddef.h>
 
+#include "bool.h"
 #include "move.h"
 
 void initMoveQueue(MoveQueue *queue)
@@ -23,6 +24,11 @@ void initMoveQueue(MoveQueue *queue)
 			queue->data[index].dir = queue->data[index].orient = M_NONE;
 		}
 	}
+}
+
+BOOL isMoveQueueEmpty(MoveQueue *queue)
+{
+	return (queue->index >= queue->placeIndex);
 }
 
 Direction getMoveDir(const MoveFrame * const moveFrame)
@@ -50,7 +56,7 @@ Direction getMoveOrient(const MoveFrame * const moveFrame)
 
 void enqueueMoveFrame(MoveQueue *queue, Direction dir, Direction orient)
 {
-	if (queue != NULL)
+	if (queue != NULL && (dir != M_NONE || orient != M_NONE))
 	{
 		queue->data[queue->placeIndex].dir = dir;
 		queue->data[queue->placeIndex++].orient = orient;
@@ -63,7 +69,7 @@ void dequeueMoveFrame(MoveFrame *dest, MoveQueue *queue)
 	{
 		peekAtMoveFrame(dest, queue);
 
-		if (queue->index < queue->placeIndex)
+		if (!isMoveQueueEmpty(queue))
 		{
 			queue->data[queue->index].dir = M_NONE;
 			queue->data[queue->index++].orient = M_NONE;
@@ -75,7 +81,7 @@ void peekAtMoveFrame(MoveFrame *dest, MoveQueue *queue)
 {
 	if (dest != NULL && queue != NULL)
 	{
-		if (queue->index >= queue->placeIndex)
+		if (isMoveQueueEmpty(queue))
 		{
 			dest->dir = dest->orient = M_NONE;
 		}

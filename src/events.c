@@ -241,6 +241,7 @@ BOOL movePlayer(World* world, Player* player)
 {
 	MoveFrame playerMovementReq;
 	Direction dir;
+	Direction orient;
 
 	int  desiredX = player->x;
 	int  desiredY = player->y;
@@ -252,7 +253,12 @@ BOOL movePlayer(World* world, Player* player)
 	{
 		dequeueMoveFrame(&playerMovementReq, &player->moveQueue);
 
-		player->orientation = getMoveOrient(&playerMovementReq);
+		orient = getMoveOrient(&playerMovementReq);
+
+		if (orient != M_NONE)
+		{
+			player->orientation = orient;
+		}
 		dir = getMoveDir(&playerMovementReq);
 
 		switch(dir)

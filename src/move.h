@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 
+#include "bool.h"
 #include "types.h"
 
 /**
@@ -61,6 +62,8 @@ typedef struct
 void initMoveQueue(MoveQueue *queue);
 
 #define resetMoveQueue(queue) initMoveQueue(queue)
+
+BOOL isMoveQueueEmpty(MoveQueue *queue);
 
 Direction getMoveDir(const MoveFrame * const moveFrame);
 
