@@ -8,37 +8,21 @@
 
 #include <stddef.h>
 
-#include "bool.h"
 #include "move.h"
 
-void initMoveQueue(MoveQueue *queue, UINT32 currX, UINT32 currY)
+void initMoveQueue(MoveQueue *queue)
 {
 	int index;
 	
 	if (queue != NULL)
 	{
 		queue->fillLevel = queue->index = 0;
-		queue->resultX = currX;
-		queue->resultY = currY;
-		queue->valid = TRUE;
 
 		for (index = 0; index < MAX_ITEMS_IN_MOVE_QUEUE; index++)
 		{
 			queue->data[index].dir = queue->data[index].orient = M_NONE;
 		}
 	}
-}
-
-BOOL isQueueValid(const MoveQueue * const queue)
-{
-	BOOL validity = FALSE;
-
-	if (queue != NULL)
-	{
-		validity = queue->valid;
-	}
-
-	return validity;
 }
 
 Direction getMoveDir(const MoveFrame * const moveFrame)
@@ -68,32 +52,8 @@ void enqueueMoveFrame(MoveQueue *queue, Direction dir, Direction orient)
 {
 	if (queue != NULL)
 	{
-		if (queue->fillLevel == UINT8_MAX)
-		{
-			queue->valid = FALSE;
-		}
-
 		queue->data[queue->fillLevel].dir = dir;
 		queue->data[queue->fillLevel++].orient = orient;
-
-		switch(dir)
-		{
-			case M_UP:
-				if (queue->resultY)
-				queue->resultY++;
-				break;
-			case M_DOWN:
-				queue->resultY--;
-				break;
-			case M_RIGHT:
-				queue->resultX++;
-				break;
-			case M_LEFT:
-				queue->resultX--;
-				break;
-			case M_NONE:
-				break;
-		}
 	}
 }
 
