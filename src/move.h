@@ -54,7 +54,7 @@ typedef struct
 typedef struct
 {
 	MoveFrame data[MAX_ITEMS_IN_MOVE_QUEUE];
-	UINT8     fillLevel;
+	UINT8     placeIndex;
 	UINT8     index;
 } MoveQueue;
 

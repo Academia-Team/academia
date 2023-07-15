@@ -16,7 +16,7 @@ void initMoveQueue(MoveQueue *queue)
 	
 	if (queue != NULL)
 	{
-		queue->fillLevel = queue->index = 0;
+		queue->placeIndex = queue->index = 0;
 
 		for (index = 0; index < MAX_ITEMS_IN_MOVE_QUEUE; index++)
 		{
@@ -52,8 +52,8 @@ void enqueueMoveFrame(MoveQueue *queue, Direction dir, Direction orient)
 {
 	if (queue != NULL)
 	{
-		queue->data[queue->fillLevel].dir = dir;
-		queue->data[queue->fillLevel++].orient = orient;
+		queue->data[queue->placeIndex].dir = dir;
+		queue->data[queue->placeIndex++].orient = orient;
 	}
 }
 
@@ -63,7 +63,7 @@ void dequeueMoveFrame(MoveFrame *dest, MoveQueue *queue)
 	{
 		peekAtMoveFrame(dest, queue);
 
-		if (queue->index < queue->fillLevel)
+		if (queue->index < queue->placeIndex)
 		{
 			queue->data[queue->index].dir = M_NONE;
 			queue->data[queue->index++].orient = M_NONE;
@@ -75,7 +75,7 @@ void peekAtMoveFrame(MoveFrame *dest, MoveQueue *queue)
 {
 	if (dest != NULL && queue != NULL)
 	{
-		if (queue->index >= queue->fillLevel)
+		if (queue->index >= queue->placeIndex)
 		{
 			dest->dir = dest->orient = M_NONE;
 		}
