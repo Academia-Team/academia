@@ -526,6 +526,7 @@ void testPlayerMove()
 {
 	BOOL   keyValid;
 	BOOL   quitter;
+	UINT32 oldSsp;
 	World  tstWorld;
 
 	int rowIdx;
@@ -669,7 +670,9 @@ by one second.");
 
 		while (playerMayMove(&tstWorld.mainPlayer))
 		{
+			oldSsp = Super(0);
 			movePlayer(&tstWorld, &tstWorld.mainPlayer);
+			Super(oldSsp);
 		}
 
 		if (secSinceDmg >= 0)
