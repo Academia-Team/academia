@@ -395,7 +395,7 @@ BOOL playerMoveOpposite(const Player * const player, Direction dir)
 	{
 		getPlayerNextMove(player, &playerNextMove);
 
-		if (isDirOpposite(getMoveDir(&playerNextMove), M_UP))
+		if (isDirOpposite(getMoveDir(&playerNextMove), dir))
 		{
 			dirOpposing = TRUE;
 		}
