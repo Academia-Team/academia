@@ -9,6 +9,7 @@
 #ifndef MOVE_H
 #define MOVE_H
 
+#include "bool.h"
 #include "types.h"
 
 /**
@@ -51,9 +52,16 @@ typedef struct
 	MoveFrame data[MAX_ITEMS_IN_MOVE_QUEUE];
 	UINT8     fillLevel;
 	UINT8     index;
+	UINT32    resultX;
+	UINT32    resultY;
+	BOOL      valid;
 } MoveQueue;
 
-void initMoveQueue(MoveQueue *queue);
+#define resetMoveQueue(queue, currX, currY) initMoveQueue(queue, currX, currY)
+
+void initMoveQueue(MoveQueue *queue, UINT32 currX, UINT32 currY);
+
+BOOL isQueueValid(const MoveQueue * const queue);
 
 Direction getMoveDir(const MoveFrame * const moveFrame);
 
