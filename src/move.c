@@ -26,7 +26,7 @@ void initMoveQueue(MoveQueue *queue)
 	}
 }
 
-BOOL isMoveQueueEmpty(MoveQueue *queue)
+BOOL isMoveQueueEmpty(const MoveQueue * const queue)
 {
 	return (queue->index >= queue->placeIndex);
 }
@@ -77,7 +77,7 @@ void dequeueMoveFrame(MoveFrame *dest, MoveQueue *queue)
 	}
 }
 
-void peekAtMoveFrame(MoveFrame *dest, MoveQueue *queue)
+void peekAtMoveFrame(MoveFrame *dest, const MoveQueue * const queue)
 {
 	if (dest != NULL && queue != NULL)
 	{
