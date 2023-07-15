@@ -251,7 +251,7 @@ BOOL movePlayer(World* world, Player* player)
 	BOOL moveCancelled = FALSE;
 	BOOL moveValid     = FALSE;
 
-	if (isPlayerAlive(*player))
+	if (isPlayerAlive(*player) && playerMayMove(*world, *player))
 	{
 		dequeueMoveFrame(&playerMovementReq, &playerMoveQueue);
 
