@@ -268,7 +268,7 @@ typedef struct
 	int x;
 	int y;
 	Direction orientation;
-	BOOL      mayMove;
+	MoveQueue moveQueue;
 
 	Lives lives;
 	Score score;
@@ -352,12 +352,20 @@ typedef struct
 	(playerObj).alive
 
 /**
- * @brief Determines whether a player may move or not.
- * @param worldObj The World which contains the player.
+ * @brief Determines whether a player may move or change orientation.
  * @param playerObj The Player object which may be moving.
  * @return A BOOL of TRUE if the given player could be moving; false otherwise.
  */
-#define playerMayMove(worldObj, playerObj) ((playerObj).mayMove)
+BOOL playerMayMove(const Player * const player);
+
+/**
+ * @brief Gets the next move frame associated with the given player.
+ * @details The move frame received is undefined if the player may not move.
+ * 
+ * @param player The player to get the move frame from.
+ * @param nextMovement The move frame to return by reference.
+ */
+void getPlayerNextMove(const Player * const player, MoveFrame *nextMovement);
 
 /**
  * @brief Toggles immunity for a given Player object.

@@ -415,10 +415,27 @@ void initPlayer(Player* player, int numPlayers)
 	player->x = PLAYER_START_X;
 	player->y = PLAYER_START_Y;
 	player->orientation = M_SOUTH;
-	player->mayMove     = FALSE;
+	initMoveQueue(&player->moveQueue);
 
 	player->immune = FALSE;
 	player->alive  = TRUE;
+}
+
+BOOL playerMayMove(const Player * const player)
+{
+	MoveFrame nextMovement;
+
+	peekAtMoveFrame(&nextMovement, &player->moveQueue);
+
+	return (getMoveDir(&nextMovement) || getMoveOrient(&nextMovement));
+}
+
+void getPlayerNextMove(const Player * const player, MoveFrame *nextMovement)
+{
+	if (nextMovement != NULL)
+	{
+		peekAtMoveFrame(nextMovement, &player->moveQueue);
+	}
 }
 
 void lostLife (Player* player)

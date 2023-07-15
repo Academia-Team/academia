@@ -650,16 +650,16 @@ by one second.");
 					initWorld(&tstWorld, 1);
 					break;
 				case IKBD_UP_SCANCODE:
-					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, M_UP);
+					setPlayerDir(&tstWorld.mainPlayer, M_UP);
 					break;
 				case IKBD_LEFT_SCANCODE:
-					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, M_LEFT);
+					setPlayerDir(&tstWorld.mainPlayer, M_LEFT);
 					break;
 				case IKBD_RIGHT_SCANCODE:
-					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, M_RIGHT);
+					setPlayerDir(&tstWorld.mainPlayer, M_RIGHT);
 					break;
 				case IKBD_DOWN_SCANCODE:
-					setPlayerDir(&tstWorld, &tstWorld.mainPlayer, M_DOWN);
+					setPlayerDir(&tstWorld.mainPlayer, M_DOWN);
 					break;
 				default:
 					keyValid = FALSE;
@@ -667,7 +667,7 @@ by one second.");
 			}
 		} while (!keyValid);
 
-		while (playerMayMove(tstWorld, tstWorld.mainPlayer))
+		while (playerMayMove(&tstWorld.mainPlayer))
 		{
 			movePlayer(&tstWorld, &tstWorld.mainPlayer);
 		}

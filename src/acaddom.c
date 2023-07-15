@@ -425,6 +425,7 @@ void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
 void processAsync(BOOL *quitToTitleScrn, World *gameWorld)
 {
 	IKBD_Scancode kybdKey;
+	Direction     dirRequest = M_NONE;
 
 	kybdKey = getKey();
 
@@ -455,20 +456,34 @@ void processAsync(BOOL *quitToTitleScrn, World *gameWorld)
 				*quitToTitleScrn = TRUE;
 				break;
 			case IKBD_UP_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, M_UP);
+				dirRequest = M_UP;
 				break;
 			case IKBD_LEFT_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, M_LEFT);
+				dirRequest = M_LEFT;
 				break;
 			case IKBD_RIGHT_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, M_RIGHT);
+				dirRequest = M_RIGHT;
 				break;
 			case IKBD_DOWN_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, M_DOWN);
+				dirRequest = M_DOWN;
 				break;
 			default:
 				handleInvalidKeyPress();
 		}
+	}
+
+	if (dirRequest != M_NONE)
+	{
+		if (playerMoveOpposite(&gameWorld->mainPlayer, dirRequest))
+		{
+			resetMoveQueue(&gameWorld->mainPlayer.moveQueue);
+		}
+		else
+		{
+			setPlayerDir(&gameWorld->mainPlayer, dirRequest);
+		}
+
+		dirRequest = M_NONE;
 	}
 }
 
@@ -544,7 +559,7 @@ void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow,
 				*immunityTimer = get_time() + NUM_TICKS_IN_TWO_SEC;
 			}
 
-			if (playerMayMove(*gameWorld, gameWorld->mainPlayer) &&
+			if (playerMayMove(&gameWorld->mainPlayer) &&
 				*playerMoveTimer == UINT32_MAX)
 			{
 				*playerMoveTimer = get_time() + NUM_TICKS_IN_0_5_SEC;

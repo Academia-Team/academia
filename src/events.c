@@ -15,9 +15,6 @@
 #include "model.h"
 #include "move.h"
 
-BOOL      playerQueueInitialized = FALSE;
-MoveQueue playerMoveQueue;
-
 int handleHazardCollision(World* world, Player* player)
 {
 	int immunityTime = -1;
@@ -251,9 +248,9 @@ BOOL movePlayer(World* world, Player* player)
 	BOOL moveCancelled = FALSE;
 	BOOL moveValid     = FALSE;
 
-	if (isPlayerAlive(*player) && playerMayMove(*world, *player))
+	if (isPlayerAlive(*player) && playerMayMove(player))
 	{
-		dequeueMoveFrame(&playerMovementReq, &playerMoveQueue);
+		dequeueMoveFrame(&playerMovementReq, &player->moveQueue);
 
 		player->orientation = getMoveOrient(&playerMovementReq);
 		dir = getMoveDir(&playerMovementReq);
@@ -312,9 +309,7 @@ BOOL movePlayer(World* world, Player* player)
 		}
 	}
 
-	peekAtMoveFrame(&playerMovementReq, &playerMoveQueue);
-
-	player->mayMove = (getMoveDir(&playerMovementReq) != M_NONE);
+	peekAtMoveFrame(&playerMovementReq, &player->moveQueue);
 
 	return (!moveCancelled);
 }
@@ -359,7 +354,7 @@ void removeHazard(Row* row)
 	}
 }
 
-void setPlayerDir(World* world, Player* player, Direction dir)
+void setPlayerDir(Player* player, Direction dir)
 {
 	MoveFrame futureMovement;
 
@@ -371,35 +366,36 @@ void setPlayerDir(World* world, Player* player, Direction dir)
 	int    oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	Super(oldSsp);
 
-	if (!playerQueueInitialized)
-	{
-		initMoveQueue(&playerMoveQueue);
-		playerQueueInitialized = TRUE;
-	}
-
 	if (isPlayerAlive(*player) && (
 		dir == M_UP || dir == M_DOWN || dir == M_RIGHT || dir == M_LEFT)
 	   )
 	{
-		peekAtMoveFrame(&futureMovement, &playerMoveQueue);
-
-		if (isDirOpposite(getMoveDir(&futureMovement), dir))
-		{
-			resetMoveQueue(&playerMoveQueue);
-			player->mayMove = FALSE;
-		}
-		else
-		{
-			/* The orientation is the same as the direction in this case.
-		   	For example, a player going up faces north. */
-			enqueueMoveFrame(&playerMoveQueue, dir, dir);
-			player->mayMove = TRUE;
-		}
+		/* The orientation is the same as the direction in this case.
+		For example, a player going up faces north. */
+		enqueueMoveFrame(&player->moveQueue, dir, dir);
 	}
 
 	oldSsp = Super(0);
 	set_ipl(oldIpl);
 	Super(oldSsp);
+}
+
+BOOL playerMoveOpposite(const Player * const player, Direction dir)
+{
+	BOOL          dirOpposing = FALSE;
+	MoveFrame     playerNextMove;
+
+	if (playerMayMove(player))
+	{
+		getPlayerNextMove(player, &playerNextMove);
+
+		if (isDirOpposite(getMoveDir(&playerNextMove), M_UP))
+		{
+			dirOpposing = TRUE;
+		}
+	}
+
+	return dirOpposing;
 }
 
 void shiftWorld(World* world)

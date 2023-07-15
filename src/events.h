@@ -168,14 +168,21 @@ BOOL movePlayer(World *world, Player* player);
 
 /**
  * @brief Sets the direction the Player should move in.
- * @details If the direction set is opposite the next direction to be processed,
- * all movement events will be cancelled.
  * 
  * @param world The World that the player belongs to.
  * @param player The Player to set the direction of.
  * @param dir The direction that the Player should move in.
  */
-void setPlayerDir(World* world, Player* player, Direction dir);
+void setPlayerDir(Player* player, Direction dir);
+
+/**
+ * @brief Determines if the given direction opposes the direction of the next
+ * scheduled player movement (if one exists).
+ * 
+ * @param player The player to check the future movement of.
+ * @return TRUE if the given direction opposes future movement; FALSE otherwise.
+ */
+BOOL playerMoveOpposite(const Player * const player, Direction dir);
 
 /**
  * @brief Shifts the entire world downwards such that a new row is generated
