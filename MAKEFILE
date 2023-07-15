@@ -5,8 +5,8 @@ tests: tst_mdl tst_mse tst_mus tst_psg tst_rast tst_sfx
 src\tst_bmp.o: src\tst_bmp.c src\tst_bmp.h src\scrn.h src\types.h
 	cc68x -g -c src\tst_bmp.c
 
-tst_mdl: src\model.o src\effects.o src\events.o src\ints.o src\psg.o src\rast_asm.o src\tst_mdl.o src\move.o src\test.o src\types.h
-	cc68x -g src\model.o src\effects.o src\events.o src\ints.o src\psg.o src\rast_asm.o src\tst_mdl.o src\test.o -o bin\tst_mdl.tos
+tst_mdl: src\model.o src\effects.o src\events.o src\ints.o src\move.o src\psg.o src\rast_asm.o src\tst_mdl.o src\move.o src\test.o src\types.h
+	cc68x -g src\model.o src\effects.o src\events.o src\ints.o src\move.o src\psg.o src\rast_asm.o src\tst_mdl.o src\test.o -o bin\tst_mdl.tos
 
 src\tst_mdl.o: src\tst_mdl.c src\effects.h src\model.h src\move.h src\test.h
 	cc68x -g -c src\tst_mdl.c
