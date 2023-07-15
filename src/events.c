@@ -15,6 +15,9 @@
 #include "model.h"
 #include "move.h"
 
+BOOL      playerQueueInitialized = FALSE;
+MoveQueue playerMoveQueue;
+
 int handleHazardCollision(World* world, Player* player)
 {
 	int immunityTime = -1;
@@ -237,38 +240,83 @@ void moveHazard(Row* row)
 	}
 }
 
-void movePlayer(World* world, Player* player)
+BOOL movePlayer(World* world, Player* player)
 {
+	MoveFrame playerMovementReq;
+	Direction dir;
+
+	int  desiredX = player->x;
+	int  desiredY = player->y;
+
+	BOOL moveCancelled = FALSE;
+	BOOL moveValid     = FALSE;
+
 	if (isPlayerAlive(*player))
 	{
-		if (world->shiftWorld)
-		{
-			shiftWorld(world);
-			if (world->numWorldShifts + 1 >= 0)
-			{
-				world->numWorldShifts++;
-			}
+		dequeueMoveFrame(&playerMovementReq, &playerMoveQueue);
 
-			updateScore(PLAYER_ROW_ADV_SCORE, &player->score);
-			world->shiftWorld = FALSE;
-			play_walk();
-		}
-		else
+		player->orientation = getMoveOrient(&playerMovementReq);
+		dir = getMoveDir(&playerMovementReq);
+
+		switch(dir)
 		{
-			if (player->y != player->destY)
+			case M_UP:
+				desiredY = player->y - ROW_HEIGHT;
+				moveValid = TRUE;
+				break;
+			case M_DOWN:
+				desiredY = player->y + ROW_HEIGHT;
+				moveValid = TRUE;
+				break;
+			case M_RIGHT:
+				desiredX = player->x + CELL_LEN;
+				moveValid = TRUE;
+				break;
+			case M_LEFT:
+				desiredX = player->x - CELL_LEN;
+				moveValid = TRUE;
+				break;
+			case M_NONE:
+				moveValid = FALSE;
+		}
+
+		if (moveValid)
+		{
+			if (!chkBorderCollision(desiredX, desiredY) &&
+				!chkHedgeCollision(world, desiredX, desiredY))
 			{
-				player->y += (player->y > player->destY ? -CELL_LEN : CELL_LEN);
-				world->copyCells = TRUE;
+				if (dir == M_UP && player->y == WSHIFT_Y_BOUNDARY)
+				{
+					shiftWorld(world);
+					if (world->numWorldShifts + 1 >= 0)
+					{
+						world->numWorldShifts++;
+					}
+
+					updateScore(PLAYER_ROW_ADV_SCORE, &player->score);
+				}
+				else
+				{
+					player->x = desiredX;
+					player->y = desiredY;
+					world->copyCells = TRUE;
+				}
+
 				play_walk();
 			}
-			else if (player->x != player->destX)
+			else
 			{
-				player->x += (player->x > player->destX ? -CELL_LEN : CELL_LEN);
-				world->copyCells = TRUE;
-				play_walk();
+				play_beep();
+				moveCancelled = TRUE;
 			}
 		}
 	}
+
+	peekAtMoveFrame(&playerMovementReq, &playerMoveQueue);
+
+	player->mayMove = (getMoveDir(&playerMovementReq) != M_NONE);
+
+	return (!moveCancelled);
 }
 
 void removeHazard(Row* row)
@@ -313,6 +361,8 @@ void removeHazard(Row* row)
 
 void setPlayerDir(World* world, Player* player, Direction dir)
 {
+	MoveFrame futureMovement;
+
 	BOOL dirValid = TRUE;
 	int  desiredX = player->x;
 	int  desiredY = player->y;
@@ -321,46 +371,29 @@ void setPlayerDir(World* world, Player* player, Direction dir)
 	int    oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	Super(oldSsp);
 
-
-	if (isPlayerAlive(*player) && !isPlayerMoving(*world, *player))
+	if (!playerQueueInitialized)
 	{
-		switch(dir)
-		{
-			case M_UP:
-				player->orientation = M_NORTH;
-				desiredY = player->y - ROW_HEIGHT;
-				break;
-			case M_DOWN:
-				player->orientation = M_SOUTH;
-				desiredY = player->y + ROW_HEIGHT;
-				break;
-			case M_RIGHT:
-				player->orientation = M_EAST;
-				desiredX = player->x + CELL_LEN;
-				break;
-			case M_LEFT:
-				player->orientation = M_WEST;
-				desiredX = player->x - CELL_LEN;
-				break;
-			default:
-				dirValid = FALSE;
-		}
+		initMoveQueue(&playerMoveQueue);
+		playerQueueInitialized = TRUE;
+	}
 
-		if (dirValid)
+	if (isPlayerAlive(*player) && (
+		dir == M_UP || dir == M_DOWN || dir == M_RIGHT || dir == M_LEFT)
+	   )
+	{
+		peekAtMoveFrame(&futureMovement, &playerMoveQueue);
+
+		if (isDirOpposite(getMoveDir(&futureMovement), dir))
 		{
-			if (!chkBorderCollision(desiredX, desiredY) &&
-				!chkHedgeCollision(world, desiredX, desiredY))
-			{
-				if (dir == M_UP && player->y == WSHIFT_Y_BOUNDARY)
-				{
-					world->shiftWorld = TRUE;
-				}
-				else
-				{
-					player->destX = desiredX;
-					player->destY = desiredY;
-				}
-			}
+			resetMoveQueue(&playerMoveQueue);
+			player->mayMove = FALSE;
+		}
+		else
+		{
+			/* The orientation is the same as the direction in this case.
+		   	For example, a player going up faces north. */
+			enqueueMoveFrame(&playerMoveQueue, dir, dir);
+			player->mayMove = TRUE;
 		}
 	}
 

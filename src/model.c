@@ -117,7 +117,6 @@ void initWorld (World* world, int numPlayers)
 		world->top            = world->usableRows - 1;
 		world->bottom         = 0;
 		world->numWorldShifts = 0;
-		world->shiftWorld     = FALSE;
 		world->copyCells      = FALSE;
 		world->renderCells    = FALSE;
 
@@ -415,10 +414,8 @@ void initPlayer(Player* player, int numPlayers)
 
 	player->x = PLAYER_START_X;
 	player->y = PLAYER_START_Y;
-
-	player->destX = player->x;
-	player->destY = player->y;
 	player->orientation = M_SOUTH;
+	player->mayMove     = FALSE;
 
 	player->immune = FALSE;
 	player->alive  = TRUE;

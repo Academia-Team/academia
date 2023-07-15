@@ -667,7 +667,7 @@ by one second.");
 			}
 		} while (!keyValid);
 
-		while (isPlayerMoving(tstWorld, tstWorld.mainPlayer))
+		while (playerMayMove(tstWorld, tstWorld.mainPlayer))
 		{
 			movePlayer(&tstWorld, &tstWorld.mainPlayer);
 		}

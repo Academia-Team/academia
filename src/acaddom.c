@@ -505,16 +505,17 @@ void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow,
 
 	if (*timeNow > *playerMoveTimer)
 	{
-		movePlayer(gameWorld, &gameWorld->mainPlayer);
-
-		if (handleHazardCollision(gameWorld, &gameWorld->mainPlayer) >= 0)
+		if (movePlayer(gameWorld, &gameWorld->mainPlayer))
 		{
-			*immunityTimer = get_time() + NUM_TICKS_IN_TWO_SEC;
+			if (handleHazardCollision(gameWorld, &gameWorld->mainPlayer) >= 0)
+			{
+				*immunityTimer = get_time() + NUM_TICKS_IN_TWO_SEC;
+			}
+
+			handleCollectableCollision(gameWorld, &gameWorld->mainPlayer);
+
+			*playerMoveTimer = UINT32_MAX;
 		}
-
-		handleCollectableCollision(gameWorld, &gameWorld->mainPlayer);
-
-		*playerMoveTimer = UINT32_MAX;
 	}
 
 	if (*timeNow >= *timeDesired)
@@ -543,7 +544,7 @@ void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow,
 				*immunityTimer = get_time() + NUM_TICKS_IN_TWO_SEC;
 			}
 
-			if (isPlayerMoving(*gameWorld, gameWorld->mainPlayer) &&
+			if (playerMayMove(*gameWorld, gameWorld->mainPlayer) &&
 				*playerMoveTimer == UINT32_MAX)
 			{
 				*playerMoveTimer = get_time() + NUM_TICKS_IN_0_5_SEC;

@@ -268,9 +268,7 @@ typedef struct
 	int x;
 	int y;
 	Direction orientation;
-
-	int destX;
-	int destY;
+	BOOL      mayMove;
 
 	Lives lives;
 	Score score;
@@ -293,7 +291,6 @@ typedef struct
 	int  top;
 	int  bottom;
 	int  numWorldShifts;
-	BOOL shiftWorld;
 	BOOL copyCells;
 	BOOL renderCells;
 
@@ -355,15 +352,12 @@ typedef struct
 	(playerObj).alive
 
 /**
- * @brief Determines whether a player is currently moving or not.
+ * @brief Determines whether a player may move or not.
  * @param worldObj The World which contains the player.
  * @param playerObj The Player object which may be moving.
- * @return A BOOL of TRUE if the given player is moving; false otherwise.
+ * @return A BOOL of TRUE if the given player could be moving; false otherwise.
  */
-#define isPlayerMoving(worldObj, playerObj) \
-	((playerObj).x != (playerObj).destX || \
-	(playerObj).y != (playerObj).destY  || \
-	(worldObj).shiftWorld)
+#define playerMayMove(worldObj, playerObj) ((playerObj).mayMove)
 
 /**
  * @brief Toggles immunity for a given Player object.

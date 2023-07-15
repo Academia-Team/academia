@@ -61,6 +61,20 @@ void dequeueMoveFrame(MoveFrame *dest, MoveQueue *queue)
 {
 	if (dest != NULL && queue != NULL)
 	{
+		peekAtMoveFrame(dest, queue);
+
+		if (queue->index < queue->fillLevel)
+		{
+			queue->data[queue->index].dir = M_NONE;
+			queue->data[queue->index++].orient = M_NONE;
+		}
+	}
+}
+
+void peekAtMoveFrame(MoveFrame *dest, MoveQueue *queue)
+{
+	if (dest != NULL && queue != NULL)
+	{
 		if (queue->index >= queue->fillLevel)
 		{
 			dest->dir = dest->orient = M_NONE;
@@ -68,10 +82,7 @@ void dequeueMoveFrame(MoveFrame *dest, MoveQueue *queue)
 		else
 		{
 			dest->dir = queue->data[queue->index].dir;
-			queue->data[queue->index].dir = M_NONE;
-
 			dest->orient = queue->data[queue->index].orient;
-			queue->data[queue->index++].orient = M_NONE;
 		}
 	}
 }

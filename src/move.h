@@ -9,6 +9,8 @@
 #ifndef MOVE_H
 #define MOVE_H
 
+#include <stdlib.h>
+
 #include "types.h"
 
 /**
@@ -40,6 +42,9 @@ typedef enum
 
 #define MAX_ITEMS_IN_MOVE_QUEUE 256
 
+#define isDirOpposite(dir1, dir2) \
+	(((dir1) != (dir2)) && (abs(dir1) == abs(dir2)))
+
 typedef struct
 {
 	Direction dir;
@@ -55,6 +60,8 @@ typedef struct
 
 void initMoveQueue(MoveQueue *queue);
 
+#define resetMoveQueue(queue) initMoveQueue(queue)
+
 Direction getMoveDir(const MoveFrame * const moveFrame);
 
 Direction getMoveOrient(const MoveFrame * const moveFrame);
@@ -62,5 +69,7 @@ Direction getMoveOrient(const MoveFrame * const moveFrame);
 void enqueueMoveFrame(MoveQueue *queue, Direction dir, Direction orient);
 
 void dequeueMoveFrame(MoveFrame *dest, MoveQueue *queue);
+
+void peekAtMoveFrame(MoveFrame *dest, MoveQueue *queue);
 
 #endif
