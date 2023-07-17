@@ -11,22 +11,13 @@
 
 #include <osbind.h>
 #include <stdio.h>
+
 #include "raster.h"
+#include "super.h"
 #include "types.h"
 
 #define MAX_BOOL_NAME_LEN 7
 typedef char BoolName[MAX_BOOL_NAME_LEN + 1];
-
-/**
- * @brief Runs the given function call with super privileges.
- * @param func The function call to execute.
- * @param ssp Used to store the old system stack pointer while gaining super
- * privileges.
- */
-#define doSu(func, ssp) \
-	ssp = Super(0); \
-	func; \
-	Super(ssp)
 
 /**
  * @brief Returns the friendly name of a boolean (TRUE/FALSE).

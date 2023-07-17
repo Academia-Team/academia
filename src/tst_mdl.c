@@ -7,13 +7,13 @@
  */
 
 #include <limits.h>
-#include <osbind.h>
 #include <stdio.h>
 
 #include "events.h"
 #include "ikbdcode.h"
 #include "model.h"
 #include "move.h"
+#include "super.h"
 #include "test.h"
 #include "types.h"
 
@@ -670,9 +670,9 @@ by one second.");
 
 		while (playerMayMove(&tstWorld.mainPlayer))
 		{
-			oldSsp = Super(0);
+			oldSsp = Su(0);
 			movePlayer(&tstWorld, &tstWorld.mainPlayer);
-			Super(oldSsp);
+			Su(oldSsp);
 		}
 
 		if (secSinceDmg >= 0)

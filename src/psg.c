@@ -7,10 +7,9 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
-
 #include "num_util.h"
 #include "psg.h"
+#include "super.h"
 #include "types.h"
 
 void write_psg(PsgReg reg, UINT8 val)
@@ -163,12 +162,12 @@ void enable_channel(Channel channel, Toggle tone_on, Toggle noise_on)
 
 void stop_sound()
 {
-	UINT32 old_ssp = Super(0);
+	UINT32 old_ssp = Su(0);
 
 	write_psg(A_LEVEL_REG, 0);
 	write_psg(B_LEVEL_REG, 0);
 	write_psg(C_LEVEL_REG, 0);
 	write_psg(MIXER_REG, read_psg(MIXER_REG) | 0077);
 
-	Super(old_ssp);
+	Su(old_ssp);
 }

@@ -6,7 +6,6 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
 #include <string.h>
 
 #include "bool.h"
@@ -20,6 +19,7 @@
 #include "music.h"
 #include "psg.h"
 #include "renderer.h"
+#include "super.h"
 #include "types.h"
 #include "vector.h"
 #include "vbl.h"
@@ -609,7 +609,7 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 				UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
 				World *gameWorld)
 {
-	UINT32 oldSsp = Super(0);
+	UINT32 oldSsp = Su(0);
 	int    oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 
 	/* This may look weird, but without using these constants, these values
@@ -618,7 +618,7 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 	const BOOL RENDER_CELLS = gameWorld->renderCells;
 	const BOOL COPY_CELLS   = gameWorld->copyCells;
 
-	Super(oldSsp);
+	Su(oldSsp);
 
 	if (RENDER_CELLS)
 	{
@@ -653,16 +653,16 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 		*nextScreenBuffer = PRIMARY_SCREEN_BUFFER;
 	}
 
-	oldSsp = Super(0);
+	oldSsp = Su(0);
 	set_ipl(oldIpl);
-	Super(oldSsp);
+	Su(oldSsp);
 	vert_sync();
 
 	if (COPY_CELLS || RENDER_CELLS)
 	{
-		oldSsp = Super(0);
+		oldSsp = Su(0);
 		oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
-		Super(oldSsp);
+		Su(oldSsp);
 
 		if (*nextScreenBuffer == PRIMARY_SCREEN_BUFFER)
 		{
@@ -678,9 +678,9 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 		gameWorld->copyCells   = FALSE;
 		gameWorld->renderCells = FALSE;
 		
-		oldSsp = Super(0);
+		oldSsp = Su(0);
 		set_ipl(oldIpl);
-		Super(oldSsp);
+		Su(oldSsp);
 	}
 }
 

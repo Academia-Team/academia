@@ -6,10 +6,9 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
-
 #include "effects.h"
 #include "psg.h"
+#include "super.h"
 #include "test.h"
 
 void testPain();

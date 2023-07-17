@@ -9,8 +9,6 @@
 #ifndef MUSIC_H
 #define MUSIC_H
 
-#include <osbind.h>
-
 #include "psg.h"
 #include "types.h"
 

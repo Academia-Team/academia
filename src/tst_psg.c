@@ -7,11 +7,11 @@
  */
 
 #include <limits.h>
-#include <osbind.h>
 #include <stdio.h>
 
 #include "psg.h"
 #include "raster.h"
+#include "super.h"
 #include "test.h"
 #include "types.h"
 
@@ -66,9 +66,9 @@ void testReadWritePsg()
 
 	doSu(write_psg(A_LEVEL_REG, INITIAL_VOLUME), oldSsp);
 
-	oldSsp = Super(0);
+	oldSsp = Su(0);
 	printf("Value read back: %u\n\n", read_psg(A_LEVEL_REG));
-	Super(oldSsp);
+	Su(oldSsp);
 
 
 	printf
@@ -80,9 +80,9 @@ void testReadWritePsg()
 
 	doSu(write_psg(A_LEVEL_REG, FINAL_VOLUME), oldSsp);
 
-	oldSsp = Super(0);
+	oldSsp = Su(0);
 	printf("Value read back: %u\n\n", read_psg(A_LEVEL_REG));
-	Super(oldSsp);
+	Su(oldSsp);
 
 	Cconin();
 }
@@ -102,7 +102,7 @@ void testSetTone(Channel channel)
 
 	if (channel >= MIN_CHANNEL_VAL && channel <= MAX_CHANNEL_VAL)
 	{
-		oldSsp = Super(0);
+		oldSsp = Su(0);
 
 		printf("Mixer register before disabling: %u\n", read_psg(MIXER_REG));
 		disable_channel(channel);
@@ -115,7 +115,7 @@ void testSetTone(Channel channel)
 
 		outChannelInfo(channel);
 
-		Super(oldSsp);
+		Su(oldSsp);
 
 		putchar('\n');
 		Cconin();
@@ -156,7 +156,7 @@ void testMultipleTones(Channel firstChannel, Channel secondChannel)
 		&& secondChannel >= MIN_CHANNEL_VAL && secondChannel <= MAX_CHANNEL_VAL
 		&& firstChannel != secondChannel)
 	{
-		oldSsp = Super(0);
+		oldSsp = Su(0);
 
 		disable_channel(firstChannel);
 		disable_channel(secondChannel);
@@ -167,7 +167,7 @@ void testMultipleTones(Channel firstChannel, Channel secondChannel)
 		set_volume(firstChannel, 11);
 		set_volume(secondChannel, 11);
 
-		Super(oldSsp);
+		Su(oldSsp);
 
 		doSu(outChannelInfo(firstChannel), oldSsp);
 		putchar('\n');
@@ -231,14 +231,14 @@ void outChannelInfo(Channel channel)
  */
 void testEnvelope()
 {
-	UINT32 oldSsp = Super(0);
+	UINT32 oldSsp = Su(0);
 
 	disable_channel(A_CHANNEL);
 	set_tone(A_CHANNEL, 248);
 	enable_channel(A_CHANNEL, ON, OFF);
 	set_volume(A_CHANNEL, 11);
 
-	Super(oldSsp);
+	Su(oldSsp);
 	putchar('\n');
 
 	doSu(outChannelInfo(A_CHANNEL), oldSsp);
@@ -271,7 +271,7 @@ void testEnvelope()
  */
 void testRepeatingEnvelope()
 {
-	UINT32 oldSsp = Super(0);
+	UINT32 oldSsp = Su(0);
 
 	disable_channel(A_CHANNEL);
 	set_tone(A_CHANNEL, 0x264);
@@ -279,7 +279,7 @@ void testRepeatingEnvelope()
 	enable_envelope(A_CHANNEL);
 	set_envelope(12, 0x0500);
 
-	Super(oldSsp);
+	Su(oldSsp);
 	Cconin();
 
 	doSu(disable_channel(A_CHANNEL), oldSsp);
@@ -292,7 +292,7 @@ void testRepeatingEnvelope()
  */
 void testNoise()
 {
-	UINT32 oldSsp = Super(0);
+	UINT32 oldSsp = Su(0);
 
 	disable_channel(A_CHANNEL);
 	set_noise(0x1F);
@@ -300,7 +300,7 @@ void testNoise()
 	enable_envelope(A_CHANNEL);
 	set_envelope(0x0, 0x3800);
 
-	Super(oldSsp);
+	Su(oldSsp);
 	Cconin();
 
 	doSu(disable_channel(A_CHANNEL), oldSsp);
@@ -318,7 +318,7 @@ void testNoise()
  */
 void testNoiseWTone()
 {
-	UINT32 oldSsp = Super(0);
+	UINT32 oldSsp = Su(0);
 
 	disable_channel(A_CHANNEL);
 	set_tone(A_CHANNEL, 0x264);
@@ -327,7 +327,7 @@ void testNoiseWTone()
 	enable_envelope(A_CHANNEL);
 	set_envelope(0x0, 0x3800);
 
-	Super(oldSsp);
+	Su(oldSsp);
 	Cconin();
 
 	doSu(disable_channel(A_CHANNEL), oldSsp);

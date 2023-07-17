@@ -6,13 +6,13 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
 #include <stdlib.h>
 
 #include "bool.h"
 #include "ints.h"
 #include "music.h"
 #include "psg.h"
+#include "super.h"
 #include "types.h"
 
 int curSongPos = 0;
@@ -113,48 +113,48 @@ void load_note(NoteInfo* noteInfo)
 
 void start_music()
 {
-	int oldSsp  = Super(0);
+	UINT32 oldSsp  = Su(0);
 	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
 
 	curSongPos  = 0;
 	musPaused   = FALSE;
 
 	set_ipl(origIpl);
-	Super(oldSsp);
+	Su(oldSsp);
 }
 
 void pause_music()
 {
-	int oldSsp  = Super(0);
+	UINT32 oldSsp  = Su(0);
 	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
 
 	musPaused   = TRUE;
 
 	set_ipl(origIpl);
-	Super(oldSsp);
+	Su(oldSsp);
 }
 
 void resume_music()
 {
-	int oldSsp  = Super(0);
+	UINT32 oldSsp  = Su(0);
 	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
 
 	musPaused   = FALSE;
 
 	set_ipl(origIpl);
-	Super(oldSsp);
+	Su(oldSsp);
 }
 
 void stop_music()
 {
-	int oldSsp  = Super(0);
+	UINT32 oldSsp  = Su(0);
 	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
 
 	curSongPos  = 0;
 	musPaused   = TRUE;
 
 	set_ipl(origIpl);
-	Super(oldSsp);
+	Su(oldSsp);
 }
 
 void update_music(UINT32 time_elapsed)

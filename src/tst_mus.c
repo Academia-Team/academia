@@ -6,11 +6,11 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
 #include <stdio.h>
 
 #include "music.h"
 #include "psg.h"
+#include "super.h"
 #include "test.h"
 #include "types.h"
 
@@ -62,9 +62,9 @@ UINT32 getTime()
 	UINT32 *timer = (UINT32 *)0x462;
 	UINT32 oldSsp;
 
-	oldSsp = Super(0);
+	oldSsp = Su(0);
 	curTime = *timer;
-	Super(oldSsp);
+	Su(oldSsp);
 
 	return curTime;
 }

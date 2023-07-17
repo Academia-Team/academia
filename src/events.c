@@ -7,13 +7,12 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
-
 #include "effects.h"
 #include "events.h"
 #include "ints.h"
 #include "model.h"
 #include "move.h"
+#include "super.h"
 
 int handleHazardCollision(World* world, Player* player)
 {
@@ -368,9 +367,9 @@ void setPlayerDir(Player* player, Direction dir)
 	int  desiredX = player->x;
 	int  desiredY = player->y;
 
-	UINT32 oldSsp = Super(0);
+	UINT32 oldSsp = Su(0);
 	int    oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
-	Super(oldSsp);
+	Su(oldSsp);
 
 	if (isPlayerAlive(*player) && (
 		dir == M_UP || dir == M_DOWN || dir == M_RIGHT || dir == M_LEFT)
@@ -381,9 +380,9 @@ void setPlayerDir(Player* player, Direction dir)
 		enqueueMoveFrame(&player->moveQueue, dir, dir);
 	}
 
-	oldSsp = Super(0);
+	oldSsp = Su(0);
 	set_ipl(oldIpl);
-	Super(oldSsp);
+	Su(oldSsp);
 }
 
 BOOL playerMoveOpposite(const Player * const player, Direction dir)
@@ -446,11 +445,11 @@ void shiftWorld(World* world)
 
 void handleInvalidKeyPress()
 {
-	UINT32 oldSsp  = Super(0);
+	UINT32 oldSsp  = Su(0);
 	int    origIpl = set_ipl(MASK_ALL_INTERRUPTS);
 
 	play_beep();
 
 	set_ipl(origIpl);
-	Super(oldSsp);
+	Su(oldSsp);
 }
