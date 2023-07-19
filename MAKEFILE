@@ -44,6 +44,9 @@ src\tst_sfx.o: src\tst_sfx.c src\psg.h src\effects.h src\super.h src\test.h
 src\test.o: src\test.c src\test.h src\bool.h src\raster.h src\super.h src\types.h
 	cc68x -g -c src\test.c
 
+src\arg_list.o: src\arg_list.c src\arg_list.h src\bool.h
+	cc68x -g -c src\arg_list.c
+
 acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints.o src\model.o src\move.o src\music.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vector.o
 	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints.o src\model.o src\move.o src\music.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vector.o -o bin\acaddom.tos
 
