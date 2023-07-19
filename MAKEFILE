@@ -29,8 +29,8 @@ tst_psg: src\psg.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o src\test
 src\tst_psg.o: src\tst_psg.c src\psg.h src\raster.h src\super.h src\test.h src\types.h
 	cc68x -g -c src\tst_psg.c
 
-tst_rast: src\test.o src\tst_bmp.o src\tst_rast.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o
-	cc68x -g src\test.o src\tst_bmp.o src\tst_rast.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o -o bin\tst_rast.tos
+tst_rast: src\test.o src\tst_bmp.o src\tst_rast.o src\arg_list.o src\input.o src\in_asm.o src\ints.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o src\vector.o
+	cc68x -g src\test.o src\tst_bmp.o src\tst_rast.o src\arg_list.o src\input.o src\in_asm.o src\ints.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o src\vector.o -o bin\tst_rast.tos
 
 src\tst_rast.o: src\tst_rast.c src\raster.h src\tst_bmp.h src\scrn.h src\super.h src\types.h
 	cc68x -g -c src\tst_rast.c

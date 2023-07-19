@@ -7,6 +7,12 @@
  * @copyright Copyright Academia Team 2023
  */
 
+#include <stddef.h>
+#include <stdio.h>
+
+#include "arg_list.h"
+#include "ikbdcode.h"
+#include "input.h"
 #include "raster.h"
 #include "scrn.h"
 #include "super.h"
@@ -22,7 +28,25 @@
 #define BLACK_SCREEN_ON  TRUE
 #define BLACK_SCREEN_OFF FALSE
 
-void tst_plot_px(UINT8 *base);
+void rastTstWhite(void (*tstFunc)(ArgList *args));
+void rastTstBlack(void (*tstFunc)(ArgList *args));
+void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen);
+
+void regPlotPxTests(BOOL blackScreen);
+void t1PlotPx(ArgList *args);
+void t2PlotPx(ArgList *args);
+void t3PlotPx(ArgList *args);
+void t4PlotPx(ArgList *args);
+void t5PlotPx(ArgList *args);
+void t6PlotPx(ArgList *args);
+void t7PlotPx(ArgList *args);
+void t8PlotPx(ArgList *args);
+void t9PlotPx(ArgList *args);
+void t10PlotPx(ArgList *args);
+void t11PlotPx(ArgList *args);
+void t12PlotPx(ArgList *args);
+void t13PlotPx(ArgList *args);
+
 void tst_hline(UINT32 *base);
 void tst_plot_rast32(UINT32 *base, BOOL destruct, BOOL blackScreen);
 void tst_plot_rast16(UINT16 *base, BOOL destruct, BOOL blackScreen);
@@ -34,111 +58,371 @@ void gridDots(UINT32 *base);
 
 int main()
 {
-	UINT32 *base = (UINT32 *)Physbase();
-	off_curs();
+	TestSuite *tstSuite;
+	TestCase  *tstCase;
 
-	run_test(tst_rect_area(base));
-	run_test(tst_clr_area(base));
+	int promptResponse;
+	BOOL validResponse;
 
-	run_test(tst_plot_px((UINT8 *)base));
-	run_test(tst_hline(base));
+	Vector origKybd;
 
-	run_test(tst_plot_rast32(base, DESTRUCT_OFF, BLACK_SCREEN_OFF));
-	run_test(tst_plot_rast32(base, DESTRUCT_ON, BLACK_SCREEN_OFF));
-	run_test(tst_plot_rast32(base, DESTRUCT_ON, BLACK_SCREEN_ON));
-	run_test(tst_plot_rast32(base, DESTRUCT_OFF, BLACK_SCREEN_ON));
+	regPlotPxTests(BLACK_SCREEN_OFF);
+	regPlotPxTests(BLACK_SCREEN_ON);
 
-	run_test(tst_plot_rast16((UINT16 *)base, DESTRUCT_OFF, BLACK_SCREEN_OFF));
-	run_test(tst_plot_rast16((UINT16 *)base, DESTRUCT_ON, BLACK_SCREEN_OFF));
-	run_test(tst_plot_rast16((UINT16 *)base, DESTRUCT_ON, BLACK_SCREEN_ON));
-	run_test(tst_plot_rast16((UINT16 *)base, DESTRUCT_OFF, BLACK_SCREEN_ON));
+	while ((tstSuite = getNextTestSuite()) != NULL)
+	{
+		showTestSuiteInfo(stdout, tstSuite);
 
-	run_test(tst_plot_rast8((UINT8 *)base, DESTRUCT_OFF, BLACK_SCREEN_OFF));
-	run_test(tst_plot_rast8((UINT8 *)base, DESTRUCT_ON, BLACK_SCREEN_OFF));
-	run_test(tst_plot_rast8((UINT8 *)base, DESTRUCT_ON, BLACK_SCREEN_ON));
-	run_test(tst_plot_rast8((UINT8 *)base, DESTRUCT_OFF, BLACK_SCREEN_ON));
+		origKybd = initKybd();
+		do
+		{
+			showTestPrompt(stdout);
+			promptResponse = getBAscii();
+			validResponse = (promptResponse == '\r' || promptResponse == 'q');
+		} while (!validResponse);
+		restoreKybd(origKybd);
 
-	clr_scrn(base);
-	on_curs();
+		if (promptResponse == '\r')
+		{
+			while ((tstCase = getNextTestCase(tstSuite)) != NULL)
+			{
+				showTestCaseInfo(stdout, tstCase);
+
+				origKybd = initKybd();
+				do
+				{
+					showTestPrompt(stdout);
+					promptResponse = getBAscii();
+					validResponse = (promptResponse == '\r' ||
+									 promptResponse == 'q');
+				} while (!validResponse);
+				restoreKybd(origKybd);
+				
+				if (promptResponse == '\r')
+				{
+					runTest(tstCase);
+				}
+			}
+		}
+	}
 
 	return 0;
 }
 
 /**
- * @brief A function that tests plot_px().
- * @details The screen will be cleared before every test. Enter has to be
- * pressed after every test.
+ * @brief Sets up a blank white screen for testing the raster functions.
  * 
- * @param base The location in memory to plot at.
+ * @param tstFunc The function to test the raster functions.
  */
-void tst_plot_px(UINT8 *base)
+void rastTstWhite(void (*tstFunc)(ArgList *args))
 {
-	/*TEST 1: When x and y are both at their minimum value (zero).*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, 0, 0);
-	Cconin();
+	rastTstCommon(tstFunc, BLACK_SCREEN_OFF);
+}
 
-	/*TEST 2: When x is at its middle value and y is at its minimum value.*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, SCRN_MID_X, 0);
-	Cconin();
+/**
+ * @brief Sets up a blank black screen for testing the raster functions.
+ * 
+ * @param tstFunc The function to test the raster functions.
+ */
+void rastTstBlack(void (*tstFunc)(ArgList *args))
+{
+	rastTstCommon(tstFunc, BLACK_SCREEN_ON);
+}
 
-	/*TEST 3: When x is at its maximum and y is at its minimum value.*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, SCRN_MAX_X, 0);
-	Cconin();
+/**
+ * @brief Contains the common functionality shared by all the raster test
+ * manager functions.
+ * 
+ * @param tstFunc The function to test the raster functions.
+ * @param blackScreen Whether there should be a white or black screen.
+ */
+void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen)
+{
+	ArgList args;
+	Vector origKybd = initKybd();
+	IKBD_Scancode scancode;
 
-	/*TEST 4: When x is at its minimum value and y is at its middle value.*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, 0, SCRN_MID_Y);
-	Cconin();
+	initArgList(&args);
+	appendArgToList("base", get_video_base(), &args);
 
-	/* TEST 5: When x is at its minimum and y is at its maximum.*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, 0, SCRN_MAX_Y);
-	Cconin();
+	off_curs();
 
-	/*TEST 6: When x and y are both at their maximum value.*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, SCRN_MAX_X, SCRN_MAX_Y);
-	Cconin();
+	if (blackScreen)
+	{
+		fill_scrn((UINT32 *)getArgFromList("base", &args));
+	}
+	else
+	{
+		clr_scrn((UINT32 *)getArgFromList("base", &args));
+	}
 
-	/*TEST 7: A white pixel should be plotted when there is a black
-	background.*/
-	fill_scrn((UINT32 *)base);
-	plot_px(base, SCRN_MID_X, SCRN_MID_Y);
-	Cconin();
+	tstFunc(&args);
 
-	/*TEST 8: Nothing should be plotted when x is negative.*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, -1, 0);
-	Cconin();
+	while ((scancode = getKey()) == NO_KEY);
+	on_curs();
 
-	/*TEST 9: Nothing should be plotted when x is equal to the SCRN_LEN.*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, SCRN_LEN, 0);
-	Cconin();
+	restoreKybd(origKybd);
+}
 
-	/*TEST 10: Nothing should be plotted when x is greater than the SCRN_LEN*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, SCRN_LEN + 1, 0);
-	Cconin();
+void regPlotPxTests(BOOL blackScreen)
+{
+	TestSuiteID suiteID;
 
-	/*TEST 11: Nothing should be plotted when y is negative.*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, 0, -1);
-	Cconin();
+	if (blackScreen)
+	{
+		suiteID = registerTestSuite("Tests plotting pixels on a black surface.",
+									rastTstBlack);
+	}
+	else
+	{
+		suiteID = registerTestSuite("Tests plotting pixels on a white surface.",
+									rastTstWhite);
+	}
+	
+	registerTestCase(suiteID,
+					 "When both x and y are at their minimum value (zero).",
+					 NULL, t1PlotPx);
 
-	/*TEST 12: Nothing should be plotted when y is equal to the SCRN_HEIGHT.*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, 0, SCRN_HEIGHT);
-	Cconin();
+	registerTestCase(suiteID,
+					 "When x is at its middle value and y is at its minimum value.",
+					 NULL, t2PlotPx);
 
-	/*TEST 13: Nothing should be plotted when y is greater than the
-	SCRN_HEIGHT.*/
-	clr_scrn((UINT32 *)base);
-	plot_px(base, 0, SCRN_HEIGHT + 1);
-	Cconin();
+	registerTestCase(suiteID,
+					 "When x is at its maximum value and y is at its minimum value.",
+					 NULL, t3PlotPx);
+
+	registerTestCase(suiteID,
+					 "When x is at its minimum value and y is at its middle value.",
+					 NULL, t4PlotPx);
+
+	registerTestCase(suiteID,
+					 "When x is at its minimum value and y is at its maximum value.",
+					 NULL, t5PlotPx);
+
+	registerTestCase(suiteID,
+					 "When both x and y are at their maximum values.",
+					 NULL, t6PlotPx);
+
+	registerTestCase(suiteID,
+					 "When both x and y are at their middle values.",
+					 NULL, t7PlotPx);
+
+	registerTestCase(suiteID,
+					 "When x is negative.",
+					 NULL, t8PlotPx);
+
+	registerTestCase(suiteID,
+					 "When x is equal to the length of the screen.",
+					 NULL, t9PlotPx);
+
+	registerTestCase(suiteID,
+					 "When x is greater than the length of the screen.",
+					 NULL, t10PlotPx);
+
+	registerTestCase(suiteID,
+					 "When y is negative.",
+					 NULL, t11PlotPx);
+
+	registerTestCase(suiteID,
+					 "When y is equal to the screen height.",
+					 NULL, t12PlotPx);
+
+	registerTestCase(suiteID,
+					 "When y is greater than the screen height.",
+					 NULL, t13PlotPx);
+}
+
+/**
+ * @brief Tests plot_px() when both x and y are at their minimum value (zero).
+ * @details The expected results are that a point will be plotted in the
+ * top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t1PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), 0, 0);
+}
+
+/**
+ * @brief Tests plot_px() when x is at its middle value and y is at its minimum
+ * value.
+ * @details The expected results are that a point will be plotted on the
+ * top-middle portion of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t2PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), SCRN_MID_X, 0);
+}
+
+/**
+ * @brief Tests plot_px() when x is at its maximum value and y is at its minimum
+ * value.
+ * @details The expected results are that a point will be plotted in the
+ * top-right corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t3PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), SCRN_MAX_X, 0);
+}
+
+/**
+ * @brief Tests plot_px() when x is at its minimum value and y is at its middle
+ * value.
+ * @details The expected results are that a point will be plotted on the left
+ * and vertically centered on the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t4PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), 0, SCRN_MID_Y);
+}
+
+/**
+ * @brief Tests plot_px() when x is at its minimum value and y is at its maximum
+ * value.
+ * @details The expected results are that a point will be plotted in the
+ * bottom-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t5PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), 0, SCRN_MAX_Y);
+}
+
+/**
+ * @brief Tests plot_px() when both x and y are at their maximum values.
+ * @details The expected results are that a point will be plotted in the
+ * bottom-right corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t6PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), SCRN_MAX_X, SCRN_MAX_Y);
+}
+
+/**
+ * @brief Tests plot_px() when both x and y are at their middle values.
+ * @details The expected results are that a point will be plotted in the center
+ * of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t7PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), SCRN_MID_X, SCRN_MID_Y);
+}
+
+/**
+ * @brief Tests plot_px() when x is negative.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t8PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), -1, 0);
+}
+
+/**
+ * @brief Tests plot_px() when x is equal to the length of the screen.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t9PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), SCRN_LEN, 0);
+}
+
+/**
+ * @brief Tests plot_px() when x is greater than the length of the screen.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t10PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), SCRN_LEN + 1, 0);
+}
+
+/**
+ * @brief Tests plot_px() when y is negative.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t11PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), 0, -1);
+}
+
+/**
+ * @brief Tests plot_px() when y is equal to the height of the screen.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t12PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), 0, SCRN_HEIGHT);
+}
+
+/**
+ * @brief Tests plot_px() when y is greater than the height of the screen.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t13PlotPx(ArgList *args)
+{
+	plot_px((UINT8 *)getArgFromList("base", args), 0, SCRN_HEIGHT + 1);
 }
 
 /**
