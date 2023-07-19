@@ -831,9 +831,33 @@ UINT32 getKybdRaw()
 	return kybdVal;
 }
 
+UINT32 getKybdBRaw()
+{
+	long kybdVal;
+
+	do
+	{
+		kybdVal = getKybdRaw();
+	} while (!kybdVal);
+
+	return kybdVal;
+}
+
 UINT8 getAscii()
 {
 	return (UINT8)(getKybdRaw());
+}
+
+UINT8 getBAscii()
+{
+	UINT8 asciiVal;
+
+	do
+	{
+		asciiVal = (UINT8)(getKybdBRaw());
+	} while (!asciiVal);
+	
+	return asciiVal;
 }
 
 IKBD_Scancode getKey()
@@ -850,6 +874,11 @@ IKBD_Scancode getKey()
 	}
 
 	return (int)(keyNum);
+}
+
+IKBD_Scancode getBKey()
+{
+	return (int)(getKybdBRaw());
 }
 
 BOOL mouseLclick()
