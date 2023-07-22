@@ -44,7 +44,7 @@ char* getBoolName(BOOL val, char *boolName);
  * @brief The maximum length of a test description (excluding the NULL
  * terminator).
  */
-#define MAX_TEST_DESCRIPTION_LEN 80
+#define MAX_TEST_DESCRIPTION_LEN 120
 
 /**
  * @brief Stores information used to test specific functionality.

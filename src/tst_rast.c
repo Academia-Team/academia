@@ -47,7 +47,37 @@ void t11PlotPx(ArgList *args);
 void t12PlotPx(ArgList *args);
 void t13PlotPx(ArgList *args);
 
-void tst_hline(UINT32 *base);
+void regHlineTests();
+void t1Hline(ArgList *args);
+void t2Hline(ArgList *args);
+void t3Hline(ArgList *args);
+void t4Hline(ArgList *args);
+void t5Hline(ArgList *args);
+void t6Hline(ArgList *args);
+void t7Hline(ArgList *args);
+void t8Hline(ArgList *args);
+void t9Hline(ArgList *args);
+void t10Hline(ArgList *args);
+void t11Hline(ArgList *args);
+void t12Hline(ArgList *args);
+void t13Hline(ArgList *args);
+void t14Hline(ArgList *args);
+void t15Hline(ArgList *args);
+void t16Hline(ArgList *args);
+void t17Hline(ArgList *args);
+void t18Hline(ArgList *args);
+void t19Hline(ArgList *args);
+void t20Hline(ArgList *args);
+void t21Hline(ArgList *args);
+void t22Hline(ArgList *args);
+void t23Hline(ArgList *args);
+void t24Hline(ArgList *args);
+void t25Hline(ArgList *args);
+void t26Hline(ArgList *args);
+void t27Hline(ArgList *args);
+void t28Hline(ArgList *args);
+void t29Hline(ArgList *args);
+
 void tst_plot_rast32(UINT32 *base, BOOL destruct, BOOL blackScreen);
 void tst_plot_rast16(UINT16 *base, BOOL destruct, BOOL blackScreen);
 void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen);
@@ -68,6 +98,7 @@ int main()
 
 	regPlotPxTests(BLACK_SCREEN_OFF);
 	regPlotPxTests(BLACK_SCREEN_ON);
+	regHlineTests();
 
 	while ((tstSuite = getNextTestSuite()) != NULL)
 	{
@@ -164,6 +195,13 @@ void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen)
 	restoreKybd(origKybd);
 }
 
+/**
+ * @brief Handle the registration of all tests related to the plot_px()
+ * function.
+ * 
+ * @param blackScreen Whether the tests registered should utilize a blank white
+ * or black screen.
+ */
 void regPlotPxTests(BOOL blackScreen)
 {
 	TestSuiteID suiteID;
@@ -426,175 +464,529 @@ void t13PlotPx(ArgList *args)
 }
 
 /**
- * @brief A function that tests hline().
- * @details The screen will be cleared before every test. Enter has to be
- * pressed after every test.
- * 
- * @param base The location in memory to plot at.
+ * @brief Handle the registration of all tests related to the hline() function.
  */
-void tst_hline(UINT32 *base)
+void regHlineTests()
 {
-	int counter; /* Used for stress test. */
+	TestSuiteID suiteID;
 
-	/*TEST 1: When y is at its minimum value (zero).*/
-	clr_scrn(base);
-	hline(base, 0, 31, 0);
-	Cconin();
+	suiteID = registerTestSuite("Tests drawing horizontal lines.", rastTstWhite);
 
-	/*TEST 2: When y is at its middle value.*/
-	clr_scrn(base);
-	hline(base, 0, 31, SCRN_MID_Y);
-	Cconin();
+	registerTestCase(suiteID, "When y is at its minimum value (zero).", NULL,
+					 t1Hline);
 
-	/*TEST 3: When y is at its maximum (on screen) value.*/
-	clr_scrn(base);
-	hline(base, 0, 31, SCRN_MAX_Y);
-	Cconin();
+	registerTestCase(suiteID, "When y is at its middle value.", NULL, t2Hline);
 
-	/*TEST 4: When the line is long-aligned and x1 > x2.*/
-	clr_scrn(base);
-	hline(base, 31, 0, 0);
-	Cconin();
+	registerTestCase(suiteID, "When y is at its maximum value.", NULL, t3Hline);
 
-	/*TEST 5: When the line is word-aligned and x1 < x2.*/
-	clr_scrn(base);
-	hline(base, 0, 15, 0);
-	Cconin();
+	registerTestCase(suiteID, "When the length of the line is 32-bit aligned and x1 is greater than x2.", NULL, t4Hline);
 
-	/*TEST 6: When the line is word-aligned and x1 < x2.*/
-	clr_scrn(base);
-	hline(base, 15, 0, 0);
-	Cconin();
+	registerTestCase(suiteID, "When the length of the line is 16-bit aligned and x1 is less than x2.", NULL, t5Hline);
 
-	/*TEST 7: When the line is byte-aligned and x1 < x2.*/
-	clr_scrn(base);
-	hline(base, 0, 7, 0);
-	Cconin();
+	registerTestCase(suiteID, "When the length of the line is 16-bit aligned and x1 is greater than x2.", NULL, t6Hline);
 
-	/*TEST 8: When the line is byte-aligned and x1 < x2.*/
-	clr_scrn(base);
-	hline(base, 7, 0, 0);
-	Cconin();
+	registerTestCase(suiteID, "When the length of the line is 8-bit aligned and x1 is less than x2.", NULL, t7Hline);
 
-	/*TEST 9: When the line is not byte-aligned and x1 < x2.*/
-	clr_scrn(base);
-	hline(base, 0, 6, 0);
-	Cconin();
+	registerTestCase(suiteID, "When the length of the line is 8-bit aligned and x1 is greater than x2.", NULL, t8Hline);
 
-	/*TEST 10: When the line is not byte-aligned and x1 < x2.*/
-	clr_scrn(base);
-	hline(base, 6, 0, 0);
-	Cconin();
+	registerTestCase(suiteID, "When the length of the line is not 8-bit aligned and x1 is less than x2.", NULL, t9Hline);
 
-	/*TEST 11: When x1 and x2 in same long-word*/
-	clr_scrn(base);
-	hline(base, 3, 28, 0);
-	Cconin();
+	registerTestCase(suiteID, "When the length of the line is not 8-bit aligned and x1 is greater than x2.", NULL, t10Hline);
 
-	/*TEST 12: When x1 and x2 need shifting no middle segments*/
-	clr_scrn(base);
-	hline(base, 28, 35, 0);
-	Cconin();
+	registerTestCase(suiteID, "When the line does not start at the very left of the screen and is within a 32-bit segment.", NULL, t11Hline);
 
-	/*TEST 13: When x1 and x2 are at their minimum visible value.*/
-	clr_scrn(base);
-	hline(base, 0, 0, 0);
-	Cconin();
+	registerTestCase(suiteID, "When the line does not start at zero and has no middle segments.", NULL, t12Hline);
 
-	/*TEST 14: When x1 and x2 are at their middle visible value.*/
-	clr_scrn(base);
-	hline(base, SCRN_MID_X, SCRN_MID_X, 0);
-	Cconin();
+	registerTestCase(suiteID, "When x1 and x2 are at their minimum visible value.", NULL, t13Hline);
 
-	/*TEST 15: When x1 and x2 are at their maximum visible value.*/
-	clr_scrn(base);
-	hline(base, SCRN_MAX_X, SCRN_MAX_X, 0);
-	Cconin();
+	registerTestCase(suiteID, "When x1 and x2 are at their middle visible value.", NULL, t14Hline);
 
-	/*TEST 16: When x1 is off the screen to the left and x2 is barely on the
-	screen.*/
-	clr_scrn(base);
-	hline(base, -1, 0, 0);
-	Cconin();
+	registerTestCase(suiteID, "When x1 and x2 are at their maximum visible value.", NULL, t15Hline);
 
-	/*TEST 17: When x1 is barely on the screen and x2 is off the screen to the
-	right.*/
-	clr_scrn(base);
-	hline(base, SCRN_MAX_X, SCRN_LEN, 0);
-	Cconin();
+	registerTestCase(suiteID, "When x1 is off the screen to the left and x2 is barely on the screen.", NULL, t16Hline);
 
-	/*TEST 18: When x1 and x2 are at their minimum and maximum visable value
-	on the screen respectively.*/
-	clr_scrn(base);
-	hline(base, 0, SCRN_MAX_X, SCRN_MAX_Y);
-	Cconin();
+	registerTestCase(suiteID, "When x1 is barely on the screen and x2 is off the screen to the right.", NULL, t17Hline);
 
-	/*TEST 19: When x1 and x2 are off the screen to the left and right
-	respectively.*/
-	clr_scrn(base);
-	hline(base, -1, SCRN_LEN, SCRN_MAX_Y);
-	Cconin();
+	registerTestCase(suiteID, "When x1 and x2 are at their minimum and maximum visible value on the screen respectively.", NULL, t18Hline);
 
-	/*TEST 20: Stress test.*/
-	clr_scrn(base);
+	registerTestCase(suiteID, "When x1 and x2 are off the screen to the left and right respectively.", NULL, t19Hline);
+
+	registerTestCase(suiteID, "When the function is executed repeatedly such that it prints lines of different lengths.", NULL, t20Hline);
+
+	registerTestCase(suiteID, "When y is negative.", NULL, t21Hline);
+
+	registerTestCase(suiteID, "When y is equal to the screen height.", NULL, t22Hline);
+
+	registerTestCase(suiteID, "When y is greater than the screen height.", NULL, t23Hline);
+
+	registerTestCase(suiteID, "When x1 and x2 are off the screen to the left and x1 is less than x2.", NULL, t24Hline);
+
+	registerTestCase(suiteID, "When x1 and x2 are off the screen to the left and x1 is equal to x2.", NULL, t25Hline);
+
+	registerTestCase(suiteID, "When x1 and x2 are off the screen to the left and x1 is greater than x2.", NULL, t26Hline);
+
+	registerTestCase(suiteID, "When x1 and x2 are off the screen to the right and x1 is less than x2.", NULL, t27Hline);
+
+	registerTestCase(suiteID, "When x1 and x2 are off the screen to the right and x1 is equal to x2.", NULL, t28Hline);
+
+	registerTestCase(suiteID, "when x1 and x2 are off the screen to the right and x1 is greater than x2.", NULL, t29Hline);
+}
+
+/**
+ * @brief Tests plot_hline() when y is at its minimum value (zero).
+ * @details The expected results are that a 32 px long horizontal line will be
+ * drawn starting at the top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t1Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, 31, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when y is at its middle value.
+ * @details The expected results are that a 32 px long horizontal line will be
+ * drawn vertically-centered starting at the left of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t2Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, 31, SCRN_MID_Y);
+}
+
+/**
+ * @brief Tests plot_hline() when y is at its maximum value.
+ * @details The expected results are that a 32 px long horizontal line will be
+ * drawn starting at the bottom-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t3Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, 31, SCRN_MAX_Y);
+}
+
+/**
+ * @brief Tests plot_hline() when the length of the line is 32-bit aligned and
+ * x1 is greater than x2.
+ * @details The expected results are that a 32 px long horizontal line will be
+ * drawn starting at the top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t4Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 31, 0, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when the length of the line is 16-bit aligned and
+ * x1 is less than x2.
+ * @details The expected results are that a 16 px long horizontal line will be
+ * drawn starting at the top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t5Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, 15, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when the length of the line is 16-bit aligned and
+ * x1 is greater than x2.
+ * @details The expected results are that a 16 px long horizontal line will be
+ * drawn starting at the top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t6Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 15, 0, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when the length of the line is 8-bit aligned and
+ * x1 is less than x2.
+ * @details The expected results are that a 8 px long horizontal line will be
+ * drawn starting at the top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t7Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, 7, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when the length of the line is 8-bit aligned and
+ * x1 is greater than x2.
+ * @details The expected results are that a 8 px long horizontal line will be
+ * drawn starting at the top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t8Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 7, 0, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when the length of the line is not 8-bit aligned
+ * and x1 is less than x2.
+ * @details The expected results are that a 7 px long horizontal line will be
+ * drawn starting at the top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t9Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, 6, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when the length of the line is not 8-bit aligned
+ * and x1 is greater than x2.
+ * @details The expected results are that a 7 px long horizontal line will be
+ * drawn starting at the top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t10Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 6, 0, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when the line does not start at the very left of
+ * the screen and is within a 32-bit segment.
+ * @details The expected results are that a 26 px long horizontal line will be
+ * drawn three pixels in from the top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t11Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 3, 28, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when the line does not start at zero and has no
+ * middle segments.
+ * @details The expected results are that a 8 px long horizontal line will be
+ * drawn at the top of the screen starting at 29 pixels from the left.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t12Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 28, 35, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when x1 and x2 are at their minimum visible value.
+ * @details The expected results are that a 1 px wide dot will be in the
+ * top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t13Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, 0, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when x1 and x2 are at their middle visible value.
+ * @details The expected results are that a 1 px wide dot will be in the
+ * top-center position of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t14Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), SCRN_MID_X, SCRN_MID_X, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when x1 and x2 are at their maximum visible value.
+ * @details The expected results are that a 1 px wide dot will be in the
+ * top-right corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t15Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), SCRN_MAX_X, SCRN_MAX_X, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when x1 is off the screen to the left and x2 is
+ * barely on the screen.
+ * @details The expected results are that a 1 px wide dot will be in the
+ * top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t16Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), -1, 0, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when x1 is barely on the screen and x2 is off the
+ * screen to the right.
+ * @details The expected results are that a 1 px wide dot will be in the
+ * top-right corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t17Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), SCRN_MAX_X, SCRN_LEN, 0);
+}
+
+/**
+ * @brief Tests plot_hline() when x1 and x2 are at their minimum and maximum
+ * visible value on the screen respectively.
+ * @details The expected results are that a horizontal line will extend across
+ * the very bottom of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t18Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, SCRN_MAX_X, SCRN_MAX_Y);
+}
+
+/**
+ * @brief Tests plot_hline() when x1 and x2 are off the screen to the left and
+ * right respectively.
+ * @details The expected results are that a horizontal line will extend across
+ * the very bottom of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t19Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), -1, SCRN_LEN, SCRN_MAX_Y);
+}
+
+/**
+ * @brief Tests plot_hline() when the function is executed repeatedly such that
+ * it prints lines of different lengths.
+ * @details The expected results are that a large downward facing triangle
+ * (whose initial length spans the entire length of the screen) will appear from
+ * the top of the screen. Connected to that triangle is a smaller one facing the
+ * other direction. Both triangles are completely filled in and together, they
+ * take up the entire height of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t20Hline(ArgList *args)
+{
+	int counter;
+
 	for(counter = -1; counter < SCRN_HEIGHT; counter++)
 	{
-		hline(base, counter, SCRN_MAX_X - counter, counter);
+		hline((UINT32 *)getArgFromList("base", args), counter,
+			  SCRN_MAX_X - counter, counter);
 	}
-	Cconin();
+}
 
-	/*TEST 21: When y is negative, nothing should be plotted.*/
-	clr_scrn(base);
-	hline(base, 0, 31, -1);
-	Cconin();
+/**
+ * @brief Tests plot_hline() when y is negative.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t21Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, 31, -1);
+}
 
-	/*TEST 22: When y is equal to the SCRN_HEIGHT, nothing should be
-	plotted.*/
-	clr_scrn(base);
-	hline(base, 0, 31, SCRN_HEIGHT);
-	Cconin();
+/**
+ * @brief Tests plot_hline() when y is equal to the screen height.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t22Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, 31, SCRN_HEIGHT);
+}
 
-	/*TEST 23: When y is greater than SCRN_HEIGHT, nothing should be
-	plotted.*/
-	clr_scrn(base);
-	hline(base, 0, 31, SCRN_HEIGHT + 1);
-	Cconin();
+/**
+ * @brief Tests plot_hline() when y is greater than the screen height.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t23Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), 0, 31, SCRN_HEIGHT + 1);
+}
 
-	/*TEST 24: When x1 and x2 are off the screen to the left and x1 < x2,
-	nothing should be plotted.*/
-	clr_scrn(base);
-	hline(base, -94, -31, SCRN_MAX_Y);
-	Cconin();
+/**
+ * @brief Tests plot_hline() when x1 and x2 are off the screen to the left and
+ * x1 is less than x2.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t24Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), -94, -31, SCRN_MAX_Y);
+}
 
-	/*TEST 25: When x1 and x2 are off the screen to the left and x1 = x2,
-	nothing should be plotted.*/
-	clr_scrn(base);
-	hline(base, -1, -1, SCRN_MAX_Y);
-	Cconin();
+/**
+ * @brief Tests plot_hline() when x1 and x2 are off the screen to the left and
+ * x1 is equal to x2.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t25Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), -1, -1, SCRN_MAX_Y);
+}
 
-	/*TEST 26: When x1 and x2 are off the screen to the left and x1 > x2,
-	nothing should be plotted.*/
-	clr_scrn(base);
-	hline(base, -31, -94, SCRN_MAX_Y);
-	Cconin();
+/**
+ * @brief Tests plot_hline() when x1 and x2 are off the screen to the left and
+ * x1 is greater than x2.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t26Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), -31, -94, SCRN_MAX_Y);
+}
 
-	/*TEST 27: When x1 and x2 are off the screen to the right and x1 < x2,
-	nothing should be plotted.*/
-	clr_scrn(base);
-	hline(base, 671, 703, 0);
-	Cconin();
+/**
+ * @brief Tests plot_hline() when x1 and x2 are off the screen to the right and
+ * x1 is less than x2.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t27Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), SCRN_MAX_X + 32,
+		  SCRN_MAX_X + 64, 0);
+}
 
-	/*TEST 28: When x1 and x2 are off the screen to the right and x1 = x2,
-	nothing should be plotted.*/
-	clr_scrn(base);
-	hline(base, SCRN_LEN, SCRN_LEN, 0);
-	Cconin();
+/**
+ * @brief Tests plot_hline() when x1 and x2 are off the screen to the right and
+ * x1 is equal to x2.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t28Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), SCRN_LEN, SCRN_LEN, 0);
+}
 
-	/*TEST 29: When x1 and x2 are off the screen to the right and x1 > x2,
-	nothing should be plotted.*/
-	clr_scrn(base);
-	hline(base, 703, 671, 0);
-	Cconin();
+/**
+ * @brief Tests plot_hline() when x1 and x2 are off the screen to the right and
+ * x1 is greater than x2.
+ * @details The expected results are that nothing will be plotted on screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t29Hline(ArgList *args)
+{
+	hline((UINT32 *)getArgFromList("base", args), SCRN_MAX_X + 64,
+		  SCRN_MAX_X + 32, 0);
 }
 
 /**
