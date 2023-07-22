@@ -47,8 +47,6 @@ void outCellInfo(const Cell* const cell, int id, int index);
 
 int main()
 {
-	off_curs();
-
 	run_test(testScoreBox());
 	run_test(testLivesBox());
 	run_test(testRowGen());
@@ -56,7 +54,6 @@ int main()
 	run_test(testHazAdd());
 	run_test(testPlayerMove());
 
-	on_curs();
 	return 0;
 }
 

@@ -161,15 +161,3 @@ char* getBoolName(BOOL val, char *boolName)
 
 	return boolName;
 }
-
-void off_curs()
-{
-	printf("\033f");
-	fflush(stdout);
-}
-
-void on_curs()
-{
-	printf("\033e");
-	fflush(stdout);
-}

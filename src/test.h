@@ -186,14 +186,4 @@ void runTest(TestCase *test);
 		clr_scrn((UINT32 *)Physbase()); \
 	}
 
-/**
- * @brief Disables the cursor.
- */
-void off_curs();
-
-/**
- * @brief Enables the cursor.
- */
-void on_curs();
-
 #endif

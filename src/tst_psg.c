@@ -26,7 +26,6 @@ void testNoiseWTone();
 
 int main()
 {
-	off_curs();
 	stop_sound();
 	
 	run_test(testReadWritePsg());
@@ -42,7 +41,6 @@ int main()
 	run_test(testNoiseWTone());
 
 	stop_sound();
-	on_curs();
 }
 
 /**

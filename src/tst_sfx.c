@@ -30,7 +30,6 @@ void testBeep();
 
 int main()
 {
-	off_curs();
 	stop_sound();
 
 	run_test(testPain());
@@ -41,7 +40,6 @@ int main()
 	run_test(testBeep());
 
 	stop_sound();
-	on_curs();
 }
 
 /**

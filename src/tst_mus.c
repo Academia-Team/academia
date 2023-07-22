@@ -21,13 +21,11 @@ int main()
 {
 	UINT32 oldSsp;
 
-	off_curs();
 	stop_sound();
 
 	run_test(playSong());
 
 	stop_sound();
-	on_curs();
 }
 
 /**

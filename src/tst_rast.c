@@ -176,8 +176,6 @@ void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen)
 	initArgList(&args);
 	appendArgToList("base", get_video_base(), &args);
 
-	off_curs();
-
 	if (blackScreen)
 	{
 		fill_scrn((UINT32 *)getArgFromList("base", &args));
@@ -190,7 +188,6 @@ void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen)
 	tstFunc(&args);
 
 	while ((scancode = getKey()) == NO_KEY);
-	on_curs();
 
 	restoreKybd(origKybd);
 }
