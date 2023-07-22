@@ -28,9 +28,15 @@
 #define BLACK_SCREEN_ON  TRUE
 #define BLACK_SCREEN_OFF FALSE
 
+#define GRID_DOTS_ON  TRUE
+#define GRID_DOTS_OFF FALSE
+
 void rastTstWhite(void (*tstFunc)(ArgList *args));
+void rastGDTstWhite(void (*tstFunc)(ArgList *args));
 void rastTstBlack(void (*tstFunc)(ArgList *args));
-void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen);
+void rastGDTstBlack(void (*tstFunc)(ArgList *args));
+void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen,
+				   BOOL enableGridDots);
 
 void regPlotPxTests(BOOL blackScreen);
 void t1PlotPx(ArgList *args);
@@ -147,7 +153,18 @@ int main()
  */
 void rastTstWhite(void (*tstFunc)(ArgList *args))
 {
-	rastTstCommon(tstFunc, BLACK_SCREEN_OFF);
+	rastTstCommon(tstFunc, BLACK_SCREEN_OFF, GRID_DOTS_OFF);
+}
+
+/**
+ * @brief Sets up a white screen with uniformly distributed dots for testing the
+ * raster functions.
+ * 
+ * @param tstFunc The function to test the raster functions.
+ */
+void rastGDTstWhite(void (*tstFunc)(ArgList *args))
+{
+	rastTstCommon(tstFunc, BLACK_SCREEN_OFF, GRID_DOTS_ON);
 }
 
 /**
@@ -157,7 +174,18 @@ void rastTstWhite(void (*tstFunc)(ArgList *args))
  */
 void rastTstBlack(void (*tstFunc)(ArgList *args))
 {
-	rastTstCommon(tstFunc, BLACK_SCREEN_ON);
+	rastTstCommon(tstFunc, BLACK_SCREEN_ON, GRID_DOTS_OFF);
+}
+
+/**
+ * @brief Sets up a black screen with uniformly distributed dots for testing the
+ * raster functions.
+ * 
+ * @param tstFunc The function to test the raster functions.
+ */
+void rastGDTstBlack(void (*tstFunc)(ArgList *args))
+{
+	rastTstCommon(tstFunc, BLACK_SCREEN_ON, GRID_DOTS_ON);
 }
 
 /**
@@ -166,8 +194,11 @@ void rastTstBlack(void (*tstFunc)(ArgList *args))
  * 
  * @param tstFunc The function to test the raster functions.
  * @param blackScreen Whether there should be a white or black screen.
+ * @param enableGridDots When enabled, will show dots that are spaced out by 32
+ * pixels horizontally and 16 pixels vertically.
  */
-void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen)
+void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen,
+				   BOOL enableGridDots)
 {
 	ArgList args;
 	Vector origKybd = initKybd();
@@ -175,6 +206,7 @@ void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen)
 
 	initArgList(&args);
 	appendArgToList("base", get_video_base(), &args);
+	appendArgToList("blackScreen", &blackScreen, &args);
 
 	if (blackScreen)
 	{
@@ -183,6 +215,11 @@ void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen)
 	else
 	{
 		clr_scrn((UINT32 *)getArgFromList("base", &args));
+	}
+
+	if (enableGridDots)
+	{
+		gridDots((UINT32 *)getArgFromList("base", &args));
 	}
 
 	tstFunc(&args);
