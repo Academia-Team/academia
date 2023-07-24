@@ -13,6 +13,7 @@
 #include "events.h"
 #include "ints.h"
 #include "model.h"
+#include "move.h"
 
 int handleHazardCollision(World* world, Player* player)
 {
@@ -126,7 +127,7 @@ void addHazard(Row* row)
 	{
 		if (probPlaceHazard(FEATHERS_HAZ))
 		{
-			startingX = (row->horzDirection == LEFT ?
+			startingX = (row->horzDirection == M_LEFT ?
 						 MAX_CELL_X : MIN_VIS_X_FEATHERS);
 			
 			row->hazards[row->hazardCount].hazardType = FEATHERS_HAZ;
@@ -137,7 +138,7 @@ void addHazard(Row* row)
 	{
 		if (probPlaceHazard(TRAIN_HAZ))
 		{
-			startingX = (row->horzDirection == LEFT ?
+			startingX = (row->horzDirection == M_LEFT ?
 						 MAX_CELL_X : MIN_VIS_X_TRAIN);
 
 			row->hazards[row->hazardCount].hazardType = TRAIN_HAZ;
@@ -149,7 +150,7 @@ void addHazard(Row* row)
 	{
 		if (probPlaceHazard(CAR_HAZ))
 		{
-			startingX = (row->horzDirection == LEFT ?
+			startingX = (row->horzDirection == M_LEFT ?
 						 MAX_CELL_X : MIN_VIS_X_CAR);
 
 			row->hazards[row->hazardCount].hazardType = CAR_HAZ;
@@ -185,6 +186,8 @@ void handleCollectableCollision(World* world, Player* player)
 				break;
 			case C_COLLECT_VAL:
 				world->cCount--;
+				break;
+			case NO_COLLECT:
 				break;
 		}
 		world->rows[row].cells[column].collectableValue = NO_COLLECT;
@@ -229,43 +232,92 @@ void moveHazard(Row* row)
 
 	for(index = 0; index < row->hazardCount; index++)
 	{
-		row->hazards[index].x += (row->horzDirection == RIGHT ?
+		row->hazards[index].x += (row->horzDirection == M_RIGHT ?
 								  CELL_LEN : -CELL_LEN);
 	}
 }
 
-void movePlayer(World* world, Player* player)
+BOOL movePlayer(World* world, Player* player)
 {
-	if (isPlayerAlive(*player))
-	{
-		if (world->shiftWorld)
-		{
-			shiftWorld(world);
-			if (world->numWorldShifts + 1 >= 0)
-			{
-				world->numWorldShifts++;
-			}
+	MoveFrame playerMovementReq;
+	Direction dir;
+	Direction orient;
 
-			updateScore(PLAYER_ROW_ADV_SCORE, &player->score);
-			world->shiftWorld = FALSE;
-			play_walk();
-		}
-		else
+	int  desiredX = player->x;
+	int  desiredY = player->y;
+
+	BOOL moveCancelled = FALSE;
+	BOOL moveValid     = FALSE;
+
+	if (isPlayerAlive(*player) && playerMayMove(player))
+	{
+		dequeueMoveFrame(&playerMovementReq, &player->moveQueue);
+
+		orient = getMoveOrient(&playerMovementReq);
+
+		if (orient != M_NONE)
 		{
-			if (player->y != player->destY)
+			player->orientation = orient;
+		}
+		dir = getMoveDir(&playerMovementReq);
+
+		switch(dir)
+		{
+			case M_UP:
+				desiredY = player->y - ROW_HEIGHT;
+				moveValid = TRUE;
+				break;
+			case M_DOWN:
+				desiredY = player->y + ROW_HEIGHT;
+				moveValid = TRUE;
+				break;
+			case M_RIGHT:
+				desiredX = player->x + CELL_LEN;
+				moveValid = TRUE;
+				break;
+			case M_LEFT:
+				desiredX = player->x - CELL_LEN;
+				moveValid = TRUE;
+				break;
+			case M_NONE:
+				moveValid = FALSE;
+		}
+
+		if (moveValid)
+		{
+			if (!chkBorderCollision(desiredX, desiredY) &&
+				!chkHedgeCollision(world, desiredX, desiredY))
 			{
-				player->y += (player->y > player->destY ? -CELL_LEN : CELL_LEN);
-				world->copyCells = TRUE;
+				if (dir == M_UP && player->y == WSHIFT_Y_BOUNDARY)
+				{
+					shiftWorld(world);
+					if (world->numWorldShifts + 1 >= 0)
+					{
+						world->numWorldShifts++;
+					}
+
+					updateScore(PLAYER_ROW_ADV_SCORE, &player->score);
+				}
+				else
+				{
+					player->x = desiredX;
+					player->y = desiredY;
+					world->copyCells = TRUE;
+				}
+
 				play_walk();
 			}
-			else if (player->x != player->destX)
+			else
 			{
-				player->x += (player->x > player->destX ? -CELL_LEN : CELL_LEN);
-				world->copyCells = TRUE;
-				play_walk();
+				play_beep();
+				moveCancelled = TRUE;
 			}
 		}
 	}
+
+	peekAtMoveFrame(&playerMovementReq, &player->moveQueue);
+
+	return (!moveCancelled);
 }
 
 void removeHazard(Row* row)
@@ -277,19 +329,19 @@ void removeHazard(Row* row)
 	switch(row->cellType)
 	{
 		case GRASS_CELL:
-			endingX = (row->horzDirection == LEFT ?
+			endingX = (row->horzDirection == M_LEFT ?
 					   MIN_VIS_X_FEATHERS - CELL_LEN : MAX_CELL_X + CELL_LEN);
 			break;
 		case ROAD_CELL:
-			endingX = (row->horzDirection == LEFT ?
+			endingX = (row->horzDirection == M_LEFT ?
 					   MIN_VIS_X_CAR - CELL_LEN : MAX_CELL_X + CELL_LEN);
 			break;
 		case TRACK_CELL:
-			endingX = (row->horzDirection == LEFT ?
+			endingX = (row->horzDirection == M_LEFT ?
 					   MIN_VIS_X_TRAIN - CELL_LEN : MAX_CELL_X + CELL_LEN);
 			break;
 		default:
-			endingX = (row->horzDirection == LEFT ?
+			endingX = (row->horzDirection == M_LEFT ?
 					   MIN_CELL_X - CELL_LEN : MAX_CELL_X + CELL_LEN);
 	}
 
@@ -308,8 +360,10 @@ void removeHazard(Row* row)
 	}
 }
 
-void setPlayerDir(World* world, Player* player, Direction dir)
+void setPlayerDir(Player* player, Direction dir)
 {
+	MoveFrame futureMovement;
+
 	BOOL dirValid = TRUE;
 	int  desiredX = player->x;
 	int  desiredY = player->y;
@@ -318,52 +372,36 @@ void setPlayerDir(World* world, Player* player, Direction dir)
 	int    oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	Super(oldSsp);
 
-
-	if (isPlayerAlive(*player) && !isPlayerMoving(*world, *player))
+	if (isPlayerAlive(*player) && (
+		dir == M_UP || dir == M_DOWN || dir == M_RIGHT || dir == M_LEFT)
+	   )
 	{
-		switch(dir)
-		{
-			case UP:
-				player->orientation = NORTH;
-				desiredY = player->y - ROW_HEIGHT;
-				break;
-			case DOWN:
-				player->orientation = SOUTH;
-				desiredY = player->y + ROW_HEIGHT;
-				break;
-			case RIGHT:
-				player->orientation = EAST;
-				desiredX = player->x + CELL_LEN;
-				break;
-			case LEFT:
-				player->orientation = WEST;
-				desiredX = player->x - CELL_LEN;
-				break;
-			default:
-				dirValid = FALSE;
-		}
-
-		if (dirValid)
-		{
-			if (!chkBorderCollision(desiredX, desiredY) &&
-				!chkHedgeCollision(world, desiredX, desiredY))
-			{
-				if (dir == UP && player->y == WSHIFT_Y_BOUNDARY)
-				{
-					world->shiftWorld = TRUE;
-				}
-				else
-				{
-					player->destX = desiredX;
-					player->destY = desiredY;
-				}
-			}
-		}
+		/* The orientation is the same as the direction in this case.
+		For example, a player going up faces north. */
+		enqueueMoveFrame(&player->moveQueue, dir, dir);
 	}
 
 	oldSsp = Super(0);
 	set_ipl(oldIpl);
 	Super(oldSsp);
+}
+
+BOOL playerMoveOpposite(const Player * const player, Direction dir)
+{
+	BOOL          dirOpposing = FALSE;
+	MoveFrame     playerNextMove;
+
+	if (playerMayMove(player))
+	{
+		getPlayerNextMove(player, &playerNextMove);
+
+		if (isDirOpposite(getMoveDir(&playerNextMove), dir))
+		{
+			dirOpposing = TRUE;
+		}
+	}
+
+	return dirOpposing;
 }
 
 void shiftWorld(World* world)

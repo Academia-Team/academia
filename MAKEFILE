@@ -5,10 +5,10 @@ tests: tst_mdl tst_mse tst_mus tst_psg tst_rast tst_sfx
 src\tst_bmp.o: src\tst_bmp.c src\tst_bmp.h src\scrn.h src\types.h
 	cc68x -g -c src\tst_bmp.c
 
-tst_mdl: src\model.o src\effects.o src\events.o src\ints.o src\psg.o src\rast_asm.o src\tst_mdl.o src\test.o src\types.h
-	cc68x -g src\model.o src\effects.o src\events.o src\ints.o src\psg.o src\rast_asm.o src\tst_mdl.o src\test.o -o bin\tst_mdl.tos
+tst_mdl: src\model.o src\effects.o src\events.o src\ints.o src\move.o src\psg.o src\rast_asm.o src\tst_mdl.o src\move.o src\test.o src\types.h
+	cc68x -g src\model.o src\effects.o src\events.o src\ints.o src\move.o src\psg.o src\rast_asm.o src\tst_mdl.o src\test.o -o bin\tst_mdl.tos
 
-src\tst_mdl.o: src\tst_mdl.c src\effects.h src\model.h src\test.h
+src\tst_mdl.o: src\tst_mdl.c src\effects.h src\model.h src\move.h src\test.h
 	cc68x -g -c src\tst_mdl.c
 
 tst_mse: src\tst_mse.o src\in_asm.o src\input.o src\ints.o src\vector.o
@@ -44,8 +44,8 @@ src\tst_sfx.o: src\tst_sfx.c src\psg.h src\effects.h src\test.h
 src\test.o: src\test.c src\test.h src\bool.h src\raster.h src\types.h
 	cc68x -g -c src\test.c
 
-acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints.o src\model.o src\music.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\vbl.o src\vector.o
-	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints.o src\model.o src\music.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\vbl.o src\vector.o -o bin\acaddom.tos
+acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints.o src\model.o src\move.o src\music.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\vbl.o src\vector.o
+	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints.o src\model.o src\move.o src\music.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\vbl.o src\vector.o -o bin\acaddom.tos
 
 src\vbl.o:	src\vbl.s src\vbl.h
 	gen -D -L2 src\vbl.s
@@ -65,7 +65,7 @@ src\music.o: src\music.c src\music.h src\ints.h src\psg.h src\types.h
 src\psg.o: src\psg.h src\num_util.h src\toggle.h src\types.h
 	cc68x -g -c src\psg.c
 
-src\acaddom.o: src\acaddom.c src\bool.h src\events.h src\input.h src\model.h src\music.h src\types.h
+src\acaddom.o: src\acaddom.c src\bool.h src\events.h src\input.h src\model.h src\move.h src\music.h src\types.h
 	cc68x -g -c src\acaddom.c
 
 src\in_asm.o: src\in_asm.s src\bool.h
@@ -86,11 +86,14 @@ src\font16.o: src\font16.c src\font16.h src\types.h
 src\bitmaps.o: src\bitmaps.c src\bitmaps.h src\types.h src\model.h
 	cc68x -g -c src\bitmaps.c
 
-src\events.o: src\events.c src\events.h src\effects.h src\ints.h src\model.h
+src\events.o: src\events.c src\events.h src\effects.h src\ints.h src\model.h src\move.h
 	cc68x -g -c src\events.c
 
-src\model.o: src\model.c src\model.h src\bool.h src\events.h src\font16.h src\scrn.h src\types.h
+src\model.o: src\model.c src\model.h src\bool.h src\move.h src\scrn.h src\types.h
 	cc68x -g -c src\model.c
+
+src\move.o: src\move.c src\move.h
+	cc68x -g -c src\move.c
 
 src\rast_asm.o: src\rast_asm.s
 	gen -D -L2 src\rast_asm.s

@@ -16,6 +16,7 @@
 #include "ints.h"
 #include "model.h"
 #include "raster.h"
+#include "move.h"
 #include "music.h"
 #include "psg.h"
 #include "renderer.h"
@@ -424,6 +425,7 @@ void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
 void processAsync(BOOL *quitToTitleScrn, World *gameWorld)
 {
 	IKBD_Scancode kybdKey;
+	Direction     dirRequest = M_NONE;
 
 	kybdKey = getKey();
 
@@ -454,20 +456,34 @@ void processAsync(BOOL *quitToTitleScrn, World *gameWorld)
 				*quitToTitleScrn = TRUE;
 				break;
 			case IKBD_UP_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, UP);
+				dirRequest = M_UP;
 				break;
 			case IKBD_LEFT_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, LEFT);
+				dirRequest = M_LEFT;
 				break;
 			case IKBD_RIGHT_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, RIGHT);
+				dirRequest = M_RIGHT;
 				break;
 			case IKBD_DOWN_SCANCODE:
-				setPlayerDir(gameWorld, &gameWorld->mainPlayer, DOWN);
+				dirRequest = M_DOWN;
 				break;
 			default:
 				handleInvalidKeyPress();
 		}
+	}
+
+	if (dirRequest != M_NONE)
+	{
+		if (playerMoveOpposite(&gameWorld->mainPlayer, dirRequest))
+		{
+			resetMoveQueue(&gameWorld->mainPlayer.moveQueue);
+		}
+		else
+		{
+			setPlayerDir(&gameWorld->mainPlayer, dirRequest);
+		}
+
+		dirRequest = M_NONE;
 	}
 }
 
@@ -504,16 +520,17 @@ void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow,
 
 	if (*timeNow > *playerMoveTimer)
 	{
-		movePlayer(gameWorld, &gameWorld->mainPlayer);
-
-		if (handleHazardCollision(gameWorld, &gameWorld->mainPlayer) >= 0)
+		if (movePlayer(gameWorld, &gameWorld->mainPlayer))
 		{
-			*immunityTimer = get_time() + NUM_TICKS_IN_TWO_SEC;
+			if (handleHazardCollision(gameWorld, &gameWorld->mainPlayer) >= 0)
+			{
+				*immunityTimer = get_time() + NUM_TICKS_IN_TWO_SEC;
+			}
+
+			handleCollectableCollision(gameWorld, &gameWorld->mainPlayer);
+
+			*playerMoveTimer = UINT32_MAX;
 		}
-
-		handleCollectableCollision(gameWorld, &gameWorld->mainPlayer);
-
-		*playerMoveTimer = UINT32_MAX;
 	}
 
 	if (*timeNow >= *timeDesired)
@@ -542,7 +559,7 @@ void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow,
 				*immunityTimer = get_time() + NUM_TICKS_IN_TWO_SEC;
 			}
 
-			if (isPlayerMoving(*gameWorld, gameWorld->mainPlayer) &&
+			if (playerMayMove(&gameWorld->mainPlayer) &&
 				*playerMoveTimer == UINT32_MAX)
 			{
 				*playerMoveTimer = get_time() + NUM_TICKS_IN_0_5_SEC;

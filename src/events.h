@@ -10,8 +10,9 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
-#include "model.h"
 #include "effects.h"
+#include "model.h"
+#include "move.h"
 
 /**
  * @brief Handles all the tasks needed in the event where a player dies.
@@ -154,25 +155,34 @@ void removeHazard(Row* row);
 
 /**
  * @brief Moves a player in a pre-set direction.
- * @details Will shift the world down if necessary.
+ * @details Will shift the world down if necessary. If there is an obstruction
+ * in the player's way, the move will be cancelled.
  * 
  * @param world The World the player is in.
  * @param player The Player to move.
  * 
  * @note Requires super privileges.
+ * @return FALSE if a move has been cancelled. True otherwise.
  */
-void movePlayer(World *world, Player* player);
+BOOL movePlayer(World *world, Player* player);
 
 /**
  * @brief Sets the direction the Player should move in.
- * @details No direction will be set if it will cause the player to move into
- * inaccessible tiles or borders.
  * 
  * @param world The World that the player belongs to.
  * @param player The Player to set the direction of.
  * @param dir The direction that the Player should move in.
  */
-void setPlayerDir(World* world, Player* player, Direction dir);
+void setPlayerDir(Player* player, Direction dir);
+
+/**
+ * @brief Determines if the given direction opposes the direction of the next
+ * scheduled player movement (if one exists).
+ * 
+ * @param player The player to check the future movement of.
+ * @return TRUE if the given direction opposes future movement; FALSE otherwise.
+ */
+BOOL playerMoveOpposite(const Player * const player, Direction dir);
 
 /**
  * @brief Shifts the entire world downwards such that a new row is generated

@@ -11,16 +11,15 @@
 #include <string.h>
 
 #include "bool.h"
-#include "events.h"
-#include "font16.h"
 #include "model.h"
+#include "move.h"
 #include "scrn.h"
 #include "types.h"
 
 /**
  * @brief Randomly chooses between LEFT and RIGHT.
  */
-#define randHorzDir() ((random(1) == 0) ? LEFT : RIGHT)
+#define randHorzDir() ((random(1) == 0) ? M_LEFT : M_RIGHT)
 
 /**
  * @brief Initializes a row with grass cells and no hazards.
@@ -28,7 +27,7 @@
  * @param row The row to initialize.
  * @param rowY The y coordinate of the row to initialize.
  */
-#define initSafeRow(row, rowY) prepRow(row, rowY, GRASS_CELL, RIGHT)
+#define initSafeRow(row, rowY) prepRow(row, rowY, GRASS_CELL, M_NONE)
 
 BOOL probPlaceHazard(HazType hazard);
 
@@ -46,7 +45,7 @@ int random(int rangeMax)
 
 void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels, ...)
 {
-	const int FINAL_Y = y + (numLabels * (FONT16_HEIGHT + spacing) -
+	const int FINAL_Y = y + (numLabels * (INFO_BAR_FONT_HEIGHT + spacing) -
 						spacing - 1);
 
 	va_list argList;
@@ -72,11 +71,12 @@ void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels, ...)
 
 void addInfoText(InfoBar* infoBar, char* string)
 {
-	const int NEW_X = SCRN_MID_X - ((strlen(string) * FONT16_WIDTH) >> 1);
+	const int NEW_X = SCRN_MID_X - ((strlen(string) * INFO_BAR_FONT_WIDTH) >>
+					  1);
 	const int NEW_Y = (infoBar->numLabels == 0 ? infoBar->y :
 					   infoBar->labels[infoBar->numLabels - 1].y +
-					   FONT16_HEIGHT + infoBar->spacingBetweenLabels);
-	const int END_Y = NEW_Y + FONT16_HEIGHT - 1;
+					   INFO_BAR_FONT_HEIGHT + infoBar->spacingBetweenLabels);
+	const int END_Y = NEW_Y + INFO_BAR_FONT_HEIGHT - 1;
 
 	if (infoBar->numLabels < MAX_INFO_LABELS - 1 && END_Y <= SCRN_MAX_Y)
 	{
@@ -117,7 +117,6 @@ void initWorld (World* world, int numPlayers)
 		world->top            = world->usableRows - 1;
 		world->bottom         = 0;
 		world->numWorldShifts = 0;
-		world->shiftWorld     = FALSE;
 		world->copyCells      = FALSE;
 		world->renderCells    = FALSE;
 
@@ -158,7 +157,7 @@ void prepRow(Row* row, int rowY, CellType rowType, Direction dir)
 	row->hazardCount   = 0;
 	row->hedgeCount    = 0;
 	row->spikeCount    = 0;
-	row->horzDirection = (dir != LEFT && dir != RIGHT ? RIGHT : dir);
+	row->horzDirection = (dir != M_LEFT && dir != M_RIGHT ? M_RIGHT : dir);
 	row->cellType      = rowType;
 	row->y             = rowY;
 
@@ -289,12 +288,12 @@ void initHazard(Row* row)
 		row->hazards[index].hazardType = NO_HAZ;
 		if (hazard == TRAIN_HAZ)
 		{
-			row->hazards[index].orientation = SYMMETRIC;
+			row->hazards[index].orientation = M_NONE;
 		}
 		else
 		{
-			row->hazards[index].orientation = (row->horzDirection == LEFT ?
-										 	   WEST : EAST);
+			row->hazards[index].orientation = (row->horzDirection == M_LEFT ?
+										 	   M_WEST : M_EAST);
 		}
 	}
 	
@@ -383,7 +382,7 @@ void initLives (int x, int y, Lives* lifeBox)
 	initLabel(&lifeBox->label, x, y + 1, "LIVES:");
 }
 
-void initLabel(Label* label, int x, int y, LabelStr text)
+void initLabel(Label* label, int x, int y, char *text)
 {
 	label->x = x;
 	label->y = y;
@@ -415,13 +414,24 @@ void initPlayer(Player* player, int numPlayers)
 
 	player->x = PLAYER_START_X;
 	player->y = PLAYER_START_Y;
-
-	player->destX = player->x;
-	player->destY = player->y;
-	player->orientation = SOUTH;
+	player->orientation = M_SOUTH;
+	initMoveQueue(&player->moveQueue);
 
 	player->immune = FALSE;
 	player->alive  = TRUE;
+}
+
+BOOL playerMayMove(const Player * const player)
+{
+	return (!isMoveQueueEmpty(&player->moveQueue));
+}
+
+void getPlayerNextMove(const Player * const player, MoveFrame *nextMovement)
+{
+	if (nextMovement != NULL)
+	{
+		peekAtMoveFrame(nextMovement, &player->moveQueue);
+	}
 }
 
 void lostLife (Player* player)
@@ -475,8 +485,8 @@ void initButton(Button* button, int x, int y, int height, int width,
 	button->height = height;
 	button->width = width;
 
-	textX = x + ((width / 2 - 1) - ((strlen(text) / 2) * FONT16_WIDTH));
-	textY = y + ((height / 2 - 1) - ((FONT16_HEIGHT >> 1) - 1));
+	textX = x + ((width / 2 - 1) - ((strlen(text) / 2) * INFO_BAR_FONT_WIDTH));
+	textY = y + ((height / 2 - 1) - ((INFO_BAR_FONT_HEIGHT >> 1) - 1));
 	initLabel(&button->label, textX, textY, text);
 
 	button->selected = FALSE;
