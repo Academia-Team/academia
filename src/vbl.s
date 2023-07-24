@@ -423,7 +423,6 @@ VBL_HANDLE_SYNC_EVENTS:	cmpi.b			#TRUE,gameStart
 						pea				_gameWorld
 						jsr				_processSync
 						add.l			#32,sp
-						bra				VBL_RETURN
 
 						; Set rendReq to true before leaving.
 VBL_RETURN:				move.w			#TRUE,rendReq
