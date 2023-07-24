@@ -3,6 +3,10 @@
 ; 
 ; Copyright Academia Team 2023
 
+					xdef			_clr_scrn
+					xdef			_fill_scrn
+					xdef			_get_video_base
+					xdef			_set_video_base
 
 					xref			_isSu
 					xref			_Su
@@ -14,8 +18,6 @@
 ; runs in about 1/100th of a second (at 8MHz)
 ;
 ; Original came from Marc Schroeder and has since been slightly modified.
-
-					xdef			_clr_scrn
 
 CLR_SCRN_BASE:		equ				64					; offset from SP, not A6
 
@@ -40,8 +42,6 @@ clr_scrn_zeros:		ds.l			13
 ; runs in about 1/100th of a second (at 8MHz) instead of 1/50th
 ;
 ; Derived from Marc Schroeder's Quick Clear subroutine.
-
-					xdef			_fill_scrn
 
 FILL_SCRN_BASE:		equ				64					; offset from SP, not A6
 
@@ -84,8 +84,6 @@ VBASE_REG:			equ				$FFFF8201
 ;			mode.
 ; a0	-	Holds the address of the video base register.
 ; a6	-	Holds the address of the start of the stack frame.
-
-					xdef			_get_video_base
 
 _get_video_base:	link			a6,#0
 					movem.l			d1-7/a0-5,-(sp)
@@ -130,8 +128,6 @@ G_VBASE_RETURN:		move.l			d3,d0
 ;			mode.
 ; a0	-	Holds the address of the video base register.
 ; a6	-	Holds the address of the start of the stack frame.
-
-					xdef			_set_video_base
 
 S_VBASE_NEW_ADDR:	equ				8
 
