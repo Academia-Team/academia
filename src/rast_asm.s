@@ -4,6 +4,10 @@
 ; Copyright Academia Team 2023
 
 
+					xref			_isSu
+					xref			_Su
+
+
 ; void clr_scrn(UINT32 *base)
 ;
 ; quick clear (uses movem to reduce fetch-execute cycle overhead)
@@ -66,16 +70,19 @@ VBASE_REG:			equ				$FFFF8201
 ;
 ; Returns the current frame buffer start address.
 ;
-; Note: The low 8-bits are always zero.
+; Note: The low 8-bits are always zero. This is why bitshifting is necessary.
 ;
 ; Register Table:
 ; ---------------
-; d0	-	Holds the old system stack pointer from Super().
-;		-	Holds the return value of get_video_base().
+; d0	-	Holds a value indicating if the subroutine is currently running in
+;			supervisor mode.
+;		-	Holds the old system stack pointer from Su().
+; d3	-	Holds the return value of get_video_base().
 ;		-	Holds the current video base address so that it can be returned by
 ;			register.
-; d3	-	Holds the current video base address.
-; d4	-	Holds the old system stack pointer from Super().
+; d4	-	Holds a value indicating if the subroutine has entered supervisor
+;			mode.
+; a0	-	Holds the address of the video base register.
 ; a6	-	Holds the address of the start of the stack frame.
 
 					xdef			_get_video_base
@@ -84,48 +91,28 @@ _get_video_base:	link			a6,#0
 					movem.l			d1-7/a0-5,-(sp)
 					
 					; Enter Supervisor Mode.
+					jsr				_isSu
+					move.b			d0,d4
+					bne				G_VBASE_MAIN
 					clr.l			-(sp)
-					move.w			#$20,-(sp)
-					trap			#1
-					addq.l			#6,sp
-					move.l			d0,d4
+					jsr				_Su
+					addq.l			#4,sp
 
-					jsr				get_video_base
-					move.l			d0,d3
+G_VBASE_MAIN:		clr.l			d3
+					movea.l			#VBASE_REG,a0
+					movep.w			0(a0),d3
+					lsl.l			#8,d3
 
 					; Leave Supervisor Mode.
-					move.l			d4,-(sp)
-					move.w			#$20,-(sp)
-					trap			#1
-					addq.l			#6,sp
+					tst.b			d4
+					bne				G_VBASE_RETURN
+					move.l			d0,-(sp)
+					jsr				_Su
+					addq.l			#4,sp
 
-					move.l			d3,d0
+G_VBASE_RETURN:		move.l			d3,d0
 					movem.l			(sp)+,d1-7/a0-5
 					unlk			a6
-					rts
-
-
-; UINT16 *get_video_base()
-;
-; Returns the current frame buffer start address.
-;
-; Note: The low 8-bits are always zero. This is why bitshifting within the SR is
-;		necessary. Also, supervisor privileges are required.
-;
-; Register Table:
-; ---------------
-; d0	-	Holds the current video base address so that it can be returned by
-;			register.
-; a0	-	Holds the address of the video base register.
-
-					xdef			get_video_base
-
-get_video_base:		movem.l			a0,-(sp)
-					clr.l			d0
-					movea.l			#VBASE_REG,a0
-					movep.w			0(a0),d0
-					lsl.l			#8,d0
-					movem.l			(sp)+,a0
 					rts
 
 
@@ -135,8 +122,12 @@ get_video_base:		movem.l			a0,-(sp)
 ;
 ; Register Table:
 ; ---------------
-; d0	-	Holds the old system stack pointer from Super().
+; d0	-	Holds a value indicating if the subroutine is currently running in
+;			supervisor mode.
+;		-	Holds the old system stack pointer from Super().
 ; d1	-	Holds the desired video base address.
+; d4	-	Holds a value indicating if the subroutine has entered supervisor
+;			mode.
 ; a0	-	Holds the address of the video base register.
 ; a6	-	Holds the address of the start of the stack frame.
 
@@ -148,25 +139,28 @@ _set_video_base:	link			a6,#0
 					movem.l			d0-7/a0-6,-(sp)
 
 					; Enter Supervisor Mode.
+					jsr				_isSu
+					move.b			d0,d4
+					bne				S_VBASE_MAIN
 					clr.l			-(sp)
-					move.w			#$20,-(sp)
-					trap			#1
-					addq.l			#6,sp
+					jsr				_Su
+					addq.l			#4,sp
 					
 					; Places desired video base address into register.
 					; (Low order byte is not stored in the register since it is
 					; always zero, which is why bitshifting is necessary.)
-					move.l			S_VBASE_NEW_ADDR(a6),d1
+S_VBASE_MAIN:		move.l			S_VBASE_NEW_ADDR(a6),d1
 					lsr.l			#8,d1
 					movea.l			#VBASE_REG,a0
 					movep.w			d1,0(a0)
 
 					; Leave Supervisor Mode.
+					tst.b			d4
+					bne				S_VBASE_RETURN
 					move.l			d0,-(sp)
-					move.w			#$20,-(sp)
-					trap			#1
-					addq.l			#6,sp
+					jsr				_Su
+					addq.l			#4,sp
 
-					movem.l			(sp)+,d0-7/a0-6
+S_VBASE_RETURN:		movem.l			(sp)+,d0-7/a0-6
 					unlk			a6
 					rts
