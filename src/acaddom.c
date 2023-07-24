@@ -609,16 +609,17 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 				UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
 				World *gameWorld)
 {
-	UINT32 oldSsp = Su(0);
-	int    oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
-
-	/* This may look weird, but without using these constants, these values
-	might change while the function is still running, leading to hard to
-	diagnose issues. */
-	const BOOL RENDER_CELLS = gameWorld->renderCells;
-	const BOOL COPY_CELLS   = gameWorld->copyCells;
-
+	UINT32 oldSsp;
+	int    oldIpl;
+	BOOL   RENDER_CELLS;
+	BOOL   COPY_CELLS;
+	
+	oldSsp = Su(0);
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	Su(oldSsp);
+
+	RENDER_CELLS = gameWorld->renderCells;
+	COPY_CELLS   = gameWorld->copyCells;
 
 	if (RENDER_CELLS)
 	{
@@ -653,17 +654,8 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 		*nextScreenBuffer = PRIMARY_SCREEN_BUFFER;
 	}
 
-	oldSsp = Su(0);
-	set_ipl(oldIpl);
-	Su(oldSsp);
-	vert_sync();
-
 	if (COPY_CELLS || RENDER_CELLS)
 	{
-		oldSsp = Su(0);
-		oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
-		Su(oldSsp);
-
 		if (*nextScreenBuffer == PRIMARY_SCREEN_BUFFER)
 		{
 			copyScrnBuffer((UINT8 *)screenBuffer, (UINT8 *)otherScreenBuffer, 0,
@@ -677,11 +669,12 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 
 		gameWorld->copyCells   = FALSE;
 		gameWorld->renderCells = FALSE;
-		
-		oldSsp = Su(0);
-		set_ipl(oldIpl);
-		Su(oldSsp);
 	}
+
+	oldSsp = Su(0);
+	set_ipl(oldIpl);
+	Su(oldSsp);
+	vert_sync();
 }
 
 /**
