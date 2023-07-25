@@ -53,7 +53,7 @@ src\vbl.o:	src\vbl.s src\vbl.h
 src\ints.o: src\ints.s src\ints.h
 	gen -D -L2 src\ints.s
 
-src\vector.o: src\vector.c src\vector.h src\super.h
+src\vector.o: src\vector.c src\vector.h src\bool.h src\super.h
 	cc68x -g -c src\vector.c
 
 src\effects.o: src\effects.c src\effects.h src\psg.h
@@ -62,7 +62,7 @@ src\effects.o: src\effects.c src\effects.h src\psg.h
 src\music.o: src\music.c src\music.h src\ints.h src\psg.h src\super.h src\types.h
 	cc68x -g -c src\music.c
 
-src\psg.o: src\psg.h src\num_util.h src\super.h src\toggle.h src\types.h
+src\psg.o: src\psg.h src\bool.h src\num_util.h src\super.h src\toggle.h src\types.h
 	cc68x -g -c src\psg.c
 
 src\acaddom.o: src\acaddom.c src\bool.h src\events.h src\input.h src\model.h src\move.h src\music.h src\super.h src\types.h

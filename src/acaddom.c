@@ -609,14 +609,16 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 				UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
 				World *gameWorld)
 {
+	const BOOL IS_SUPER = isSu();
+
 	UINT32 oldSsp;
 	int    oldIpl;
 	BOOL   RENDER_CELLS;
 	BOOL   COPY_CELLS;
 	
-	oldSsp = Su(0);
+	if (!IS_SUPER) oldSsp = Su(0);
 	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	RENDER_CELLS = gameWorld->renderCells;
 	COPY_CELLS   = gameWorld->copyCells;
@@ -671,9 +673,9 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 		gameWorld->renderCells = FALSE;
 	}
 
-	oldSsp = Su(0);
+	if (!IS_SUPER) oldSsp = Su(0);
 	set_ipl(oldIpl);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 	vert_sync();
 }
 

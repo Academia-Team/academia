@@ -7,6 +7,7 @@
  * @copyright Copyright Academia Team 2023
  */
 
+#include "bool.h"
 #include "num_util.h"
 #include "psg.h"
 #include "super.h"
@@ -162,12 +163,15 @@ void enable_channel(Channel channel, Toggle tone_on, Toggle noise_on)
 
 void stop_sound()
 {
-	UINT32 old_ssp = Su(0);
+	const BOOL IS_SUPER = isSu();
+	UINT32 old_ssp;
+
+	if (!IS_SUPER) old_ssp = Su(0);
 
 	write_psg(A_LEVEL_REG, 0);
 	write_psg(B_LEVEL_REG, 0);
 	write_psg(C_LEVEL_REG, 0);
 	write_psg(MIXER_REG, read_psg(MIXER_REG) | 0077);
 
-	Su(old_ssp);
+	if (!IS_SUPER) Su(old_ssp);
 }

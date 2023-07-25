@@ -726,28 +726,34 @@ void IKBD_isr();
 
 Vector initKybd()
 {
-	Vector sysKybdVec;
+	const BOOL IS_SUPER = isSu();
 
-	UINT32 oldSsp  = Su(0);
+	Vector sysKybdVec;
+	UINT32 oldSsp;
+
+	if (!IS_SUPER) oldSsp  = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	sysKybdVec = install_vector(KYBD_VECTOR, IKBD_isr);
 
-	oldSsp = Su(0);
+	if (!IS_SUPER) oldSsp = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	return sysKybdVec;
 }
 
 void flushKybd()
 {
-	int index;
-	UINT32 oldSsp  = Su(0);
+	const BOOL IS_SUPER = isSu();
 
+	int index;
+	UINT32 oldSsp;
+
+	if (!IS_SUPER) oldSsp = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	for (index = 0; index < SIZE_KEY_BUFF; index++)
 	{
@@ -758,9 +764,9 @@ void flushKybd()
 	keyFindPos      = 0;
 	keyPlacePos     = 0;
 
-	oldSsp = Su(0);
+	if (!IS_SUPER) oldSsp = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }
 
 void restoreKybd(Vector sysKybdVec)
@@ -811,11 +817,14 @@ void addToKeyBuffer(UINT8 scancode)
 
 UINT32 getKybdRaw()
 {
-	long kybdVal;
+	const BOOL IS_SUPER = isSu();
 
-	UINT32 oldSsp  = Su(0);
+	long kybdVal;
+	UINT32 oldSsp;
+
+	if (!IS_SUPER) oldSsp = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	kybdVal = kybdKeyBuffer[keyFindPos];
 
@@ -824,9 +833,9 @@ UINT32 getKybdRaw()
 		kybdKeyBuffer[keyFindPos++] = 0;
 	}
 
-	oldSsp = Su(0);
+	if (!IS_SUPER) oldSsp = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	return kybdVal;
 }
@@ -883,62 +892,74 @@ IKBD_Scancode getBKey()
 
 BOOL mouseLclick()
 {
-	BOOL mouseLclickStatus;
+	const BOOL IS_SUPER = isSu();
 
-	UINT32 oldSsp  = Su(0);
+	BOOL mouseLclickStatus;
+	UINT32 oldSsp;
+
+	if (!IS_SUPER) oldSsp  = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	mouseLclickStatus = mouse.leftClick;
 	mouse.leftClick = FALSE;
 
-	oldSsp = Su(0);
+	if (!IS_SUPER) oldSsp = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	return mouseLclickStatus;
 }
 
 BOOL mouseRclick()
 {
-	BOOL mouseRclickStatus;
+	const BOOL IS_SUPER = isSu();
 
-	UINT32 oldSsp  = Su(0);
+	BOOL mouseRclickStatus;
+	UINT32 oldSsp;
+
+	if (!IS_SUPER) oldSsp  = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	mouseRclickStatus = mouse.rightClick;
 	mouse.rightClick = FALSE;
 
-	oldSsp = Su(0);
+	if (!IS_SUPER) oldSsp = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	return mouseRclickStatus;
 }
 
 BOOL mouseMoved()
 {
-	BOOL mouseMovedStatus;
+	const BOOL IS_SUPER = isSu();
 
-	UINT32 oldSsp  = Su(0);
+	BOOL mouseMovedStatus;
+	UINT32 oldSsp;
+
+	if (!IS_SUPER) oldSsp  = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	mouseMovedStatus = mouse.posChange;
 
-	oldSsp = Su(0);
+	if (!IS_SUPER) oldSsp = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	return mouseMovedStatus;
 }
 
 void getMousePos(int *x, int *y)
 {
-	UINT32 oldSsp  = Su(0);
+	const BOOL IS_SUPER = isSu();
+	UINT32 oldSsp;
+
+	if (!IS_SUPER) oldSsp  = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 
 	if (x != NULL)
 	{
@@ -952,7 +973,7 @@ void getMousePos(int *x, int *y)
 
 	mouse.posChange = FALSE;
 
-	oldSsp = Su(0);
+	if (!IS_SUPER) oldSsp = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }

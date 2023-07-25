@@ -113,48 +113,76 @@ void load_note(NoteInfo* noteInfo)
 
 void start_music()
 {
-	UINT32 oldSsp  = Su(0);
-	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	const BOOL IS_SUPER = isSu();
+
+	UINT32 oldSsp;
+	int origIpl;
+
+	if (!IS_SUPER) oldSsp = Su(0);
+	origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	if (!IS_SUPER) Su(oldSsp);
 
 	curSongPos  = 0;
 	musPaused   = FALSE;
 
+	if (!IS_SUPER) oldSsp = Su(0);
 	set_ipl(origIpl);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }
 
 void pause_music()
 {
-	UINT32 oldSsp  = Su(0);
-	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	const BOOL IS_SUPER = isSu();
+
+	UINT32 oldSsp;
+	int origIpl;
+
+	if (!IS_SUPER) oldSsp = Su(0);
+	origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	if (!IS_SUPER) oldSsp = Su(oldSsp);
 
 	musPaused   = TRUE;
 
+	if (!IS_SUPER) oldSsp = Su(0);
 	set_ipl(origIpl);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }
 
 void resume_music()
 {
-	UINT32 oldSsp  = Su(0);
-	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	const BOOL IS_SUPER = isSu();
+
+	UINT32 oldSsp;
+	int origIpl;
+
+	if (!IS_SUPER) oldSsp = Su(0);
+	origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	if (!IS_SUPER) Su(oldSsp);
 
 	musPaused   = FALSE;
 
+	if (!IS_SUPER) oldSsp = Su(0);
 	set_ipl(origIpl);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }
 
 void stop_music()
 {
-	UINT32 oldSsp  = Su(0);
-	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	const BOOL IS_SUPER = isSu();
+
+	UINT32 oldSsp;
+	int origIpl;
+
+	if (!IS_SUPER) oldSsp = Su(0);
+	origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	if (!IS_SUPER) Su(oldSsp);
 
 	curSongPos  = 0;
 	musPaused   = TRUE;
 
+	if (!IS_SUPER) oldSsp = Su(0);
 	set_ipl(origIpl);
-	Su(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }
 
 void update_music(UINT32 time_elapsed)
