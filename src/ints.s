@@ -92,7 +92,7 @@ modify_ipl:	move.w	sr,d0
 ;			mask registers.
 ; d1	-	Holds a value indicating if the subroutine has entered supervisor
 ;			mode.
-; d2	-	Holds the old system stack pointer from Super().
+; d2	-	Holds the old system stack pointer from Su().
 ; a0	-	Holds the Interrupt Mask Register A.
 ;		-	Holds the Interrupt Mask Register B.
 ; a6	-	Holds the address to the start of the stack frame.

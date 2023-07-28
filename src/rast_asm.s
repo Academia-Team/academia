@@ -122,7 +122,7 @@ G_VBASE_RETURN:		move.l			d3,d0
 ; ---------------
 ; d0	-	Holds a value indicating if the subroutine is currently running in
 ;			supervisor mode.
-;		-	Holds the old system stack pointer from Super().
+;		-	Holds the old system stack pointer from Su().
 ; d1	-	Holds the desired video base address.
 ; d4	-	Holds a value indicating if the subroutine has entered supervisor
 ;			mode.
