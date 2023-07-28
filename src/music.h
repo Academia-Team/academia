@@ -41,7 +41,6 @@ void stop_music();
  * @brief Provides the PSG with the next note from a song.
  * @details The song is only advanced if and only if the time elapsed is greater
  * than the duration the current note is supposed to be held for.
- * @note Requires super privileges.
  * 
  * @param time_elapsed The time elapsed since the last call to the function
  * (or any other equivalent functions that affect the playing of music).

@@ -87,7 +87,6 @@ const NoteInfo song[NUM_NOTES_IN_SONG] =
 /**
  * @brief Loads the given note into the PSG and sets the time to hold it
  * accordingly.
- * @note Requires super privileges.
  * 
  * @param noteInfo The information pertaining to the note to be loaded into the
  * PSG.
