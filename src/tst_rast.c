@@ -33,11 +33,13 @@
 #define GRID_DOTS_OFF FALSE
 
 void rastTstWhite(void (*tstFunc)(ArgList *args));
+void rastTstWhitePerserve(void (*tstFunc)(ArgList *args));
 void rastGDTstWhite(void (*tstFunc)(ArgList *args));
 void rastTstBlack(void (*tstFunc)(ArgList *args));
 void rastGDTstBlack(void (*tstFunc)(ArgList *args));
+void rastTstBlackPerserve(void (*tstFunc)(ArgList *args));
 void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen,
-				   BOOL enableGridDots);
+				   BOOL enableGridDots, BOOL destructive);
 
 void regPlotPxTests(BOOL blackScreen);
 void t1PlotPx(ArgList *args);
@@ -184,7 +186,19 @@ int main()
  */
 void rastTstWhite(void (*tstFunc)(ArgList *args))
 {
-	rastTstCommon(tstFunc, BLACK_SCREEN_OFF, GRID_DOTS_OFF);
+	rastTstCommon(tstFunc, BLACK_SCREEN_OFF, GRID_DOTS_OFF, DESTRUCT_ON);
+}
+
+/**
+ * @brief Sets up a blank white screen for testing the raster functions and
+ * configures the functions such that any existing imagery doesn't get
+ * destroyed.
+ * 
+ * @param tstFunc The function to test the raster functions.
+ */
+void rastTstWhitePerserve(void (*tstFunc)(ArgList *args))
+{
+	rastTstCommon(tstFunc, BLACK_SCREEN_OFF, GRID_DOTS_OFF, DESTRUCT_OFF);
 }
 
 /**
@@ -195,7 +209,7 @@ void rastTstWhite(void (*tstFunc)(ArgList *args))
  */
 void rastGDTstWhite(void (*tstFunc)(ArgList *args))
 {
-	rastTstCommon(tstFunc, BLACK_SCREEN_OFF, GRID_DOTS_ON);
+	rastTstCommon(tstFunc, BLACK_SCREEN_OFF, GRID_DOTS_ON, DESTRUCT_ON);
 }
 
 /**
@@ -205,7 +219,19 @@ void rastGDTstWhite(void (*tstFunc)(ArgList *args))
  */
 void rastTstBlack(void (*tstFunc)(ArgList *args))
 {
-	rastTstCommon(tstFunc, BLACK_SCREEN_ON, GRID_DOTS_OFF);
+	rastTstCommon(tstFunc, BLACK_SCREEN_ON, GRID_DOTS_OFF, DESTRUCT_ON);
+}
+
+/**
+ * @brief Sets up a blank black screen for testing the raster functions and
+ * configures the functions such that any existing imagery doesn't get
+ * destroyed.
+ * 
+ * @param tstFunc The function to test the raster functions.
+ */
+void rastTstBlackPerserve(void (*tstFunc)(ArgList *args))
+{
+	rastTstCommon(tstFunc, BLACK_SCREEN_ON, GRID_DOTS_OFF, DESTRUCT_OFF);
 }
 
 /**
@@ -216,7 +242,7 @@ void rastTstBlack(void (*tstFunc)(ArgList *args))
  */
 void rastGDTstBlack(void (*tstFunc)(ArgList *args))
 {
-	rastTstCommon(tstFunc, BLACK_SCREEN_ON, GRID_DOTS_ON);
+	rastTstCommon(tstFunc, BLACK_SCREEN_ON, GRID_DOTS_ON, DESTRUCT_ON);
 }
 
 /**
@@ -227,9 +253,11 @@ void rastGDTstBlack(void (*tstFunc)(ArgList *args))
  * @param blackScreen Whether there should be a white or black screen.
  * @param enableGridDots When enabled, will show dots that are spaced out by 32
  * pixels horizontally and 16 pixels vertically.
+ * @param destructive If the function being tested should destroy existing
+ * imagery on the screen (only if supported by the function being tested).
  */
 void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen,
-				   BOOL enableGridDots)
+				   BOOL enableGridDots, BOOL destructive)
 {
 	ArgList args;
 	Vector origKybd = initKybd();
@@ -238,6 +266,7 @@ void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen,
 	initArgList(&args);
 	appendArgToList("base", get_video_base(), &args);
 	appendArgToList("blackScreen", &blackScreen, &args);
+	appendArgToList("destructive", &destructive, &args);
 
 	if (blackScreen)
 	{
