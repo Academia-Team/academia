@@ -81,6 +81,20 @@
 #define RAST8_MIN_X -7
 
 /**
+ * @brief A value for the y coordinate (in pixels) for a 32 px high raster
+ * image such that the image would be vertically centered on the Atari ST's
+ * monochrome screen.
+ */
+#define RAST32H_MID_VIS_Y 184
+
+/**
+ * @brief The maximum value for the y coordinate (in pixels) for a 32 px high
+ * raster image such that the entire image is still visible on the Atari ST's
+ * monochrome screen.
+ */
+#define RAST32H_MAX_VIS_Y 368
+
+/**
  * @brief Plots a pixel at the given coordinates on the screen.
  * @details Nothing will be plotted if the given x and y value are out of
  * range. In other words, they cannot be negative or greater than the size
