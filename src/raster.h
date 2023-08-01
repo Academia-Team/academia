@@ -30,6 +30,18 @@
 #define RAST32_MID_VIS_X 304
 
 /**
+ * @brief The value for the x coordinate (in pixels) for a 32-bit wide raster
+ * image such that half of the image is cropped off from the left.
+ */
+#define RAST32_LHALF_X -16
+
+/**
+ * @brief The value for the x coordinate (in pixels) for a 32-bit wide raster
+ * image such that half of the image is cropped off from the right.
+ */
+#define RAST32_RHALF_X 624
+
+/**
  * @brief The minimum value for the x coordinate (in pixels) for a 32-bit wide
  * raster image such that part of the image is still visible on the Atari ST's
  * monochrome screen.
@@ -73,6 +85,7 @@
  */
 #define RAST8_MID_VIS_X 316
 
+
 /**
  * @brief The minimum value for the x coordinate (in pixels) for a 16-bit wide
  * raster image such that part of the image is still visible on the Atari ST's
@@ -93,6 +106,26 @@
  * monochrome screen.
  */
 #define RAST32H_MAX_VIS_Y 368
+
+/**
+ * @brief The value for the y coordinate (in pixels) for a 32 px high raster
+ * image such that half of the image is cropped off from the top.
+ */
+#define RAST32H_THALF_Y -16
+
+/**
+ * @brief The value for the y coordinate (in pixels) for a 32 px high raster
+ * image such that half of the image is cropped off from the bottom.
+ */
+#define RAST32H_BHALF_Y 384
+
+/**
+ * @brief The minimum value for the y coordinate (in pixels) for a 32 px high
+ * raster image such that part of the image is still visible on the Atari ST's
+ * monochrome screen.
+ */
+#define RAST32H_MIN_Y -31
+
 
 /**
  * @brief Plots a pixel at the given coordinates on the screen.
