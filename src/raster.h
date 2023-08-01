@@ -57,6 +57,18 @@
 #define RAST16_MAX_VIS_X 624
 
 /**
+ * @brief The value for the x coordinate (in pixels) for a 16-bit wide raster
+ * image such that half of the image is cropped off from the left.
+ */
+#define RAST16_LHALF_X -8
+
+/**
+ * @brief The value for the x coordinate (in pixels) for a 16-bit wide raster
+ * image such that half of the image is cropped off from the right.
+ */
+#define RAST16_RHALF_X 632
+
+/**
  * @brief A value for the x coordinate (in pixels) for a 16-bit wide raster
  * image such that the image would be horizontally centered on the Atari ST's
  * monochrome screen.
@@ -125,6 +137,40 @@
  * monochrome screen.
  */
 #define RAST32H_MIN_Y -31
+
+
+/**
+ * @brief A value for the y coordinate (in pixels) for a 16 px high raster
+ * image such that the image would be vertically centered on the Atari ST's
+ * monochrome screen.
+ */
+#define RAST16H_MID_VIS_Y 192
+
+/**
+ * @brief The maximum value for the y coordinate (in pixels) for a 16 px high
+ * raster image such that the entire image is still visible on the Atari ST's
+ * monochrome screen.
+ */
+#define RAST16H_MAX_VIS_Y 384
+
+/**
+ * @brief The value for the y coordinate (in pixels) for a 16 px high raster
+ * image such that half of the image is cropped off from the top.
+ */
+#define RAST16H_THALF_Y -8
+
+/**
+ * @brief The value for the x coordinate (in pixels) for a 16 px high raster
+ * image such that half of the image is cropped off from the bottom.
+ */
+#define RAST16H_BHALF_Y 392
+
+/**
+ * @brief The minimum value for the y coordinate (in pixels) for a 16 px high
+ * raster image such that part of the image is still visible on the Atari ST's
+ * monochrome screen.
+ */
+#define RAST16H_MIN_Y -15
 
 
 /**
