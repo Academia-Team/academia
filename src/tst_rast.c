@@ -88,7 +88,22 @@ void t29Hline(ArgList *args);
 void tst_plot_rast32(UINT32 *base, BOOL destruct, BOOL blackScreen);
 void tst_plot_rast16(UINT16 *base, BOOL destruct, BOOL blackScreen);
 void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen);
-void tst_rect_area(UINT32 *base);
+
+void regRectAreaTests();
+void t1RectArea(ArgList *args);
+void t2RectArea(ArgList *args);
+void t3RectArea(ArgList *args);
+void t4RectArea(ArgList *args);
+void t5RectArea(ArgList *args);
+void t6RectArea(ArgList *args);
+void t7RectArea(ArgList *args);
+void t8RectArea(ArgList *args);
+void t9RectArea(ArgList *args);
+void t10RectArea(ArgList *args);
+void t11RectArea(ArgList *args);
+void t12RectArea(ArgList *args);
+void t13RectArea(ArgList *args);
+
 void tst_clr_area(UINT32 *base);
 
 void gridDots(UINT32 *base);
@@ -106,6 +121,7 @@ int main()
 	regPlotPxTests(BLACK_SCREEN_OFF);
 	regPlotPxTests(BLACK_SCREEN_ON);
 	regHlineTests();
+	regRectAreaTests();
 
 	while ((tstSuite = getNextTestSuite()) != NULL)
 	{
@@ -550,9 +566,11 @@ void regHlineTests()
 
 	registerTestCase(suiteID, "When y is negative.", NULL, t21Hline);
 
-	registerTestCase(suiteID, "When y is equal to the screen height.", NULL, t22Hline);
+	registerTestCase(suiteID, "When y is equal to the screen height.", NULL,
+					 t22Hline);
 
-	registerTestCase(suiteID, "When y is greater than the screen height.", NULL, t23Hline);
+	registerTestCase(suiteID, "When y is greater than the screen height.", NULL,
+					 t23Hline);
 
 	registerTestCase(suiteID, "When x1 and x2 are off the screen to the left and x1 is less than x2.", NULL, t24Hline);
 
@@ -1754,106 +1772,300 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 }
 
 /**
- * @brief A function that tests rect_area().
- * @details The screen will be cleared before every test. Enter has to be
- * pressed after every test. Dots will be printed 32px horizontally apart
- * to ensure properly function operation.
- * 
- * @param base The location in memory of start of frame buffer.
+ * @brief Handle the registration of all tests related to the rect_area()
+ * function.
  */
-void tst_rect_area(UINT32 *base)
+void regRectAreaTests()
 {
-	const int LEN_TST_DEFAULT = 32;
-	const int HEIGHT_TST_DEFAULT = 32;
+	TestSuiteID suiteID;
 
-	/*TEST 1: When x and y are at their minimum valid values.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, 0, LEN_TST_DEFAULT, 0, HEIGHT_TST_DEFAULT);
-	Cconin();
+	suiteID = registerTestSuite("Tests drawing filled-in rectangles.",
+								rastGDTstWhite);
 
-	/*TEST 2: When x is at its middle possible value.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, SCRN_MID_X, LEN_TST_DEFAULT, 0,
-		HEIGHT_TST_DEFAULT);
-	Cconin();
+	registerTestCase(suiteID, "When both x and y are at their minimum value (zero).", NULL, t1RectArea);
 
-	/*TEST 3: When x is at its maximum value where the shape is still
-	visible.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, RAST32_MAX_VIS_X, LEN_TST_DEFAULT, 0,
-		HEIGHT_TST_DEFAULT);
-	Cconin();
+	registerTestCase(suiteID, "When x is at its middle value", NULL,
+					 t2RectArea);
 
-	/*TEST 4: When y is at its middle possible value.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, 0, LEN_TST_DEFAULT, SCRN_MID_Y,
-		HEIGHT_TST_DEFAULT);
-	Cconin();
+	registerTestCase(suiteID, "When x is at its maximum value such that the resultant rectangle is completely visible on screen.", NULL, t3RectArea);
 
-	/*TEST 5: When y is at its maximum value where the shape is still fully on
-	screen.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, 0, LEN_TST_DEFAULT, 368, HEIGHT_TST_DEFAULT);
-	Cconin();
+	registerTestCase(suiteID, "When y is at its middle value.", NULL,
+					 t4RectArea);
 
-	/*TEST 6: When x is set to a value such that the middle of the plotted
-	area is in the center of the screen.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, RAST32_MID_VIS_X, LEN_TST_DEFAULT, 0,
-		HEIGHT_TST_DEFAULT);
-	Cconin();
+	registerTestCase(suiteID, "When y is at its maximum value such that the rectangle is still completely visible on screen.", NULL, t5RectArea);
 
-	/*TEST 7: When y is set to a value such that the middle of the plotted
-	area is in the center of the screen.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, 0, LEN_TST_DEFAULT, 184, HEIGHT_TST_DEFAULT);
-	Cconin();
+	registerTestCase(suiteID, "When x is at a value such that the center of the rectangle is at the horizontal center of the screen.", NULL, t6RectArea);
 
-	/*TEST 8: When x and y are set to the value such that the middle of the
-	plotted area is in the center of the screen.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, RAST32_MID_VIS_X, LEN_TST_DEFAULT, 184,
-		HEIGHT_TST_DEFAULT);
-	Cconin();
+	registerTestCase(suiteID, "When y is at a value such that the center of the rectangle is at the vertical center of the screen.", NULL, t7RectArea);
 
-	/*TEST 9: When x and y are set to their maximum possible value.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, SCRN_MAX_X, LEN_TST_DEFAULT, SCRN_MAX_Y,
-		HEIGHT_TST_DEFAULT);
-	Cconin();
+	registerTestCase(suiteID, "When x and y are set to the value such that the middle of the plotted rectangle is in the center of the screen.", NULL, t8RectArea);
 
-	/*TEST 10: When height and length are at their minimum values.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, 0, 1, 0, 1);
-	Cconin();
+	registerTestCase(suiteID, "When x and y are set to their maximum values.",
+					 NULL, t9RectArea);
 
-	/*TEST 11: When height and length are equal to the screen size.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, 0, SCRN_LEN, 0, SCRN_HEIGHT);
-	Cconin();
+	registerTestCase(suiteID, "When the length and height are set to their minimum values (1).", NULL, t10RectArea);
 
-	/*TEST 12: When height and length are greater than the screen size.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, 0, SCRN_LEN + 1, 0, SCRN_HEIGHT + 1);
-	Cconin();
+	registerTestCase(suiteID, "When the length and height are set to the size of the screen.", NULL, t11RectArea);
 
-	/*TEST 13: When height and length are different values.*/
-	clr_scrn((UINT32 *)base);
-	gridDots((UINT32 *)base);
-	rect_area(base, 0, 16, 0, HEIGHT_TST_DEFAULT);
-	Cconin();
+	registerTestCase(suiteID, "When the length and height are greater than the size of the screen.", NULL, t12RectArea);
+
+	registerTestCase(suiteID, "When the value of the length is different from the height.", NULL, t13RectArea);
+}
+
+/**
+ * @brief Tests rect_area() when both x and y are at their minimum value (zero).
+ * @details The expected results are that a 32 by 32 pixel square will be
+ * plotted at the top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t1RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 32;
+	const int RECT_HEIGHT = 32;
+
+	rect_area((UINT32 *)getArgFromList("base", args), 0, RECT_LEN, 0,
+			  RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when x is at its middle value.
+ * @details The expected results are that a 32 by 32 pixel square will be
+ * plotted starting at the top-middle portion of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t2RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 32;
+	const int RECT_HEIGHT = 32;
+
+	rect_area((UINT32 *)getArgFromList("base", args), SCRN_MID_X, RECT_LEN, 0,
+			  RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when x is at its maximum value such that the
+ * resultant rectangle is completely visible on screen.
+ * @details The expected results are that a 32 by 32 pixel square will be
+ * plotted at the top-right corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t3RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 32;
+	const int RECT_HEIGHT = 32;
+
+	rect_area((UINT32 *)getArgFromList("base", args), RAST32_MAX_VIS_X,
+			  RECT_LEN, 0, RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when y is at its middle value.
+ * @details The expected results are that a 32 by 32 pixel square will be
+ * plotted starting at the left-middle portion of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t4RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 32;
+	const int RECT_HEIGHT = 32;
+
+	rect_area((UINT32 *)getArgFromList("base", args), 0, RECT_LEN, SCRN_MID_Y,
+			  RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when y is at its maximum value such that the
+ * rectangle is still completely visible on screen.
+ * @details The expected results are that a 32 by 32 pixel square will be
+ * plotted at the bottom-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t5RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 32;
+	const int RECT_HEIGHT = 32;
+
+	rect_area((UINT32 *)getArgFromList("base", args), 0, RECT_LEN,
+			  RAST32H_MAX_VIS_Y, RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when x is at a value such that the center of the
+ * rectangle is at the horizontal center of the screen.
+ * @details The expected results are that a 32 by 32 pixel square will be
+ * plotted at the top of the screen and horizontally-centered.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t6RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 32;
+	const int RECT_HEIGHT = 32;
+
+	rect_area((UINT32 *)getArgFromList("base", args), RAST32_MID_VIS_X,
+			  RECT_LEN, 0, RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when y is at a value such that the center of the
+ * rectangle is at the vertical center of the screen.
+ * @details The expected results are that a 32 by 32 pixel square will be
+ * plotted at the left of the screen and vertically-centered.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t7RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 32;
+	const int RECT_HEIGHT = 32;
+
+	rect_area((UINT32 *)getArgFromList("base", args), 0, RECT_LEN,
+			  RAST32H_MID_VIS_Y, RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when x and y are set to the value such that the
+ * middle of the plotted rectangle is in the center of the screen.
+ * @details The expected results are that a 32 by 32 pixel square will be
+ * plotted in the center of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t8RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 32;
+	const int RECT_HEIGHT = 32;
+
+	rect_area((UINT32 *)getArgFromList("base", args), RAST32_MID_VIS_X,
+			  RECT_LEN, RAST32H_MID_VIS_Y, RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when x and y are set to their maximum values.
+ * @details The expected results are that a dot will be plotted in the
+ * bottom-right corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t9RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 32;
+	const int RECT_HEIGHT = 32;
+
+	rect_area((UINT32 *)getArgFromList("base", args), SCRN_MAX_X, RECT_LEN,
+			  SCRN_MAX_Y, RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when the length and height are set to their minimum
+ * values (1).
+ * @details The expected results are that a dot will be plotted in the
+ * top-left corner of the screen.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t10RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 1;
+	const int RECT_HEIGHT = 1;
+
+	rect_area((UINT32 *)getArgFromList("base", args), 0, RECT_LEN, 0,
+			  RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when the length and height are set to the size of
+ * the screen.
+ * @details The expected results are that the entire screen will be filled
+ * black.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t11RectArea(ArgList *args)
+{
+	const int RECT_LEN    = SCRN_LEN;
+	const int RECT_HEIGHT = SCRN_HEIGHT;
+
+	rect_area((UINT32 *)getArgFromList("base", args), 0, RECT_LEN, 0,
+			  RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when the length and height are greater than the size
+ * of the screen.
+ * @details The expected results are that the entire screen will be filled
+ * black.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t12RectArea(ArgList *args)
+{
+	const int RECT_LEN    = SCRN_LEN    + 1;
+	const int RECT_HEIGHT = SCRN_HEIGHT + 1;
+
+	rect_area((UINT32 *)getArgFromList("base", args), 0, RECT_LEN, 0,
+			  RECT_HEIGHT);
+}
+
+/**
+ * @brief Tests rect_area() when the value of the length is different from the
+ * height.
+ * @details The expected results are that a 16 by 32 px rectangle will be
+ * plotted starting at the top-left corner.
+ * @note This has not been tested on both TOS and SDL2.
+ * 
+ * @param args The list of arguments required by the function.
+ * 
+ * - base: The location in memory to plot at.
+ */
+void t13RectArea(ArgList *args)
+{
+	const int RECT_LEN    = 16;
+	const int RECT_HEIGHT = 32;
+
+	rect_area((UINT32 *)getArgFromList("base", args), 0, RECT_LEN, 0,
+			  RECT_HEIGHT);
 }
 
 /**
@@ -1899,7 +2111,7 @@ void tst_clr_area(UINT32 *base)
 	screen.*/
 	fill_scrn((UINT32 *)base);
 	gridDots((UINT32 *)base);
-	clr_area(base, 0, LEN_TST_DEFAULT, 368, HEIGHT_TST_DEFAULT);
+	clr_area(base, 0, LEN_TST_DEFAULT, RAST32H_MAX_VIS_Y, HEIGHT_TST_DEFAULT);
 	Cconin();
 
 	/*TEST 6: When x is set to a value such that the middle of the plotted
@@ -1914,14 +2126,14 @@ void tst_clr_area(UINT32 *base)
 	area is in the center of the screen.*/
 	fill_scrn((UINT32 *)base);
 	gridDots((UINT32 *)base);
-	clr_area(base, 0, LEN_TST_DEFAULT, 184, HEIGHT_TST_DEFAULT);
+	clr_area(base, 0, LEN_TST_DEFAULT, RAST32H_MID_VIS_Y, HEIGHT_TST_DEFAULT);
 	Cconin();
 
 	/*TEST 8: When x and y are set to the value such that the middle of the
 	plotted area is in the center of the screen.*/
 	fill_scrn((UINT32 *)base);
 	gridDots((UINT32 *)base);
-	clr_area(base, RAST32_MID_VIS_X, LEN_TST_DEFAULT, 184,
+	clr_area(base, RAST32_MID_VIS_X, LEN_TST_DEFAULT, RAST32H_MID_VIS_Y,
 		HEIGHT_TST_DEFAULT);
 	Cconin();
 
