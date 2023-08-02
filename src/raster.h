@@ -109,13 +109,13 @@
  */
 #define RAST8_MID_VIS_X 316
 
-
 /**
  * @brief The minimum value for the x coordinate (in pixels) for a 16-bit wide
  * raster image such that part of the image is still visible on the Atari ST's
  * monochrome screen.
  */
 #define RAST8_MIN_X -7
+
 
 /**
  * @brief A value for the y coordinate (in pixels) for a 32 px high raster
