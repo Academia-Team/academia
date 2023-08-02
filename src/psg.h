@@ -143,7 +143,7 @@ void set_noise(int tuning);
 void set_envelope(int shape, UINT16 sustain);
 
 /**
- * @brief Turns the given channel’s tone/noise signals on/off (0=off, 1=on).
+ * @brief Turns the given channel's tone/noise signals on/off (0=off, 1=on).
  * @details If any invalid parameter is provided, nothing will be set. The
  * bits to set the signals in the registers are the complements of tone_on and
  * noise_on. Therefore, bits will be zeroed out in order to enable some of these
@@ -157,7 +157,7 @@ void set_envelope(int shape, UINT16 sustain);
 void enable_channel(Channel channel, Toggle tone_on, Toggle noise_on);
 
 /**
- * @brief Disables the given channel’s tone and noise signals.
+ * @brief Disables the given channel's tone and noise signals.
  * @details If a invalid channel is provided, nothing will be disabled.
  * 
  * @param channel The channel to set the signals for. Any value outside the
