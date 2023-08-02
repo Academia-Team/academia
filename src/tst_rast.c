@@ -1632,14 +1632,14 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 	/*TEST 6: When y is set to the maximum value it can be without getting 
 	the image cropped.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, 0, (SCRN_HEIGHT - 8), height, tstBmp, destruct,
+	plot_rast8(base, 0, RAST8H_MAX_VIS_Y, height, tstBmp, destruct,
 		blackScreen);
 	Cconin();
 
 	/*TEST 7: When x and y are set to their maximum values they can have 
 	without getting the image cropped.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, RAST8_MAX_VIS_X, (SCRN_HEIGHT - 8), height, tstBmp,
+	plot_rast8(base, RAST8_MAX_VIS_X, RAST8H_MAX_VIS_Y, height, tstBmp,
 		destruct, blackScreen);
 	Cconin();
 
@@ -1653,14 +1653,14 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 	/*TEST 9: When y is set to a value such that the center of the image 
 	is contained in the vertical center of the screen.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, 0, ((SCRN_HEIGHT / 2) - 4), height, tstBmp, destruct,
+	plot_rast8(base, 0, RAST8H_MID_VIS_Y, height, tstBmp, destruct,
 		blackScreen);
 	Cconin();
 
 	/*TEST 10: When x and y are set to values such that the center of the 
 	image is in the center of the screen.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, RAST8_MID_VIS_X, ((SCRN_HEIGHT / 2) - 4), height,
+	plot_rast8(base, RAST8_MID_VIS_X, RAST8H_MID_VIS_Y, height,
 		tstBmp, destruct, blackScreen);
 	Cconin();
 
@@ -1673,7 +1673,7 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 	/*TEST 12: When x is set to a value such that half of the image is 
 	cropped from the left.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, -4, 0, height, tstBmp, destruct, blackScreen);
+	plot_rast8(base, RAST8_LHALF_X, 0, height, tstBmp, destruct, blackScreen);
 	Cconin();
 
 	/*TEST 13: When x is set to a value such that only the rightmost column 
@@ -1691,13 +1691,13 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 	/*TEST 15: When y is set to a value such that the top half of the image 
 	is cropped off.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, 0, -4, height, tstBmp, destruct, blackScreen);
+	plot_rast8(base, 0, RAST8H_THALF_Y, height, tstBmp, destruct, blackScreen);
 	Cconin();
 
 	/*TEST 16: When y is set to a value such that only the bottommost row 
 	constituting the image is on screen.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, 0, -7, height, tstBmp, destruct, blackScreen);
+	plot_rast8(base, 0, RAST8H_MIN_Y, height, tstBmp, destruct, blackScreen);
 	Cconin();
 
 	/*TEST 17: When x is set to a value such that the image is cropped by 
@@ -1710,7 +1710,7 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 	/*TEST 18: When x is set to a value such that half of the image is 
 	cropped from the right.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, (SCRN_LEN - 4), 0, height, tstBmp, destruct, 
+	plot_rast8(base, RAST8_MID_VIS_X, 0, height, tstBmp, destruct, 
 			blackScreen);
 	Cconin();
 
@@ -1723,14 +1723,14 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 	/*TEST 20: When y is set to a value such that the image is cropped by 
 	1px from the bottom.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, 0, (SCRN_HEIGHT - 8), height, tstBmp, destruct,
+	plot_rast8(base, 0, RAST8H_MAX_VIS_Y, height, tstBmp, destruct,
 		blackScreen);
 	Cconin();
 
 	/*TEST 21: When y is set to a value such that the bottom half of the 
 	image is cropped off.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, 0, (SCRN_HEIGHT - 4), height, tstBmp, 
+	plot_rast8(base, 0, RAST8H_BHALF_Y, height, tstBmp, 
 			destruct, blackScreen);
 	Cconin();
 
@@ -1747,14 +1747,14 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 
 	/*TEST 24: When the height is set to half of the screen’s height.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, 0, 0, (SCRN_HEIGHT / 2), fullScrnBmp, destruct,
+	plot_rast8(base, 0, 0, SCRN_HEIGHT / 2, fullScrnBmp, destruct,
 		blackScreen);
 	Cconin();
 
 	/*TEST 25: When the height given is just below the maximum height 
 	of the screen.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, 0, 0, (SCRN_HEIGHT - 1), fullScrnBmp, destruct,
+	plot_rast8(base, 0, 0, SCRN_HEIGHT - 1, fullScrnBmp, destruct,
 		blackScreen);
 	Cconin();
 
@@ -1766,7 +1766,7 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 	/*TEST 27: When the height given is greater than the maximum height 
 	of the screen.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, 0, 0, (SCRN_HEIGHT + 1), fullScrnBmp, destruct,
+	plot_rast8(base, 0, 0, SCRN_HEIGHT + 1, fullScrnBmp, destruct,
 		blackScreen);
 	Cconin();
 
@@ -1793,7 +1793,7 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 
 	/*TEST 32: When x is greater than the screen length.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, (SCRN_LEN + 1), 0, height, tstBmp, destruct,
+	plot_rast8(base, SCRN_LEN + 1, 0, height, tstBmp, destruct,
 		blackScreen);
 	Cconin();
 
@@ -1809,7 +1809,7 @@ void tst_plot_rast8(UINT8 *base, BOOL destruct, BOOL blackScreen)
 
 	/*TEST 35: When y is greater than the screen height.*/
 	blackScreen ? fill_scrn(base_32) : clr_scrn(base_32);
-	plot_rast8(base, 0, (SCRN_HEIGHT + 1), height, tstBmp, destruct,
+	plot_rast8(base, 0, SCRN_HEIGHT + 1, height, tstBmp, destruct,
 		blackScreen);
 	Cconin();
 }
