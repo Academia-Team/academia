@@ -11,6 +11,7 @@
 
 #include "events.h"
 #include "ikbdcode.h"
+#include "input.h"
 #include "model.h"
 #include "move.h"
 #include "super.h"
@@ -26,7 +27,6 @@ void testHazAdd();
 void outHazInfo(const Hazard* const hazard);
 void testPlayerMove();
 void outObjInPos(const World* const world, int x, int y);
-IKBD_Scancode getKeyBlocking();
 void outCellInfo(const Cell* const cell, int id, int index);
 
 int main()
@@ -514,7 +514,7 @@ void testPlayerMove()
 			puts("Press the Space Bar to stay in place while the time advances \
 by one second.");
 
-			keyIn = getKeyBlocking();
+			keyIn = getBKey();
 			keyValid = TRUE;
 
 			switch(keyIn)
@@ -613,16 +613,6 @@ void outObjInPos(const World* const world, int x, int y)
 	{
 		printf("cell.\n");
 	}
-}
-
-/**
- * @brief Holds everything hostage while awaiting a key press.
- * 
- * @return An IKBD scancode.
- */
-IKBD_Scancode getKeyBlocking()
-{
-	return Cnecin() >> 16;
 }
 
 /**
