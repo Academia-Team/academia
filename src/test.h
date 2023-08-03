@@ -18,18 +18,6 @@
 #include "super.h"
 #include "types.h"
 
-#define MAX_BOOL_NAME_LEN 7
-typedef char BoolName[MAX_BOOL_NAME_LEN + 1];
-
-/**
- * @brief Returns the friendly name of a boolean (TRUE/FALSE).
- * 
- * @param val The boolean value to read.
- * @param boolName The boolean name to return.
- * @return The name of the boolean value given.
- */
-char* getBoolName(BOOL val, char *boolName);
-
 /**
  * @brief The maximum number of test cases per test suite.
  */

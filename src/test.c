@@ -144,20 +144,3 @@ void runTest(TestCase *test)
 		test->tstMgr(test->tstFunc);
 	}
 }
-
-char* getBoolName(BOOL val, char *boolName)
-{
-	switch(val)
-	{
-		case TRUE:
-			boolName = "TRUE";
-			break;
-		case FALSE:
-			boolName = "FALSE";
-			break;
-		default:
-			boolName = "Unknown";
-	}
-
-	return boolName;
-}

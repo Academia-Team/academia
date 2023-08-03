@@ -163,7 +163,6 @@ void testScoreBox()
 void testLivesBox()
 {
 	Player     tstPlayer;
-	BoolName   boolName;
 	initPlayer(&tstPlayer, 1);
 
 	printf
@@ -178,7 +177,7 @@ void testLivesBox()
 		tstPlayer.lives.value, tstPlayer.lives.x, tstPlayer.lives.y
 	);
 
-	printf("Player Alive: %s\n\n", getBoolName(tstPlayer.alive, boolName));
+	printf("Player Alive: %s\n\n", getBoolName(tstPlayer.alive));
 	Cconin();
 
 	while (tstPlayer.alive)
@@ -199,7 +198,7 @@ void testLivesBox()
 			tstPlayer.lives.x, tstPlayer.lives.y
 		);
 
-		printf("Player Alive: %s\n\n", getBoolName(tstPlayer.alive, boolName));
+		printf("Player Alive: %s\n\n", getBoolName(tstPlayer.alive));
 		Cconin();
 	}
 }
@@ -531,8 +530,6 @@ void testPlayerMove()
 
 	IKBD_Scancode keyIn;
 
-	BoolName immunityStatus;
-
 	int secSinceDmg = -1;
 
 	initWorld(&tstWorld, 1);
@@ -551,7 +548,7 @@ void testPlayerMove()
 			printf
 			(
 				"Immunity is %s.\n\n",
-				getBoolName(tstWorld.mainPlayer.immune, immunityStatus)
+				getBoolName(tstWorld.mainPlayer.immune)
 			);
 			secSinceDmg = -1;
 		}
@@ -569,7 +566,7 @@ void testPlayerMove()
 			printf
 			(
 				"Immunity is %s.\n\n",
-				getBoolName(tstWorld.mainPlayer.immune, immunityStatus)
+				getBoolName(tstWorld.mainPlayer.immune)
 			);
 		}
 
