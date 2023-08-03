@@ -13,12 +13,11 @@
 
 #include "arg_list.h"
 #include "bitmaps.h"
-#include "ikbdcode.h"
 #include "input.h"
 #include "raster.h"
 #include "scrn.h"
-#include "super.h"
 #include "test.h"
+#include "tst_hndl.h"
 
 #define CLEAR_ON  TRUE
 #define CLEAR_OFF FALSE
@@ -232,14 +231,6 @@ void gridDots(UINT32 *base);
 
 int main()
 {
-	TestSuite *tstSuite;
-	TestCase  *tstCase;
-
-	int promptResponse;
-	BOOL validResponse;
-
-	Vector origKybd;
-
 	regPlotPxTests(BLACK_SCREEN_OFF);
 	regPlotPxTests(BLACK_SCREEN_ON);
 
@@ -262,42 +253,7 @@ int main()
 	regRectAreaTests();
 	regClrAreaTests();
 
-	while ((tstSuite = getNextTestSuite()) != NULL)
-	{
-		showTestSuiteInfo(stdout, tstSuite);
-
-		origKybd = initKybd();
-		do
-		{
-			showTestPrompt(stdout);
-			promptResponse = getBAscii();
-			validResponse = (promptResponse == '\r' || promptResponse == 'q');
-		} while (!validResponse);
-		restoreKybd(origKybd);
-
-		if (promptResponse == '\r')
-		{
-			while ((tstCase = getNextTestCase(tstSuite)) != NULL)
-			{
-				showTestCaseInfo(stdout, tstCase);
-
-				origKybd = initKybd();
-				do
-				{
-					showTestPrompt(stdout);
-					promptResponse = getBAscii();
-					validResponse = (promptResponse == '\r' ||
-									 promptResponse == 'q');
-				} while (!validResponse);
-				restoreKybd(origKybd);
-				
-				if (promptResponse == '\r')
-				{
-					runTest(tstCase);
-				}
-			}
-		}
-	}
+	handleTests();
 
 	return 0;
 }
