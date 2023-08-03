@@ -304,6 +304,63 @@ typedef struct
 } World;
 
 /**
+ * @brief The maximum number of characters returned by getCellTypeName().
+ */
+#define MAX_CELL_NAME_LEN 10
+
+/**
+ * @brief A type of string guaranteed to be able to hold the string returned by
+ * getCellTypeName().
+ */
+typedef char CellName[MAX_CELL_NAME_LEN + 1];
+
+/**
+ * @brief The maximum number of characters returned by getHazName().
+ */
+#define MAX_HAZ_NAME_LEN 10
+
+/**
+ * @brief A type of string guaranteed to be able to hold the string returned by
+ * getHazName().
+ */
+typedef char HazName[MAX_HAZ_NAME_LEN + 1];
+
+/**
+ * @brief Gets the name corresponding to a particular cell type.
+ * 
+ * @param cell The cell type to get the name of.
+ * @return The name of the cell type as a string. If the given cellType is
+ * invalid, "UNKNOWN" will be returned.
+ */
+#define getCellTypeName(cell) \
+	(cell == GRASS_CELL ? "GRASS" : \
+		(cell == ROAD_CELL ? "ROAD" : \
+			(cell == TRACK_CELL ? "TRACK" : \
+				(cell == SPIKE_CELL ? "SPIKE" : \
+					(cell == HEDGE_CELL ? "HEDGE" : "UNKNOWN") \
+				) \
+			) \
+		) \
+	)
+
+/**
+ * @brief Gets the name corresponding to a particular hazard.
+ * 
+ * @param hazard The type of hazard to get the name of.
+ * @return The name of the hazard as a string. If the given hazType is invalid,
+ * "UNKNOWN" will be returned. If the hazard type is not properly set, "NONE"
+ * will be returned.
+ */
+#define getHazName(hazard) \
+	(hazard == CAR_HAZ ? "CAR" : \
+		(hazard == FEATHERS_HAZ ? "MR. FEATHERS" : \
+			(hazard == TRAIN_HAZ ? "TRAIN" : \
+				(hazard == NO_HAZ ? "NONE" : "UNKNOWN") \
+			) \
+		) \
+	)
+
+/**
  * @brief Gets the height of the top border of the screen (in pixels).
  * @param numPlayers The number of players who are playing a game.
  * @return The integral height of the upper border of the screen.

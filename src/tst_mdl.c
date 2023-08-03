@@ -17,17 +17,9 @@
 #include "test.h"
 #include "types.h"
 
-#define MAX_CELL_NAME_LEN 20
-typedef char CellName[MAX_CELL_NAME_LEN + 1];
-
-#define MAX_HAZ_NAME_LEN 20
-typedef char HazName[MAX_HAZ_NAME_LEN + 1];
-
 void testScoreBox();
 void testLivesBox();
 void testRowGen();
-char* getCellTypeName(CellType cell, char cellName[]);
-char* getHazName(HazType hazard, char hazName[]);
 void testWorldShift();
 void outRowInfo(const Row* const row, int id, int index);
 void testHazAdd();
@@ -261,69 +253,6 @@ void testRowGen()
 }
 
 /**
- * @brief Gets the name corresponding to a particular cell type.
- * 
- * @param cell The cell to get the name of.
- * @param cellName The character array to store the result in.
- * @return char* The name of the cell type as a string.
- */
-char* getCellTypeName(CellType cell, char cellName[])
-{
-	switch(cell)
-	{
-		case GRASS_CELL:
-			cellName = "GRASS CELL";
-			break;
-		case ROAD_CELL:
-			cellName = "ROAD CELL";
-			break;
-		case TRACK_CELL:
-			cellName = "TRACK CELL";
-			break;
-		case SPIKE_CELL:
-			cellName = "SPIKE CELL";
-			break;
-		case HEDGE_CELL:
-			cellName = "HEDGE CELL";
-			break;
-		default:
-			cellName = "UNKNOWN CELL";
-	}
-
-	return cellName;
-}
-
-/**
- * @brief Gets the name corresponding to a particular hazard.
- * 
- * @param hazard The hazard to get the name of.
- * @param hazName The character array to store the result in.
- * @return char* The name of the hazard as a string.
- */
-char* getHazName(HazType hazard, char hazName[])
-{
-	switch(hazard)
-	{
-		case CAR_HAZ:
-			hazName = "CAR";
-			break;
-		case FEATHERS_HAZ:
-			hazName = "MR. FEATHERS";
-			break;
-		case TRAIN_HAZ:
-			hazName = "TRAIN";
-			break;
-		case NO_HAZ:
-			hazName = "NO HAZARD";
-			break;
-		default:
-			hazName = "UNKNOWN HAZARD";
-	}
-
-	return hazName;
-}
-
-/**
  * @brief Tests the consequences of shifting all the rows off of the world for
  * both a single and double player world.
  */
@@ -364,10 +293,8 @@ void testWorldShift()
  */
 void outRowInfo(const Row* const row, int id, int index)
 {
-	CellName cellName;
-
 	printf("Row %i (index %i):\n", id, index);
-	printf("Cell Type: %s\n", getCellTypeName(row->cellType, cellName));
+	printf("Cell Type: %s\n", getCellTypeName(row->cellType));
 	printf("Direction: %s\n", getDirName(row->horzDirection));
 	printf("Hazard Count: %i\n", row->hazardCount);
 	printf("Hedge Count: %i\n", row->hedgeCount);
@@ -458,9 +385,7 @@ void testHazAdd()
  */
 void outHazInfo(const Hazard* const hazard)
 {
-	HazName    hazName;
-
-	printf("Hazard: %s\n", getHazName(hazard->hazardType, hazName));
+	printf("Hazard: %s\n", getHazName(hazard->hazardType));
 	printf("Orientation: %s\n", getOrientName(hazard->orientation));
 	printf("Current X Location: %i\n", hazard->x);
 }
@@ -709,10 +634,8 @@ IKBD_Scancode getKeyBlocking()
  */
 void outCellInfo(const Cell* const cell, int id, int index)
 {
-	CellName cellName;
-
 	printf("Cell %i (index %i):\n", id, index);
-	printf("Cell Type: %s\n", getCellTypeName(cell->cellType, cellName));
+	printf("Cell Type: %s\n", getCellTypeName(cell->cellType));
 	printf("Collectable Value: %i\n", cell->collectableValue);
 	printf("X coord: %i\n", cell->x);
 }
