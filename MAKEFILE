@@ -2,10 +2,10 @@ all: acaddom tests
 
 tests: tst_mdl tst_mse tst_mus tst_psg tst_rast tst_sfx
 
-tst_mdl: src\model.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints.o src\move.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\tst_mdl.o src\move.o src\test.o src\types.h
-	cc68x -g src\model.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints.o src\move.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\tst_mdl.o src\test.o -o bin\tst_mdl.tos
+tst_mdl: src\model.o src\arg_list.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints.o src\move.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\tst_hndl.o src\tst_mdl.o src\move.o src\test.o src\vector.o
+	cc68x -g src\model.o src\arg_list.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints.o src\move.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\tst_hndl.o src\tst_mdl.o src\test.o src\vector.o -o bin\tst_mdl.tos
 
-src\tst_mdl.o: src\tst_mdl.c src\effects.h src\input.h src\model.h src\move.h src\super.h src\test.h
+src\tst_mdl.o: src\tst_mdl.c src\arg_list.h src\effects.h src\input.h src\model.h src\move.h src\super.h src\test.h src\tst_hndl.h src\vector.h
 	cc68x -g -c src\tst_mdl.c
 
 tst_mse: src\tst_mse.o src\in_asm.o src\input.o src\ints.o src\super.o src\su_asm.o src\vector.o

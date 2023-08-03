@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <stdio.h>
 
+#include "arg_list.h"
 #include "events.h"
 #include "ikbdcode.h"
 #include "input.h"
@@ -16,35 +17,86 @@
 #include "move.h"
 #include "super.h"
 #include "test.h"
+#include "tst_hndl.h"
 #include "types.h"
+#include "vector.h"
 
-void testScoreBox();
-void testLivesBox();
-void testRowGen();
-void testWorldShift();
+void modelTstMgr(void (*tstFunc)(ArgList *args));
+void testScoreBox(ArgList *args);
+void testLivesBox(ArgList *args);
+void testRowGen(ArgList *args);
+void testWorldShift(ArgList *args);
 void outRowInfo(const Row* const row, int id, int index);
-void testHazAdd();
+void testHazAdd(ArgList *args);
 void outHazInfo(const Hazard* const hazard);
-void testPlayerMove();
+void testPlayerMove(ArgList *args);
 void outObjInPos(const World* const world, int x, int y);
 void outCellInfo(const Cell* const cell, int id, int index);
 
 int main()
 {
-	run_test(testScoreBox());
-	run_test(testLivesBox());
-	run_test(testRowGen());
-	run_test(testWorldShift());
-	run_test(testHazAdd());
-	run_test(testPlayerMove());
+	TestSuiteID suiteID;
+
+	suiteID = registerTestSuite("Tests components of the model.", modelTstMgr);
+
+	registerTestCase(suiteID,
+					 "Confirm the position and text displayed by a score box.",
+					 NULL, testScoreBox);
+
+	registerTestCase(suiteID,
+					 "Confirm the position and text displayed by a lives box.",
+					 NULL, testLivesBox);
+
+	registerTestCase(suiteID,
+					 "Confirm the position and text displayed by a lives box.",
+					 NULL, testLivesBox);
+
+	registerTestCase(suiteID,
+					 "Shows information related to the rows in two newly-generated worlds.",
+					 NULL, testRowGen);
+
+	registerTestCase(suiteID,
+					 "Test the consequences of shifting all the rows off of the world for both a single and two player world.",
+					 NULL, testWorldShift);
+
+	registerTestCase(suiteID,
+					 "Prints information about hazard addition, movement, and removal over 40 clock ticks.",
+					 NULL, testHazAdd);
+
+	registerTestCase(suiteID,
+					 "Shows the player to move across a static World.",
+					 NULL, testPlayerMove);
+
+	handleTests();
 
 	return 0;
 }
 
 /**
- * @brief Confirms the position and text displayed by a score box.
+ * @brief Sets up an environment for testing the model.
+ * @details It ensures that a test doesn't end until a key is pressed.
+ * 
+ * @param tstFunc The function to test the model.
  */
-void testScoreBox()
+void modelTstMgr(void (*tstFunc)(ArgList *args))
+{
+	ArgList args;
+	Vector origKybd = initKybd();
+	IKBD_Scancode scancode;
+
+	initArgList(&args);
+
+	tstFunc(&args);
+
+	while ((scancode = getKey()) == NO_KEY);
+
+	restoreKybd(origKybd);
+}
+
+/**
+ * @brief Confirm the position and text displayed by a score box.
+ */
+void testScoreBox(ArgList *args)
 {
 	Score scoreBox;
 
@@ -62,7 +114,7 @@ void testScoreBox()
 		scoreBox.x, scoreBox.y
 	);
 
-	Cconin();
+	getBKey();
 
 	updateScore(100, &scoreBox);
 	putchar('\n');
@@ -81,7 +133,7 @@ void testScoreBox()
 	);
 
 	printf("Current Score: %lu\n", scoreBox.value);
-	Cconin();
+	getBKey();
 
 	updateScore(500, &scoreBox);
 	putchar('\n');
@@ -100,7 +152,7 @@ void testScoreBox()
 	);
 
 	printf("Current Score: %lu\n", scoreBox.value);
-	Cconin();
+	getBKey();
 
 	updateScore(INT_MAX, &scoreBox);
 	putchar('\n');
@@ -119,7 +171,7 @@ void testScoreBox()
 	);
 		
 	printf("Current Score: %lu\n", scoreBox.value);
-	Cconin();
+	getBKey();
 
 	putchar('\n');
 	puts("Confirming that the score can never have a carry error if updated.");
@@ -136,15 +188,13 @@ void testScoreBox()
 		puts("The test has succeeded.");
 		printf("The score has a value of %lu\n", scoreBox.value);
 	}
-
-	Cconin();
 }
 
 /**
  * @brief Confirms the position and text displayed by a lives box which is
  * connected to a Player.
  */
-void testLivesBox()
+void testLivesBox(ArgList *args)
 {
 	Player     tstPlayer;
 	initPlayer(&tstPlayer, 1);
@@ -162,7 +212,7 @@ void testLivesBox()
 	);
 
 	printf("Player Alive: %s\n\n", getBoolName(tstPlayer.alive));
-	Cconin();
+	getBKey();
 
 	while (tstPlayer.alive)
 	{
@@ -183,11 +233,13 @@ void testLivesBox()
 		);
 
 		printf("Player Alive: %s\n\n", getBoolName(tstPlayer.alive));
-		Cconin();
 	}
 }
 
-void testRowGen()
+/**
+ * @brief Shows information related to the rows in two newly-generated worlds.
+ */
+void testRowGen(ArgList *args)
 {
 	const int MAX_CELL_INFO_ON_SCRN = 4;
 	const int NUM_WORLDS = 2;
@@ -218,13 +270,13 @@ void testRowGen()
 		{
 			outRowInfo(&currentWorld->rows[index], index + 1, index);
 			putchar('\n');
-			Cconin();
+			getBKey();
 
 			for (cellPos = 0; cellPos < MAX_CELLS; cellPos++)
 			{
 				if (cellPos > 0 && cellPos % MAX_CELL_INFO_ON_SCRN == 0)
 				{
-					Cconin();
+					getBKey();
 				}
 
 				outCellInfo(&currentWorld->rows[index].cells[cellPos],
@@ -233,7 +285,7 @@ void testRowGen()
 			}
 
 			putchar('\n');
-			Cconin();
+			getBKey();
 
 			for (hazardIndex = 0;
 				 hazardIndex < currentWorld->rows[index].hazardCount;
@@ -246,17 +298,17 @@ void testRowGen()
 			if (currentWorld->rows[index].hazardCount > 0)
 			{
 				putchar('\n');
-				Cconin();
+				getBKey();
 			}
 		}
 	}
 }
 
 /**
- * @brief Tests the consequences of shifting all the rows off of the world for
- * both a single and double player world.
+ * @brief Test the consequences of shifting all the rows off of the world for
+ * both a single and two player world.
  */
-void testWorldShift()
+void testWorldShift(ArgList *args)
 {
 	World tstWorld;
 	int rowCounter;
@@ -277,7 +329,7 @@ void testWorldShift()
 		{
 			outRowInfo(&tstWorld.rows[index], rowCounter + 1, index);
 			putchar('\n');
-			Cconin();
+			getBKey();
 		}
 
 		shiftWorld(&tstWorld);
@@ -306,7 +358,7 @@ void outRowInfo(const Row* const row, int id, int index)
  * @brief Prints information about hazard addition, movement, and removal over
  * 40 clock ticks.
  */
-void testHazAdd()
+void testHazAdd(ArgList *args)
 {
 	const int MAX_ITER = 40;
 
@@ -323,7 +375,7 @@ void testHazAdd()
 	for (iter = 1; iter <= MAX_ITER; iter++)
 	{
 		printf("Number of Iterations: %i/%i\n\n", iter, MAX_ITER);
-		Cconin();
+		getBKey();
 
 		puts("Hazards after adding:");
 		for (rowIndex = 0; rowIndex < NUM_ROW_TYPES; rowIndex++)
@@ -339,7 +391,7 @@ void testHazAdd()
 				putchar('\n');
 			}
 
-			Cconin();
+			getBKey();
 		}
 
 		puts("Hazards after moving:");
@@ -356,7 +408,7 @@ void testHazAdd()
 				putchar('\n');
 			}
 
-			Cconin();
+			getBKey();
 		}
 
 		puts("Hazards after Removing:");
@@ -372,8 +424,6 @@ void testHazAdd()
 				outHazInfo(&tstRows[rowIndex].hazards[hazIndex]);
 				putchar('\n');
 			}
-
-			Cconin();
 		}
 	}
 }
@@ -391,7 +441,7 @@ void outHazInfo(const Hazard* const hazard)
 }
 
 /**
- * @brief Allows the player to move across a static World.
+ * @brief Shows the player to move across a static World.
  * @details No hazards will be moving. Lives and score will be displayed every
  * time a key is entered. The arrow keys are supported for navigation. Entering
  * 'q' will cause the test to quit. Pressing 'r' will cause the World and Player
@@ -400,7 +450,7 @@ void outHazInfo(const Hazard* const hazard)
  * If a player has been hit by a hazard and immunity has been activated, every
  * subsequent valid key press will count for a second of immunity.
  */
-void testPlayerMove()
+void testPlayerMove(ArgList *args)
 {
 	BOOL   keyValid;
 	BOOL   quitter;
