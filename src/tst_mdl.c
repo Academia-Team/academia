@@ -20,20 +20,13 @@
 #define MAX_CELL_NAME_LEN 20
 typedef char CellName[MAX_CELL_NAME_LEN + 1];
 
-#define MAX_DIR_NAME_LEN 20
-typedef char DirName[MAX_DIR_NAME_LEN + 1];
-
 #define MAX_HAZ_NAME_LEN 20
 typedef char HazName[MAX_HAZ_NAME_LEN + 1];
-
-#define MAX_ORIENT_NAME_LEN 10
-typedef char OrientName[MAX_ORIENT_NAME_LEN + 1];
 
 void testScoreBox();
 void testLivesBox();
 void testRowGen();
 char* getCellTypeName(CellType cell, char cellName[]);
-char* getDirName(Direction dir, char dirName[]);
 char* getHazName(HazType hazard, char hazName[]);
 void testWorldShift();
 void outRowInfo(const Row* const row, int id, int index);
@@ -42,7 +35,6 @@ void outHazInfo(const Hazard* const hazard);
 void testPlayerMove();
 void outObjInPos(const World* const world, int x, int y);
 IKBD_Scancode getKeyBlocking();
-char* getOrientName(Direction orient, char orientName[]);
 void outCellInfo(const Cell* const cell, int id, int index);
 
 int main()
@@ -302,39 +294,6 @@ char* getCellTypeName(CellType cell, char cellName[])
 }
 
 /**
- * @brief Gets the name corresponding to a particular direction.
- * 
- * @param orient The direction to get the name of.
- * @param orientName The character array to store the result in.
- * @return char* The name of the direction as a string.
- */
-char* getDirName(Direction dir, char dirName[])
-{
-	switch(dir)
-	{
-		case M_UP:
-			dirName = "UP";
-			break;
-		case M_DOWN:
-			dirName = "DOWN";
-			break;
-		case M_LEFT:
-			dirName = "LEFT";
-			break;
-		case M_RIGHT:
-			dirName = "RIGHT";
-			break;
-		case M_NONE:
-			dirName = "NO DIRECTION";
-			break;
-		default:
-			dirName = "Unknown";
-	}
-
-	return dirName;
-}
-
-/**
  * @brief Gets the name corresponding to a particular hazard.
  * 
  * @param hazard The hazard to get the name of.
@@ -406,11 +365,10 @@ void testWorldShift()
 void outRowInfo(const Row* const row, int id, int index)
 {
 	CellName cellName;
-	DirName  dirName;
 
 	printf("Row %i (index %i):\n", id, index);
 	printf("Cell Type: %s\n", getCellTypeName(row->cellType, cellName));
-	printf("Direction: %s\n", getDirName(row->horzDirection, dirName));
+	printf("Direction: %s\n", getDirName(row->horzDirection));
 	printf("Hazard Count: %i\n", row->hazardCount);
 	printf("Hedge Count: %i\n", row->hedgeCount);
 	printf("Spike Count: %i\n", row->spikeCount);
@@ -501,10 +459,9 @@ void testHazAdd()
 void outHazInfo(const Hazard* const hazard)
 {
 	HazName    hazName;
-	OrientName orientName;
 
 	printf("Hazard: %s\n", getHazName(hazard->hazardType, hazName));
-	printf("Orientation: %s\n", getOrientName(hazard->orientation, orientName));
+	printf("Orientation: %s\n", getOrientName(hazard->orientation));
 	printf("Current X Location: %i\n", hazard->x);
 }
 
@@ -741,39 +698,6 @@ void outObjInPos(const World* const world, int x, int y)
 IKBD_Scancode getKeyBlocking()
 {
 	return Cnecin() >> 16;
-}
-
-/**
- * @brief Gets the name corresponding to a particular orientation.
- * 
- * @param orient The orientation to get the name of.
- * @param orientName The character array to store the result in.
- * @return char* The name of the orientation as a string.
- */
-char* getOrientName(Direction orient, char orientName[])
-{
-	switch(orient)
-	{
-		case M_NORTH:
-			orientName = "NORTH";
-			break;
-		case M_DOWN:
-			orientName = "SOUTH";
-			break;
-		case M_WEST:
-			orientName = "WEST";
-			break;
-		case M_EAST:
-			orientName = "EAST";
-			break;
-		case M_NONE:
-			orientName = "SYMMETRIC";
-			break;
-		default:
-			orientName = "Unknown";
-	}
-
-	return orientName;
 }
 
 /**
