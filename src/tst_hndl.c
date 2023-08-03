@@ -58,7 +58,13 @@ void handleTests()
 				{
 					runTest(tstCase);
 				}
+
+				putc('\n', stdout);
 			}
+		}
+		else
+		{
+			putc('\n', stdout);
 		}
 	}
 }
