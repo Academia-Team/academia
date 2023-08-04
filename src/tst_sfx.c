@@ -56,7 +56,7 @@ int main()
  * @details It ensures that a test doesn't end until a key is pressed. Also
  * ensures all audio is reset before moving on to the next test.
  * 
- * @param tstFunc The function to test the PSG.
+ * @param tstFunc The function to test a sound effect.
  */
 void sfxTstMgr(void (*tstFunc)(ArgList *args))
 {
