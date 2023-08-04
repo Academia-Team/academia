@@ -6,99 +6,140 @@
  * @copyright Copyright Academia Team 2023
  */
 
+#include <stdio.h>
+
+#include "arg_list.h"
 #include "effects.h"
+#include "input.h"
 #include "psg.h"
-#include "super.h"
 #include "test.h"
+#include "tst_hndl.h"
+#include "vector.h"
 
-void testPain();
-void testDeath();
-void testWalk();
-void testTrain();
-void testCollect();
-void testBeep();
+void sfxTstMgr(void (*tstFunc)(ArgList *args));
 
-/**
- * @brief Waits for enter to be pressed after a function call and causes all
- * sounds to stop playing.
- * @param func_call The function call to wait for.
- */
-#define haltAfterEnter(func_call) \
-	func_call; \
-	Cconin(); \
-	stop_sound()
+void t1SFX(ArgList *args);
+void t2SFX(ArgList *args);
+void t3SFX(ArgList *args);
+void t4SFX(ArgList *args);
+void t5SFX(ArgList *args);
+void t6SFX(ArgList *args);
 
 int main()
 {
+	TestSuiteID suiteID;
+
+	suiteID = registerTestSuite("Tests playing sound effects.", sfxTstMgr);
+
+	registerTestCase(suiteID, "Play the Pain sound effect.", NULL, t1SFX);
+
+	registerTestCase(suiteID,
+					 "Play the three stages of the Death sound effect.", NULL,
+					 t2SFX);
+
+	registerTestCase(suiteID, "Play the Walking sound effect.", NULL, t3SFX);
+
+	registerTestCase(suiteID, "Play the Train sound effect.", NULL, t4SFX);
+
+	registerTestCase(suiteID, "Play the Collecting Collectables sound effect.",
+					 NULL, t5SFX);
+
+	registerTestCase(suiteID, "Play the Beep sound effect.", NULL, t6SFX);
+
+	handleTests();
+
+	return 0;
+}
+
+/**
+ * @brief Sets up an environment for testing the playing of sound effects.
+ * @details It ensures that a test doesn't end until a key is pressed. Also
+ * ensures all audio is reset before moving on to the next test.
+ * 
+ * @param tstFunc The function to test the PSG.
+ */
+void sfxTstMgr(void (*tstFunc)(ArgList *args))
+{
+	ArgList args;
+	Vector origKybd = initKybd();
+	IKBD_Scancode scancode;
+
+	initArgList(&args);
+
+	tstFunc(&args);
+
+	while ((scancode = getKey()) == NO_KEY);
+
+	restoreKybd(origKybd);
 	stop_sound();
-
-	run_test(testPain());
-	run_test(testDeath());
-	run_test(testWalk());
-	run_test(testTrain());
-	run_test(testCollect());
-	run_test(testBeep());
-
-	stop_sound();
 }
 
 /**
- * @brief Plays the Pain sound and waits for enter to continue.
+ * @brief Play the Pain sound effect.
+ * 
+ * @param args Holds a list of arguments. (Unused)
  */
-void testPain()
+void t1SFX(ArgList *args)
 {
-	UINT32 oldSsp;
-
-	haltAfterEnter(doSu(play_pain(), oldSsp));
+	play_pain();
 }
 
 /**
- * @brief Plays the Death sound and waits for enter to continue.
+ * @brief Play the three stages of the Death sound effect.
+ * 
+ * @param args Holds a list of arguments. (Unused)
  */
-void testDeath()
+void t2SFX(ArgList *args)
 {
-	UINT32 oldSsp;
+	const int MAX_DEATH_COUNT = 3;
+	int count;
 
-	haltAfterEnter(doSu(play_death(), oldSsp));
+	for (count = 1; count <= MAX_DEATH_COUNT; count++)
+	{
+		printf("Stage %i/%i.\n", count, MAX_DEATH_COUNT);
+		play_death();
+
+		if (count < MAX_DEATH_COUNT)
+		{
+			getBKey();
+		}
+	}
 }
 
 /**
- * @brief Plays the Walking sound and waits for enter to continue.
+ * @brief Play the Walking sound effect.
+ * 
+ * @param args Holds a list of arguments. (Unused)
  */
-void testWalk()
+void t3SFX(ArgList *args)
 {
-	UINT32 oldSsp;
-
-	haltAfterEnter(doSu(play_walk(), oldSsp));
+	play_walk();
 }
 
 /**
- * @brief Plays the Train sound and waits for enter to continue.
+ * @brief Play the Train sound effect.
  */
-void testTrain()
+void t4SFX(ArgList *args)
 {
-	UINT32 oldSsp;
-
-	haltAfterEnter(doSu(play_train(), oldSsp));
+	play_train();
 }
 
 /**
- * @brief Plays the Collecting Collectables sound and waits for enter to
- * continue.
+ * @brief Play the Collecting Collectables sound effect.
+ * 
+ * @param args Holds a list of arguments. (Unused)
  */
-void testCollect()
+void t5SFX(ArgList *args)
 {
-	UINT32 oldSsp;
-
-	haltAfterEnter(doSu(play_collect(), oldSsp));
+	play_collect();
 }
 
 /**
- * @brief Plays the beeping sound and waits for enter to continue.
+ * @brief Play the Beep sound effect.
+ * 
+ * @param args Holds a list of arguments. (Unused)
  */
-void testBeep()
+void t6SFX(ArgList *args)
 {
-	UINT32 oldSsp;
-
-	haltAfterEnter(doSu(play_beep(), oldSsp));
+	play_beep();
 }

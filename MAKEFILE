@@ -32,10 +32,10 @@ tst_rast: src\test.o src\tst_hndl.o src\tst_rast.o src\arg_list.o src\bitmaps.o 
 src\tst_rast.o: src\tst_rast.c src\bitmaps.h src\raster.h src\scrn.h src\types.h
 	cc68x -g -c src\tst_rast.c
 
-tst_sfx: src\tst_sfx.o src\psg.o src\effects.o src\rast_asm.o src\super.o src\su_asm.o src\test.o
-	cc68x -g src\tst_sfx.o src\psg.o src\effects.o src\rast_asm.o src\super.o src\su_asm.o src\test.o -o bin\tst_sfx.tos
+tst_sfx: src\tst_sfx.o src\psg.o src\arg_list.o src\effects.o src\input.o src\in_asm.o src\ints.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o
+	cc68x -g src\tst_sfx.o src\psg.o src\arg_list.o src\effects.o src\input.o src\in_asm.o src\ints.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o -o bin\tst_sfx.tos
 
-src\tst_sfx.o: src\tst_sfx.c src\psg.h src\effects.h src\super.h src\test.h
+src\tst_sfx.o: src\tst_sfx.c src\psg.h src\arg_list.h src\effects.h src\input.h src\test.h src\tst_hndl.h src\vector.h
 	cc68x -g -c src\tst_sfx.c
 
 src\tst_hndl.o: src\tst_hndl.c src\bool.h src\input.h src\test.h src\tst_hndl.h src\vector.h
