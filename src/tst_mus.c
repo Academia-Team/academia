@@ -47,7 +47,6 @@ void musTstMgr(void (*tstFunc)(ArgList *args))
 {
 	ArgList args;
 	Vector origKybd = initKybd();
-	IKBD_Scancode scancode;
 
 	initArgList(&args);
 
