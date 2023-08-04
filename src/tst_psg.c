@@ -9,37 +9,116 @@
 #include <limits.h>
 #include <stdio.h>
 
+#include "arg_list.h"
+#include "input.h"
 #include "psg.h"
 #include "raster.h"
 #include "super.h"
 #include "test.h"
+#include "tst_hndl.h"
 #include "types.h"
+#include "vector.h"
 
-void testReadWritePsg();
+void psgTstMgr(void (*tstFunc)(ArgList *args));
+
+void t1ReadWritePsg(ArgList *args);
+
+void t1PlayTone(ArgList *args);
+void t2PlayTone(ArgList *args);
+void t3PlayTone(ArgList *args);
+
+void t1PlayMTones(ArgList *args);
+void t2PlayMTones(ArgList *args);
+void t3PlayMTones(ArgList *args);
+
+void t1PlayEnvelope(ArgList *args);
+void t2PlayEnvelope(ArgList *args);
+
+void t1PlayNoise(ArgList *args);
+void t2PlayNoise(ArgList *args);
+
 void testSetTone(Channel channel);
 void testMultipleTones(Channel firstChannel, Channel secondChannel);
 void outChannelInfo(Channel channel);
-void testEnvelope();
-void testRepeatingEnvelope();
-void testNoise();
-void testNoiseWTone();
 
 int main()
 {
-	stop_sound();
-	
-	run_test(testReadWritePsg());
-	run_test(testSetTone(A_CHANNEL));
-	run_test(testSetTone(B_CHANNEL));
-	run_test(testSetTone(C_CHANNEL));
-	run_test(testMultipleTones(A_CHANNEL, B_CHANNEL));
-	run_test(testMultipleTones(B_CHANNEL, C_CHANNEL));
-	run_test(testMultipleTones(A_CHANNEL, C_CHANNEL));
-	run_test(testEnvelope());
-	run_test(testRepeatingEnvelope());
-	run_test(testNoise());
-	run_test(testNoiseWTone());
+	TestSuiteID suiteID;
 
+	suiteID = registerTestSuite("Test reading and writing values to PSG registers.",
+								psgTstMgr);
+
+	registerTestCase(suiteID,
+					 "Write and Read from the A channel volume register", NULL,
+					 t1ReadWritePsg);
+
+	suiteID = registerTestSuite("Tests playing a tone on the Programmable Sound Generator",
+								psgTstMgr);
+
+	registerTestCase(suiteID, "Plays a tone using Channel A.", NULL,
+					 t1PlayTone);
+
+	registerTestCase(suiteID, "Plays a tone using Channel B.", NULL,
+					 t2PlayTone);
+
+	registerTestCase(suiteID, "Plays a tone using Channel C.", NULL,
+					 t3PlayTone);
+	
+	suiteID = registerTestSuite("Tests playing multiple tones on the Programmable Sound Generator",
+								psgTstMgr);
+
+	registerTestCase(suiteID, "Plays two tones using Channel A and B.", NULL,
+					 t1PlayMTones);
+
+	registerTestCase(suiteID, "Plays two tones using Channel A and C.", NULL,
+					 t2PlayMTones);
+
+	registerTestCase(suiteID, "Plays two tones using Channel B and C.", NULL,
+					 t2PlayMTones);
+
+	suiteID = registerTestSuite("Tests envelope generation on the Programmable Sound Generator",
+								psgTstMgr);
+
+	registerTestCase(suiteID, "Plays a non-repeating envelope.", NULL,
+					 t1PlayEnvelope);
+
+	registerTestCase(suiteID, "Plays a repeating envelope.", NULL,
+					 t2PlayEnvelope);
+
+	suiteID = registerTestSuite("Tests noise generation on the Programmable Sound Generator",
+								psgTstMgr);
+
+	registerTestCase(suiteID, "Plays a noise.", NULL,
+					 t1PlayNoise);
+
+	registerTestCase(suiteID, "Plays a noise with a tone.", NULL,
+					 t2PlayNoise);
+	
+	handleTests();
+
+	return 0;
+}
+
+/**
+ * @brief Sets up an environment for testing the Programmable Sound Generator.
+ * @details It ensures that a test doesn't end until a key is pressed. Also
+ * ensures all audio is reset before moving on to the next test.
+ * 
+ * @param tstFunc The function to test the PSG.
+ */
+void psgTstMgr(void (*tstFunc)(ArgList *args))
+{
+	ArgList args;
+	Vector origKybd = initKybd();
+	IKBD_Scancode scancode;
+
+	initArgList(&args);
+
+	tstFunc(&args);
+
+	while ((scancode = getKey()) == NO_KEY);
+
+	restoreKybd(origKybd);
 	stop_sound();
 }
 
@@ -47,8 +126,10 @@ int main()
  * @brief Tests if values can be written and read to/from the PSG registers.
  * @details This is done by writing specific values and then seeing if the same
  * values can be read back again.
+ * 
+ * @param args Holds a list of arguments. (Unused)
  */
-void testReadWritePsg()
+void t1ReadWritePsg(ArgList *args)
 {
 	const UINT8 INITIAL_VOLUME = 0;
 	const UINT8 FINAL_VOLUME   = 31;
@@ -81,8 +162,175 @@ void testReadWritePsg()
 	oldSsp = Su(0);
 	printf("Value read back: %u\n\n", read_psg(A_LEVEL_REG));
 	Su(oldSsp);
+}
 
-	Cconin();
+/**
+ * @brief Plays a tone using Channel A.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t1PlayTone(ArgList *args)
+{
+	testSetTone(A_CHANNEL);
+}
+
+/**
+ * @brief Plays a tone using Channel B.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t2PlayTone(ArgList *args)
+{
+	testSetTone(B_CHANNEL);
+}
+
+/**
+ * @brief Plays a tone using Channel C.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t3PlayTone(ArgList *args)
+{
+	testSetTone(C_CHANNEL);
+}
+
+/**
+ * @brief Plays two tones using Channel A and B.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t1PlayMTones(ArgList *args)
+{
+	testMultipleTones(A_CHANNEL, B_CHANNEL);
+}
+
+/**
+ * @brief Plays two tones using Channel A and C.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t2PlayMTones(ArgList *args)
+{
+	testMultipleTones(A_CHANNEL, C_CHANNEL);
+}
+
+/**
+ * @brief Plays two tones using Channel B and C.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t3PlayMTones(ArgList *args)
+{
+	testMultipleTones(B_CHANNEL, C_CHANNEL);
+}
+
+/**
+ * @brief Tests to make sure envelope generation is working.
+ * @warning The tones emitted by this test are very high pitched.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t1PlayEnvelope(ArgList *args)
+{
+	UINT32 oldSsp = Su(0);
+
+	disable_channel(A_CHANNEL);
+	set_tone(A_CHANNEL, 248);
+	enable_channel(A_CHANNEL, ON, OFF);
+	set_volume(A_CHANNEL, 11);
+
+	Su(oldSsp);
+	putchar('\n');
+
+	doSu(outChannelInfo(A_CHANNEL), oldSsp);
+	putchar('\n');
+	getBKey();
+
+	doSu(set_envelope(MAX_ENVELOPE_SHAPE_VAL, UINT16_MAX), oldSsp);
+	printf
+	(
+		"The envelope is set to a shape parameter of 15 and a sustain of %u.\n",
+		UINT16_MAX
+	);
+	puts("Press any key to enable the envelope for Channel A.");
+	getBKey();
+
+	doSu(enable_envelope(A_CHANNEL), oldSsp);
+	puts("Press enter to use a different tone for Channel A.");
+	getBKey();
+
+	doSu(set_tone(A_CHANNEL, 0x264), oldSsp);
+	doSu(set_envelope(MAX_ENVELOPE_SHAPE_VAL, ULONG_MAX), oldSsp);
+}
+
+/**
+ * @brief Tests to make sure a repeating envelope can be stopped by the
+ * disable_channel() function.
+ *
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t2PlayEnvelope(ArgList *args)
+{
+	UINT32 oldSsp = Su(0);
+
+	disable_channel(A_CHANNEL);
+	set_tone(A_CHANNEL, 0x264);
+	enable_channel(A_CHANNEL, ON, OFF);
+	enable_envelope(A_CHANNEL);
+	set_envelope(12, 0x0500);
+
+	Su(oldSsp);
+
+	puts("Press any key to hopefully stop the envelope.");
+	getBKey();
+
+	doSu(disable_channel(A_CHANNEL), oldSsp);
+}
+
+/**
+ * @brief Tests to make sure noise generation works.
+ * @note The values used were from section 5.2 of the YM2149 Application Manual
+ * and were designed to make an explosion sound.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t1PlayNoise(ArgList *args)
+{
+	UINT32 oldSsp = Su(0);
+
+	disable_channel(A_CHANNEL);
+	set_noise(0x1F);
+	enable_channel(A_CHANNEL, OFF, ON);
+	enable_envelope(A_CHANNEL);
+	set_envelope(0x0, 0x3800);
+
+	Su(oldSsp);
+}
+
+/**
+ * @brief Tests to make sure noise generation and tone generation work
+ * simultaneously.
+ * @details The tonal values from the testNoise() and testMultipleTones()
+ * functions were used so that the results could be better compared and
+ * interpreted.
+ * @note The noise values used were from section 5.2 of the YM2149 Application
+ * Manual and were designed to make an explosion sound. However, due to the
+ * introduction of the tone, it sounds more like a gunshot instead.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t2PlayNoise(ArgList *args)
+{
+	UINT32 oldSsp = Su(0);
+
+	disable_channel(A_CHANNEL);
+	set_tone(A_CHANNEL, 0x264);
+	set_noise(0x1F);
+	enable_channel(A_CHANNEL, ON, ON);
+	enable_envelope(A_CHANNEL);
+	set_envelope(0x0, 0x3800);
+
+	Su(oldSsp);
 }
 
 /**
@@ -116,14 +364,10 @@ void testSetTone(Channel channel)
 		Su(oldSsp);
 
 		putchar('\n');
-		Cconin();
-
-		doSu(disable_channel(channel), oldSsp);
 	}
 	else
 	{
 		puts("The channel provided is invalid.");
-		Cconin();
 	}
 }
 
@@ -173,21 +417,16 @@ void testMultipleTones(Channel firstChannel, Channel secondChannel)
 		doSu(outChannelInfo(secondChannel), oldSsp);
 		putchar('\n');
 
-		Cconin();
+		getBKey();
 
 		doSu(disable_channel(firstChannel), oldSsp);
 
 		doSu(outChannelInfo(secondChannel), oldSsp);
 		putchar('\n');
-
-		Cconin();
-
-		doSu(disable_channel(secondChannel), oldSsp);
 	}
 	else
 	{
 		puts("The given channel values were invalid.");
-		Cconin();
 	}
 }
 
@@ -221,112 +460,4 @@ void outChannelInfo(Channel channel)
 			printf("Volume: %i\n", read_psg(C_LEVEL_REG));
 			break;
 	}
-}
-
-/**
- * @brief Tests to make sure envelope generation is working.
- * @warning The tones emitted by this test are very high pitched.
- */
-void testEnvelope()
-{
-	UINT32 oldSsp = Su(0);
-
-	disable_channel(A_CHANNEL);
-	set_tone(A_CHANNEL, 248);
-	enable_channel(A_CHANNEL, ON, OFF);
-	set_volume(A_CHANNEL, 11);
-
-	Su(oldSsp);
-	putchar('\n');
-
-	doSu(outChannelInfo(A_CHANNEL), oldSsp);
-	putchar('\n');
-	Cconin();
-
-	doSu(set_envelope(MAX_ENVELOPE_SHAPE_VAL, UINT16_MAX), oldSsp);
-	printf
-	(
-		"The envelope is set to a shape parameter of 15 and a sustain of %u.\n",
-		UINT16_MAX
-	);
-	puts("Press any key to enable the envelope for Channel A.");
-	Cconin();
-
-	doSu(enable_envelope(A_CHANNEL), oldSsp);
-	puts("Press enter to use a different tone for Channel A.");
-	Cconin();
-
-	doSu(set_tone(A_CHANNEL, 0x264), oldSsp);
-	doSu(set_envelope(MAX_ENVELOPE_SHAPE_VAL, ULONG_MAX), oldSsp);
-	Cconin();
-
-	doSu(disable_channel(A_CHANNEL), oldSsp);
-}
-
-/**
- * @brief Tests to make sure a repeating envelope can be stopped by the
- * disable_channel() function.
- */
-void testRepeatingEnvelope()
-{
-	UINT32 oldSsp = Su(0);
-
-	disable_channel(A_CHANNEL);
-	set_tone(A_CHANNEL, 0x264);
-	enable_channel(A_CHANNEL, ON, OFF);
-	enable_envelope(A_CHANNEL);
-	set_envelope(12, 0x0500);
-
-	Su(oldSsp);
-	Cconin();
-
-	doSu(disable_channel(A_CHANNEL), oldSsp);
-}
-
-/**
- * @brief Tests to make sure noise generation works.
- * @note The values used were from section 5.2 of the YM2149 Application Manual
- * and were designed to make an explosion sound.
- */
-void testNoise()
-{
-	UINT32 oldSsp = Su(0);
-
-	disable_channel(A_CHANNEL);
-	set_noise(0x1F);
-	enable_channel(A_CHANNEL, OFF, ON);
-	enable_envelope(A_CHANNEL);
-	set_envelope(0x0, 0x3800);
-
-	Su(oldSsp);
-	Cconin();
-
-	doSu(disable_channel(A_CHANNEL), oldSsp);
-}
-
-/**
- * @brief Tests to make sure noise generation and tone generation work
- * simultaneously.
- * @details The tonal values from the testNoise() and testMultipleTones()
- * functions were used so that the results could be better compared and
- * interpreted.
- * @note The noise values used were from section 5.2 of the YM2149 Application
- * Manual and were designed to make an explosion sound. However, due to the
- * introduction of the tone, it sounds more like a gunshot instead.
- */
-void testNoiseWTone()
-{
-	UINT32 oldSsp = Su(0);
-
-	disable_channel(A_CHANNEL);
-	set_tone(A_CHANNEL, 0x264);
-	set_noise(0x1F);
-	enable_channel(A_CHANNEL, ON, ON);
-	enable_envelope(A_CHANNEL);
-	set_envelope(0x0, 0x3800);
-
-	Su(oldSsp);
-	Cconin();
-
-	doSu(disable_channel(A_CHANNEL), oldSsp);
 }
