@@ -41,7 +41,7 @@ src\tst_sfx.o: src\tst_sfx.c src\psg.h src\arg_list.h src\effects.h src\input.h 
 src\tst_hndl.o: src\tst_hndl.c src\bool.h src\input.h src\test.h src\tst_hndl.h src\vector.h
 	cc68x -g -c src\tst_hndl.c
 
-src\test.o: src\test.c src\test.h src\bool.h src\raster.h src\super.h src\types.h
+src\test.o: src\test.c src\test.h src\bool.h src\types.h
 	cc68x -g -c src\test.c
 
 src\arg_list.o: src\arg_list.c src\arg_list.h src\bool.h
