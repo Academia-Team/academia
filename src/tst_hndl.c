@@ -25,6 +25,8 @@ void handleTests()
 
 	Vector origKybd;
 
+	putc('\n', stdout);
+
 	while ((tstSuite = getNextTestSuite()) != NULL)
 	{
 		showTestSuiteInfo(stdout, tstSuite);
@@ -42,6 +44,7 @@ void handleTests()
 		{
 			while ((tstCase = getNextTestCase(tstSuite)) != NULL)
 			{
+				putc('\n', stdout);
 				showTestCaseInfo(stdout, tstCase);
 
 				origKybd = initKybd();
@@ -56,6 +59,7 @@ void handleTests()
 				
 				if (promptResponse == '\r')
 				{
+					putc('\n', stdout);
 					runTest(tstCase);
 				}
 
