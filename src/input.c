@@ -887,7 +887,7 @@ IKBD_Scancode getKey()
 
 IKBD_Scancode getBKey()
 {
-	return (int)(getKybdBRaw());
+	return (int)(getKybdBRaw() >> SCANCODE_BUFFER_SHIFT_VAL);
 }
 
 BOOL mouseLclick()
