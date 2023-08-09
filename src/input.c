@@ -722,9 +722,9 @@ typedef struct
 
 Mouse mouse = {INITIAL_MOUSE_X, INITIAL_MOUSE_Y, FALSE, FALSE, FALSE};
 
-void IKBD_isr();
+void IKBD_isr(void);
 
-Vector initKybd()
+Vector initKybd(void)
 {
 	const BOOL IS_SUPER = isSu();
 
@@ -744,7 +744,7 @@ Vector initKybd()
 	return sysKybdVec;
 }
 
-void flushKybd()
+void flushKybd(void)
 {
 	const BOOL IS_SUPER = isSu();
 
@@ -815,7 +815,7 @@ void addToKeyBuffer(UINT8 scancode)
 									SCANCODE_BUFFER_SHIFT_VAL;
 }
 
-UINT32 getKybdRaw()
+UINT32 getKybdRaw(void)
 {
 	const BOOL IS_SUPER = isSu();
 
@@ -840,7 +840,7 @@ UINT32 getKybdRaw()
 	return kybdVal;
 }
 
-UINT32 getKybdBRaw()
+UINT32 getKybdBRaw(void)
 {
 	long kybdVal;
 
@@ -852,12 +852,12 @@ UINT32 getKybdBRaw()
 	return kybdVal;
 }
 
-UINT8 getAscii()
+UINT8 getAscii(void)
 {
 	return (UINT8)(getKybdRaw());
 }
 
-UINT8 getBAscii()
+UINT8 getBAscii(void)
 {
 	UINT8 asciiVal;
 
@@ -869,7 +869,7 @@ UINT8 getBAscii()
 	return asciiVal;
 }
 
-IKBD_Scancode getKey()
+IKBD_Scancode getKey(void)
 {
 	long keyNum = getKybdRaw();
 
@@ -885,12 +885,12 @@ IKBD_Scancode getKey()
 	return (int)(keyNum);
 }
 
-IKBD_Scancode getBKey()
+IKBD_Scancode getBKey(void)
 {
 	return (int)(getKybdBRaw() >> SCANCODE_BUFFER_SHIFT_VAL);
 }
 
-BOOL mouseLclick()
+BOOL mouseLclick(void)
 {
 	const BOOL IS_SUPER = isSu();
 
@@ -911,7 +911,7 @@ BOOL mouseLclick()
 	return mouseLclickStatus;
 }
 
-BOOL mouseRclick()
+BOOL mouseRclick(void)
 {
 	const BOOL IS_SUPER = isSu();
 
@@ -932,7 +932,7 @@ BOOL mouseRclick()
 	return mouseRclickStatus;
 }
 
-BOOL mouseMoved()
+BOOL mouseMoved(void)
 {
 	const BOOL IS_SUPER = isSu();
 
