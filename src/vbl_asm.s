@@ -20,8 +20,10 @@
 						xref			_dead
 						xref			_gameWorld
 						xref			_mouse
-						xref			get_video_base
+						xref			_get_video_base
 						xref			_renderCursor
+						xref			_isSu
+						xref			_Su
 
 
 UNSET_CURS_X:			equ				-1
@@ -34,7 +36,9 @@ MIN_NUM_TICKS:			equ				14
 ;
 ; Register Table
 ; --------------
-; d0	-	Holds the original system stack pointer.
+; d0	-	Holds a value indicating if the subroutine is currently running in
+;			supervisor mode.
+;		-	Holds the original system stack pointer.
 ;		-	Holds the original 68000 interrupt mask.
 ;		-	Holds the current frame buffer start address.
 ;		-	Holds the old x coordinate of the mouse.
@@ -43,31 +47,34 @@ MIN_NUM_TICKS:			equ				14
 ; d4	-	Holds the original system stack pointer.
 ; d5	-	Holds the original 68000 interrupt mask.
 ; d6	-	Holds the current frame buffer start address.
+; d7	-	Holds a value indicating if the subroutine has entered supervisor
+;			mode.
 _hide_cursor:			movem.l			d0-d7/a0-a6,-(sp)
 
 						; Enter Supervisor Mode.
+						jsr				_isSu
+						move.b			d0,d7
+						bne				HC_MASK_INTS
 						clr.l			-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
 						move.l			d0,d4
+						addq.l			#4,sp
 
 						; Mask all interrupts.
-						move.w			#MASK_ALL_INTERRUPTS,-(sp)
+HC_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 						move.w			d0,d5
 
-						; Get parameter from SR that requires supervisor
-						; privileges.
-						jsr				get_video_base
-						move.l			d0,d6
-
-						; Exit Supervisor Mode.
+						; Leave Supervisor Mode.
+						tst.b			d7
+						bne				HC_GET_FRAMEBUFFER
 						move.l			d4,-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
+						addq.l			#4,sp
+
+HC_GET_FRAMEBUFFER:		jsr				_get_video_base
+						move.l			d0,d6
 
 						; Clear the old mouse position by plotting over it.
 						; Only attempt to clear if both the x and y coordinates
@@ -91,24 +98,26 @@ HC_RESET:				move.b			#FALSE,plotMouse
 						move.w			#UNSET_CURS_Y,oldCursY
 
 						; Enter Supervisor Mode.
+						tst.b			d7
+						bne				HC_RESTORE_INTS
 						clr.l			-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
 						move.l			d0,d4
+						addq.l			#4,sp
 
 						; Restore previous interrupt mask.
-						move.w			d5,-(sp)
+HC_RESTORE_INTS:		move.w			d5,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 
-						; Exit Supervisor Mode.
+						; Leave Supervisor Mode.
+						tst.b			d7
+						bne				HC_RETURN
 						move.l			d4,-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
+						addq.l			#4,sp
 
-						movem.l			(sp)+,d0-d7/a0-a6
+HC_RETURN:				movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
 ; void cursor_show();
@@ -117,21 +126,27 @@ HC_RESET:				move.b			#FALSE,plotMouse
 ;
 ; Register Table
 ; --------------
-; d0	-	Holds the original system stack pointer.
+; d0	-	Holds a value indicating if the subroutine is currently running in
+;			supervisor mode.
+;		-	Holds the original system stack pointer.
 ;		-	Holds the original 68000 interrupt mask.
 ; d4	-	Holds the original system stack pointer.
 ; d5	-	Holds the original 68000 interrupt mask.
+; d7	-	Holds a value indicating if the subroutine has entered supervisor
+;			mode.
 _show_cursor:			movem.l			d0-d7/a0-a6,-(sp)
 
 						; Enter Supervisor Mode.
+						jsr				_isSu
+						move.b			d0,d7
+						bne				SC_MASK_INTS
 						clr.l			-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
 						move.l			d0,d4
+						addq.l			#4,sp
 
 						; Mask all interrupts.
-						move.w			#MASK_ALL_INTERRUPTS,-(sp)
+SC_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 						move.w			d0,d5
@@ -143,13 +158,14 @@ _show_cursor:			movem.l			d0-d7/a0-a6,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 
-						; Exit Supervisor Mode.
+						; Leave Supervisor Mode.
+						tst.b			d7
+						bne				SC_RETURN
 						move.l			d4,-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
+						addq.l			#4,sp
 
-						movem.l			(sp)+,d0-d7/a0-a6
+SC_RETURN:				movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
 ; void game_start()
@@ -158,39 +174,46 @@ _show_cursor:			movem.l			d0-d7/a0-a6,-(sp)
 ;
 ; Register Table
 ; --------------
-; d0	-	Holds the original system stack pointer.
+; d0	-	Holds a value indicating if the subroutine is currently running in
+;			supervisor mode.
+;		-	Holds the original system stack pointer.
 ;		-	Holds the original 68000 interrupt mask.
 ;		-	Holds the current number of clock ticks.
 ;		-	Holds the total number of clock ticks that must be reached before
 ;			handling synchronous events.
 ; d4	-	Holds the original system stack pointer.
 ; d5	-	Holds the original 68000 interrupt mask.
+; d7	-	Holds a value indicating if the subroutine has entered supervisor
+;			mode.
 _game_start:			movem.l			d0-d7/a0-a6,-(sp)
 
 						; Enter Supervisor Mode.
+						jsr				_isSu
+						move.b			d0,d7
+						bne				GSTART_MASK_INTS
 						clr.l			-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
 						move.l			d0,d4
+						addq.l			#4,sp
 
 						; Mask all interrupts.
-						move.w			#MASK_ALL_INTERRUPTS,-(sp)
+GSTART_MASK_INTS:		move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 						move.w			d0,d5
 
-						; Exit Supervisor Mode.
+						; Leave Supervisor Mode.
+						tst.b			d7
+						bne				GSTART_SETUP
 						move.l			d4,-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
+						addq.l			#4,sp
 
 						; Only adjust the time desired if and only if it hasn't
 						; already been assigned to a non-zero value. This allows
 						; games that have been stopped to be resumed without any
 						; ill effect.
-						tst.l			timeDesired
+GSTART_SETUP:			tst.l			timeDesired
 						bne				GSTART_TDES_ASSIGNED
 						jsr				_get_time
 						add.l			#MIN_NUM_TICKS,d0
@@ -198,24 +221,26 @@ _game_start:			movem.l			d0-d7/a0-a6,-(sp)
 GSTART_TDES_ASSIGNED:	move.b			#TRUE,gameStart
 
 						; Enter Supervisor Mode.
+						tst.b			d7
+						bne				GSTART_RESTORE_INTS
 						clr.l			-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
 						move.l			d0,d4
+						addq.l			#4,sp
 
 						; Restore previous interrupt mask.
-						move.w			d5,-(sp)
+GSTART_RESTORE_INTS:	move.w			d5,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 
-						; Exit Supervisor Mode.
+						; Leave Supervisor Mode.
+						tst.b			d7
+						bne				GSTART_RETURN
 						move.l			d4,-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
+						addq.l			#4,sp
 
-						movem.l			(sp)+,d0-d7/a0-a6
+GSTART_RETURN:			movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
 ; void game_end()
@@ -224,21 +249,27 @@ GSTART_TDES_ASSIGNED:	move.b			#TRUE,gameStart
 ;
 ; Register Table
 ; --------------
-; d0	-	Holds the original system stack pointer.
+; d0	-	Holds a value indicating if the subroutine is currently running in
+;			supervisor mode.
+;		-	Holds the original system stack pointer.
 ;		-	Holds the original 68000 interrupt mask.
 ; d4	-	Holds the original system stack pointer.
 ; d5	-	Holds the original 68000 interrupt mask.
+; d7	-	Holds a value indicating if the subroutine has entered supervisor
+;			mode.
 _game_end:				movem.l			d0-d7/a0-a6,-(sp)
 
 						; Enter Supervisor Mode.
+						jsr				_isSu
+						move.b			d0,d7
+						bne				GEND_MASK_INTS
 						clr.l			-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
 						move.l			d0,d4
+						addq.l			#4,sp
 
 						; Mask all interrupts.
-						move.w			#MASK_ALL_INTERRUPTS,-(sp)
+GEND_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 						move.w			d0,d5
@@ -250,13 +281,14 @@ _game_end:				movem.l			d0-d7/a0-a6,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 
-						; Exit Supervisor Mode.
+						; Leave Supervisor Mode.
+						tst.b			d7
+						bne				GEND_RETURN
 						move.l			d4,-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
+						addq.l			#4,sp
 
-						movem.l			(sp)+,d0-d7/a0-a6
+GEND_RETURN:			movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
 ; UINT32 get_time()
@@ -271,23 +303,29 @@ _get_time:				move.l			vertTimer,d0
 ;
 ; Register Table
 ; --------------
-; d0	-	Holds the original system stack pointer.
+; d0	-	Holds a value indicating if the subroutine is currently running in
+;			supervisor mode.
+;		-	Holds the original system stack pointer.
 ;		-	Holds the original 68000 interrupt mask.
 ;		-	Holds the Boolean value to be returned.
 ; d4	-	Holds the original system stack pointer.
 ; d5	-	Holds the original 68000 interrupt mask.
 ; d6	-	Temporary holding spot for the Boolean value to be returned.
+; d7	-	Holds a value indicating if the subroutine has entered supervisor
+;			mode.
 _rend_req:				movem.l			d1-d7/a0-a6,-(sp)
 
 						; Enter Supervisor Mode.
+						jsr				_isSu
+						move.b			d0,d7
+						bne				R_REQ_MASK_INTS
 						clr.l			-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
 						move.l			d0,d4
+						addq.l			#4,sp
 
 						; Mask all interrupts.
-						move.w			#MASK_ALL_INTERRUPTS,-(sp)
+R_REQ_MASK_INTS:		move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 						move.w			d0,d5
@@ -300,13 +338,14 @@ _rend_req:				movem.l			d1-d7/a0-a6,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 
-						; Exit Supervisor Mode.
+						; Leave Supervisor Mode.
+						tst.b			d7
+						bne				R_REQ_RETURN
 						move.l			d4,-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
+						addq.l			#4,sp
 
-						move.w			d6,d0
+R_REQ_RETURN:			move.w			d6,d0
 						movem.l			(sp)+,d1-d7/a0-a6
 						rts
 
@@ -355,7 +394,7 @@ VBL_HANDLE_MOUSE:		cmpi.w			#UNSET_CURS_X,oldCursX
 						; Clear the old mouse position by plotting over it.
 VBL_CLR_OLD_MOUSE:		move.w			oldCursY,-(sp)
 						move.w			oldCursX,-(sp)
-						jsr				get_video_base
+						jsr				_get_video_base
 						move.l			d0,-(sp)
 						jsr				_renderCursor
 						addq.l			#8,sp
@@ -367,7 +406,7 @@ VBL_SET_OLD_MOUSE_POS:	lea				_mouse,a0
 						; Plot the cursor at its new position.
 						move.w			MOUSE_Y(a0),-(sp)
 						move.w			MOUSE_X(a0),-(sp)
-						jsr				get_video_base
+						jsr				_get_video_base
 						move.l			d0,-(sp)
 						jsr				_renderCursor
 						addq.l			#8,sp
@@ -384,7 +423,6 @@ VBL_HANDLE_SYNC_EVENTS:	cmpi.b			#TRUE,gameStart
 						pea				_gameWorld
 						jsr				_processSync
 						add.l			#32,sp
-						bra				VBL_RETURN
 
 						; Set rendReq to true before leaving.
 VBL_RETURN:				move.w			#TRUE,rendReq
@@ -397,21 +435,27 @@ VBL_RETURN:				move.w			#TRUE,rendReq
 ;
 ; Register Table
 ; --------------
-; d0	-	Holds the original system stack pointer.
+; d0	-	Holds a value indicating if the subroutine is currently running in
+;			supervisor mode.
+;		-	Holds the original system stack pointer.
 ;		-	Holds the original 68000 interrupt mask.
 ; d4	-	Holds the original system stack pointer.
 ; d5	-	Holds the original 68000 interrupt mask.
+; d7	-	Holds a value indicating if the subroutine has entered supervisor
+;			mode.
 reset_rend_req:			movem.l			d0-d7/a0-a6,-(sp)
 
 						; Enter Supervisor Mode.
+						jsr				_isSu
+						move.b			d0,d7
+						bne				RESET_REQ_MASK_INTS
 						clr.l			-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
 						move.l			d0,d4
+						addq.l			#4,sp
 
 						; Mask all interrupts.
-						move.w			#MASK_ALL_INTERRUPTS,-(sp)
+RESET_REQ_MASK_INTS:	move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 						move.w			d0,d5
@@ -423,13 +467,14 @@ reset_rend_req:			movem.l			d0-d7/a0-a6,-(sp)
 						jsr				_set_ipl
 						addq.l			#2,sp
 
-						; Exit Supervisor Mode.
+						; Leave Supervisor Mode.
+						tst.b			d7
+						bne				RESET_REQ_RETURN
 						move.l			d4,-(sp)
-						move.w			#$20,-(sp)
-						trap			#1
-						addq.l			#6,sp
+						jsr				_Su
+						addq.l			#4,sp
 
-						movem.l			(sp)+,d0-d7/a0-a6
+RESET_REQ_RETURN:		movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
 

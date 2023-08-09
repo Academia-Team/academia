@@ -1,402 +1,607 @@
 /**
  * @file tst_mdl.c
  * @author Academia Team
- * @brief Contains functions and types aimed at testing the model.
+ * @brief Contains functions aimed at testing the model.
  * 
  * @copyright Copyright Academia Team 2023
  */
 
-#include <limits.h>
-#include <osbind.h>
 #include <stdio.h>
 
+#include "arg_list.h"
 #include "events.h"
 #include "ikbdcode.h"
+#include "input.h"
 #include "model.h"
 #include "move.h"
+#include "num_util.h"
+#include "super.h"
 #include "test.h"
+#include "tst_hndl.h"
 #include "types.h"
+#include "vector.h"
 
-#define MAX_CELL_NAME_LEN 20
-typedef char CellName[MAX_CELL_NAME_LEN + 1];
+void modelTstMgr(void (*tstFunc)(ArgList *args));
 
-#define MAX_DIR_NAME_LEN 20
-typedef char DirName[MAX_DIR_NAME_LEN + 1];
+void t1ScoreBox(ArgList *args);
+void t2ScoreBox(ArgList *args);
+void t3ScoreBox(ArgList *args);
+void t4ScoreBox(ArgList *args);
+void t5ScoreBox(ArgList *args);
+void t6ScoreBox(ArgList *args);
 
-#define MAX_HAZ_NAME_LEN 20
-typedef char HazName[MAX_HAZ_NAME_LEN + 1];
+void outScoreInfo(Score *scoreBox, FILE *stream);
 
-#define MAX_ORIENT_NAME_LEN 10
-typedef char OrientName[MAX_ORIENT_NAME_LEN + 1];
+void t1LivesBox(ArgList *args);
+void t2LivesBox(ArgList *args);
+void t3LivesBox(ArgList *args);
+void t4LivesBox(ArgList *args);
+void t5LivesBox(ArgList *args);
 
-void testScoreBox();
-void testLivesBox();
-void testRowGen();
-char* getCellTypeName(CellType cell, char cellName[]);
-char* getDirName(Direction dir, char dirName[]);
-char* getHazName(HazType hazard, char hazName[]);
-void testWorldShift();
-void outRowInfo(const Row* const row, int id, int index);
-void testHazAdd();
-void outHazInfo(const Hazard* const hazard);
-void testPlayerMove();
-void outObjInPos(const World* const world, int x, int y);
-IKBD_Scancode getKeyBlocking();
-char* getOrientName(Direction orient, char orientName[]);
-void outCellInfo(const Cell* const cell, int id, int index);
+void outLivesInfo(Player *player, FILE *stream);
+
+void t1RowGen(ArgList *args);
+void t2RowGen(ArgList *args);
+void testRowGenCommon(World *world);
+
+void t1WorldShift(ArgList *args);
+void t2WorldShift(ArgList *args);
+void testWorldShiftCommon(World *world);
+
+void outRowInfo(const Row* const row, int id, int index, FILE *stream);
+
+void t1HazAdd(ArgList *args);
+
+void outHazInfo(const Hazard* const hazard, FILE *stream);
+
+void t1PlayerMove(ArgList *args);
+
+void outObjInPos(const World* const world, int x, int y, FILE *stream);
+void outCellInfo(const Cell* const cell, int id, int index, FILE *stream);
 
 int main()
 {
-	off_curs();
+	TestSuiteID suiteID;
 
-	run_test(testScoreBox());
-	run_test(testLivesBox());
-	run_test(testRowGen());
-	run_test(testWorldShift());
-	run_test(testHazAdd());
-	run_test(testPlayerMove());
+	suiteID = registerTestSuite("Tests the Score Box.", modelTstMgr);
 
-	on_curs();
+	registerTestCase(suiteID,
+					 "Displays the text and location of the components of a recently initialized Score Box whose x and y values are zero.",
+					 NULL, t1ScoreBox);
+	
+	registerTestCase(suiteID,
+					 "Displays information on a Score Box whose score has been incremented by 100.",
+					 NULL, t2ScoreBox);
+
+	registerTestCase(suiteID,
+					 "Displays information on a Score Box whose score has been incremented by 1000.",
+					 NULL, t3ScoreBox);
+
+	registerTestCase(suiteID,
+					 "Displays information on a Score Box whose score has been incremented by the maximum value a UINT32 can hold.",
+					 NULL, t4ScoreBox);
+
+	registerTestCase(suiteID,
+					 "Checks for a carry error if the score is incremented by the maximum possible score after holding a non-zero value.",
+					 NULL, t5ScoreBox);
+
+	registerTestCase(suiteID,
+					 "Checks for a carry error if the score is incremented by one after holding the maximum possible score.",
+					 NULL, t6ScoreBox);
+
+	suiteID = registerTestSuite("Tests the Lives Box.", modelTstMgr);
+
+	registerTestCase(suiteID,
+					 "Displays the text and location of a Lives Box associated with a recently initialized player.",
+					 NULL, t1LivesBox);
+
+	registerTestCase(suiteID,
+					 "Displays information on a Lives Box associated with a player who has lost one life.",
+					 NULL, t2LivesBox);
+
+	registerTestCase(suiteID,
+					 "Displays information on a Lives Box associated with a player who has lost two lives.",
+					 NULL, t3LivesBox);
+
+	registerTestCase(suiteID,
+					 "Displays information on a Lives Box associated with a player who has lost all three lives.",
+					 NULL, t4LivesBox);
+
+	registerTestCase(suiteID,
+					 "Displays information on a Lives Box where there is an attempt to remove a life from an already dead player.",
+					 NULL, t5LivesBox);
+
+	suiteID = registerTestSuite("Tests initial world generation.", modelTstMgr);
+
+	registerTestCase(suiteID,
+					 "Tests row generation in a single player world.",
+					 NULL, t1RowGen);
+
+	registerTestCase(suiteID,
+					 "Tests row generation in a two player world.",
+					 NULL, t2RowGen);
+
+	suiteID = registerTestSuite("Tests shifting rows in a world.", modelTstMgr);
+
+	registerTestCase(suiteID,
+					 "Test the consequences of shifting all the rows off of the world for a single player world.",
+					 NULL, t1WorldShift);
+
+	registerTestCase(suiteID,
+					 "Test the consequences of shifting all the rows off of the world for a two player world.",
+					 NULL, t2WorldShift);
+
+	suiteID = registerTestSuite("Tests hazard behaviour.", modelTstMgr);
+
+	registerTestCase(suiteID,
+					 "Prints information about hazard addition, movement, and removal over 40 clock ticks.",
+					 NULL, t1HazAdd);
+
+	suiteID = registerTestSuite("Tests player movement.", modelTstMgr);
+
+	registerTestCase(suiteID,
+					 "Show player movement across a static World.",
+					 NULL, t1PlayerMove);
+
+	handleTests();
+
 	return 0;
 }
 
 /**
- * @brief Confirms the position and text displayed by a score box.
+ * @brief Sets up an environment for testing the model.
+ * @details It ensures that a test doesn't end until a key is pressed.
+ * 
+ * @param tstFunc The function to test the model.
  */
-void testScoreBox()
+void modelTstMgr(void (*tstFunc)(ArgList *args))
+{
+	ArgList args;
+	Vector origKybd = initKybd();
+	IKBD_Scancode scancode;
+
+	initArgList(&args);
+
+	/* Since the model takes advantage of random numbers, make sure the rng is
+	reset before every test so that choosing to do/skip certain tests won't
+	affect the results of all the other tests. */
+	resetRandom();
+
+	tstFunc(&args);
+
+	while ((scancode = getKey()) == NO_KEY);
+
+	restoreKybd(origKybd);
+}
+
+/**
+ * @brief Displays the text and location of the components of a recently
+ * initialized Score Box whose x and y values are zero.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t1ScoreBox(ArgList *args)
 {
 	Score scoreBox;
 
 	initScore(0, 0, &scoreBox);
-
-	printf
-	(
-		"Score Label \"%s\": (%i, %i)\n", scoreBox.label.text,
-		scoreBox.label.x, scoreBox.label.y
-	);
-
-	printf
-	(
-		"Score Text \"%lu\": (%i, %i)\n", scoreBox.value,
-		scoreBox.x, scoreBox.y
-	);
-
-	Cconin();
-
-	updateScore(100, &scoreBox);
-	putchar('\n');
-	puts("After score increment by 100:");
-
-	printf
-	(
-		"Score Label \"%s\": (%i, %i)\n", scoreBox.label.text,
-		scoreBox.label.x, scoreBox.label.y
-	);
-
-	printf
-	(
-		"Score Text \"%lu\": (%i, %i)\n", scoreBox.value,
-		scoreBox.x, scoreBox.y
-	);
-
-	printf("Current Score: %lu\n", scoreBox.value);
-	Cconin();
-
-	updateScore(500, &scoreBox);
-	putchar('\n');
-	puts("After score increment by 500:");
-
-	printf
-	(
-		"Score Label \"%s\": (%i, %i)\n", scoreBox.label.text,
-		scoreBox.label.x, scoreBox.label.y
-	);
-
-	printf
-	(
-		"Score Text \"%lu\": (%i, %i)\n", scoreBox.value,
-		scoreBox.x, scoreBox.y
-	);
-
-	printf("Current Score: %lu\n", scoreBox.value);
-	Cconin();
-
-	updateScore(INT_MAX, &scoreBox);
-	putchar('\n');
-	printf("After score increment by %i:\n", INT_MAX);
-
-	printf
-	(
-		"Score Label \"%s\": (%i, %i)\n", scoreBox.label.text,
-		scoreBox.label.x, scoreBox.label.y
-	);
-
-	printf
-	(
-		"Score Text \"%lu\": (%i, %i)\n", scoreBox.value,
-		scoreBox.x, scoreBox.y
-	);
-		
-	printf("Current Score: %lu\n", scoreBox.value);
-	Cconin();
-
-	putchar('\n');
-	puts("Confirming that the score can never have a carry error if updated.");
-	putchar('\n');
-	updateScore(ULONG_MAX, &scoreBox);
-
-	if (scoreBox.value < ULONG_MAX)
-	{
-		puts("The test has failed.");
-		printf("The score has a value of %lu.\n", scoreBox.value);
-	}
-	else
-	{
-		puts("The test has succeeded.");
-		printf("The score has a value of %lu\n", scoreBox.value);
-	}
-
-	Cconin();
+	outScoreInfo(&scoreBox, stdout);
 }
 
 /**
- * @brief Confirms the position and text displayed by a lives box which is
- * connected to a Player.
+ * @brief Displays the text and location of the components of a Score Box whose
+ * score has been incremented by 100.
+ * 
+ * @param args Holds a list of arguments. (Unused)
  */
-void testLivesBox()
+void t2ScoreBox(ArgList *args)
 {
-	Player     tstPlayer;
-	BoolName   boolName;
-	initPlayer(&tstPlayer, 1);
+	Score scoreBox;
 
-	printf
-	(
-		"Lives Label \"%s\": (%i, %i)\n", tstPlayer.lives.label.text,
-		tstPlayer.lives.label.x, tstPlayer.lives.label.y
-	);
+	initScore(0, 0, &scoreBox);
+	updateScore(100, &scoreBox);
+	outScoreInfo(&scoreBox, stdout);
+}
 
-	printf
-	(
-		"Current Lives: %i (at %i, %i)\n",
-		tstPlayer.lives.value, tstPlayer.lives.x, tstPlayer.lives.y
-	);
+/**
+ * @brief Displays the text and location of the components of a Score Box whose
+ * score has been incremented by 1000.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t3ScoreBox(ArgList *args)
+{
+	Score scoreBox;
 
-	printf("Player Alive: %s\n\n", getBoolName(tstPlayer.alive, boolName));
-	Cconin();
+	initScore(0, 0, &scoreBox);
+	updateScore(1000, &scoreBox);
+	outScoreInfo(&scoreBox, stdout);
+}
 
-	while (tstPlayer.alive)
+/**
+ * @brief Displays the text and location of the components of a Score Box whose
+ * score has been incremented by the maximum value a UINT32 can hold.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t4ScoreBox(ArgList *args)
+{
+	Score scoreBox;
+
+	initScore(0, 0, &scoreBox);
+	updateScore(UINT32_MAX, &scoreBox);
+	outScoreInfo(&scoreBox, stdout);
+}
+
+/**
+ * @brief Checks if the score can have a carry error if the score is attempted
+ * to be incremented by the maximum possible score after holding a non-zero
+ * value.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t5ScoreBox(ArgList *args)
+{
+	Score scoreBox;
+
+	initScore(0, 0, &scoreBox);
+	updateScore(1, &scoreBox);
+	updateScore(UINT32_MAX, &scoreBox);
+	
+	puts(scoreBox.value < UINT32_MAX ?
+		 "The test has failed." :
+		 "The test has succeeded.");
+	printf("The score has a value of %lu.\n", scoreBox.value);
+}
+
+/**
+ * @brief Checks if the score can have a carry error if the score is attempted
+ * to be incremented by one after holding the maximum possible score.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t6ScoreBox(ArgList *args)
+{
+	Score scoreBox;
+
+	initScore(0, 0, &scoreBox);
+	updateScore(UINT32_MAX, &scoreBox);
+	updateScore(1, &scoreBox);
+	
+	puts(scoreBox.value < UINT32_MAX ?
+		 "The test has failed." :
+		 "The test has succeeded.");
+	printf("The score has a value of %lu.\n", scoreBox.value);
+}
+
+/**
+ * @brief Outputs information about the individual components of the given
+ * scoreBox to the given stream.
+ * 
+ * @details Includes details of where the score text and the label saying
+ * "SCORE" are on screen. Also displays the actual text that will be rendered
+ * on screen. If the scoreBox is NULL, it also indicates that.
+ * 
+ * @param scoreBox The scoreBox to display the information of.
+ * @param stream The stream to write the scoreBox information to.
+ */
+void outScoreInfo(Score *scoreBox, FILE *stream)
+{
+	if (scoreBox == NULL)
 	{
-		lostLife(&tstPlayer);
-		toggleImmunity(tstPlayer);
-		printf("After Life Loss:\n");
-
-		printf
+		fputs("Score is NULL.\n", stream);
+	}
+	else
+	{
+		fprintf
 		(
-			"Lives Label \"%s\": (%i, %i)\n", tstPlayer.lives.label.text,
-			tstPlayer.lives.label.x, tstPlayer.lives.label.y
+			stream, "Score Label \"%s\": (%i, %i)\n", scoreBox->label.text,
+			scoreBox->label.x, scoreBox->label.y
 		);
 
-		printf
+		fprintf
 		(
-			"Current Lives: %i (at %i, %i)\n", tstPlayer.lives.value,
-			tstPlayer.lives.x, tstPlayer.lives.y
+			stream, "Score Text \"%lu\": (%i, %i)\n", scoreBox->value,
+			scoreBox->x, scoreBox->y
 		);
 
-		printf("Player Alive: %s\n\n", getBoolName(tstPlayer.alive, boolName));
-		Cconin();
+		fprintf(stream, "Current Score: %lu\n", scoreBox->value);
 	}
 }
 
-void testRowGen()
+/**
+ * @brief Displays the text and location of a Lives Box associated with a
+ * recently initialized player.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t1LivesBox(ArgList *args)
+{
+	Player player;
+
+	initPlayer(&player, 1);
+	outLivesInfo(&player, stdout);
+	putchar('\n');
+}
+
+/**
+ * @brief Displays the text and location of a Lives Box associated with a
+ * player who has lost one life.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t2LivesBox(ArgList *args)
+{
+	const int NUM_LIVES_TO_LOSE = 1;
+
+	Player player;
+	int    counter;
+
+	initPlayer(&player, 1);
+
+	for (counter = 1;
+		 counter <= NUM_LIVES_TO_LOSE;
+		 counter++, toggleImmunity(player))
+	{
+		lostLife(&player);
+	}
+	
+	outLivesInfo(&player, stdout);
+	putchar('\n');
+}
+
+/**
+ * @brief Displays the text and location of a Lives Box associated with a
+ * player who has lost two lives.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t3LivesBox(ArgList *args)
+{
+	const int NUM_LIVES_TO_LOSE = 2;
+
+	Player player;
+	int    counter;
+
+	initPlayer(&player, 1);
+
+	for (counter = 1;
+		 counter <= NUM_LIVES_TO_LOSE;
+		 counter++, toggleImmunity(player))
+	{
+		lostLife(&player);
+	}
+
+	outLivesInfo(&player, stdout);
+	putchar('\n');
+}
+
+/**
+ * @brief Displays the text and location of a Lives Box associated with a
+ * player who has lost all three lives.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t4LivesBox(ArgList *args)
+{
+	const int NUM_LIVES_TO_LOSE = 3;
+
+	Player player;
+	int    counter;
+
+	initPlayer(&player, 1);
+
+	for (counter = 1;
+		 counter <= NUM_LIVES_TO_LOSE;
+		 counter++, toggleImmunity(player))
+	{
+		lostLife(&player);
+	}
+
+	outLivesInfo(&player, stdout);
+	putchar('\n');
+}
+
+/**
+ * @brief Displays the text and location of a Lives Box where there is an
+ * attempt to remove a life from an already dead player.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t5LivesBox(ArgList *args)
+{
+	const int NUM_LIVES_TO_LOSE = 4;
+
+	Player player;
+	int    counter;
+
+	initPlayer(&player, 1);
+
+	for (counter = 1;
+		 counter <= NUM_LIVES_TO_LOSE;
+		 counter++, toggleImmunity(player))
+	{
+		lostLife(&player);
+	}
+
+	outLivesInfo(&player, stdout);
+	putchar('\n');
+}
+
+/**
+ * @brief Outputs information about the heath of the given player.
+ * 
+ * @note Every LivesBox is connected to a Player object.
+ * 
+ * @details Includes details of where the life text and the label saying
+ * "LIVES" are on screen. Also displays the actual text that will be rendered
+ * on screen. If the player is NULL, it also indicates that.
+ * 
+ * @param player The player to display the lives information of.
+ * @param stream The stream to write the lives information to.
+ */
+void outLivesInfo(Player *player, FILE *stream)
+{
+	if (player == NULL)
+	{
+		fputs("Player is NULL.\n", stream);
+	}
+	else
+	{
+		fprintf
+		(
+			stream, "Lives Label \"%s\": (%i, %i)\n", player->lives.label.text,
+			player->lives.label.x, player->lives.label.y
+		);
+
+		fprintf
+		(
+			stream, "Current Lives: %i (at %i, %i)\n", player->lives.value,
+			player->lives.x, player->lives.y
+		);
+
+		fprintf(stream, "Player Alive: %s\n", getBoolName(player->alive));
+	}
+}
+
+/**
+ * @brief Tests row generation in a single player world.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t1RowGen(ArgList *args)
+{
+	World world;
+
+	initWorld(&world, 1);
+	testRowGenCommon(&world);
+}
+
+/**
+ * @brief Tests row generation in a two player world.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t2RowGen(ArgList *args)
+{
+	World world;
+
+	initWorld(&world, 2);
+	testRowGenCommon(&world);
+}
+
+/**
+ * @brief Shows information related to the rows in a given world.
+ * 
+ * @param world The world to display the information of.
+ */
+void testRowGenCommon(World *world)
 {
 	const int MAX_CELL_INFO_ON_SCRN = 4;
-	const int NUM_WORLDS = 2;
 
-	World tstP1World;
-	World tstP2World;
-	World *currentWorld;
-
-	int cellPos;
-	int counter;
-	int hazardIndex;
 	int index;
+	int cellPos;
+	int hazardIndex;
 
-	initWorld(&tstP1World, 1);
-	initWorld(&tstP2World, 2);
-
-	for (counter = 1, currentWorld = &tstP1World;
-		 counter <= NUM_WORLDS;
-		 counter++, currentWorld = &tstP2World)
+	if (world != NULL)
 	{
 		printf
 		(
 			"%i Player World (%i rows):\n",
-			currentWorld->numPlayers, currentWorld->usableRows
+			world->numPlayers, world->usableRows
 		);
 
-		for (index = 0; index < currentWorld->usableRows; index++)
+		for (index = 0; index < world->usableRows; index++)
 		{
-			outRowInfo(&currentWorld->rows[index], index + 1, index);
+			outRowInfo(&world->rows[index], index + 1, index, stdout);
 			putchar('\n');
-			Cconin();
+			getBKey();
 
 			for (cellPos = 0; cellPos < MAX_CELLS; cellPos++)
 			{
 				if (cellPos > 0 && cellPos % MAX_CELL_INFO_ON_SCRN == 0)
 				{
-					Cconin();
+					getBKey();
 				}
 
-				outCellInfo(&currentWorld->rows[index].cells[cellPos],
-							cellPos + 1, cellPos);
+				outCellInfo(&world->rows[index].cells[cellPos],
+							cellPos + 1, cellPos, stdout);
 				putchar('\n');
 			}
 
 			putchar('\n');
-			Cconin();
+			getBKey();
 
 			for (hazardIndex = 0;
-				 hazardIndex < currentWorld->rows[index].hazardCount;
+				 hazardIndex < world->rows[index].hazardCount;
 				 hazardIndex++)
 			{
-				outHazInfo(&currentWorld->rows[index].hazards[hazardIndex]);
+				outHazInfo(&world->rows[index].hazards[hazardIndex], stdout);
 				putchar('\n');
 			}
 
-			if (currentWorld->rows[index].hazardCount > 0)
+			if (world->rows[index].hazardCount > 0)
 			{
 				putchar('\n');
-				Cconin();
+				getBKey();
 			}
 		}
 	}
 }
 
 /**
- * @brief Gets the name corresponding to a particular cell type.
+ * @brief Test shifting the rows off of a one player world.
  * 
- * @param cell The cell to get the name of.
- * @param cellName The character array to store the result in.
- * @return char* The name of the cell type as a string.
+ * @param args Holds a list of arguments. (Unused)
  */
-char* getCellTypeName(CellType cell, char cellName[])
+void t1WorldShift(ArgList *args)
 {
-	switch(cell)
-	{
-		case GRASS_CELL:
-			cellName = "GRASS CELL";
-			break;
-		case ROAD_CELL:
-			cellName = "ROAD CELL";
-			break;
-		case TRACK_CELL:
-			cellName = "TRACK CELL";
-			break;
-		case SPIKE_CELL:
-			cellName = "SPIKE CELL";
-			break;
-		case HEDGE_CELL:
-			cellName = "HEDGE CELL";
-			break;
-		default:
-			cellName = "UNKNOWN CELL";
-	}
+	World world;
 
-	return cellName;
+	initWorld(&world, 1);
+	testWorldShiftCommon(&world);
 }
 
 /**
- * @brief Gets the name corresponding to a particular direction.
+ * @brief Test shifting the rows off of a two player world.
  * 
- * @param orient The direction to get the name of.
- * @param orientName The character array to store the result in.
- * @return char* The name of the direction as a string.
+ * @param args Holds a list of arguments. (Unused)
  */
-char* getDirName(Direction dir, char dirName[])
+void t2WorldShift(ArgList *args)
 {
-	switch(dir)
-	{
-		case M_UP:
-			dirName = "UP";
-			break;
-		case M_DOWN:
-			dirName = "DOWN";
-			break;
-		case M_LEFT:
-			dirName = "LEFT";
-			break;
-		case M_RIGHT:
-			dirName = "RIGHT";
-			break;
-		case M_NONE:
-			dirName = "NO DIRECTION";
-			break;
-		default:
-			dirName = "Unknown";
-	}
+	World world;
 
-	return dirName;
+	initWorld(&world, 2);
+	testWorldShiftCommon(&world);
 }
 
 /**
- * @brief Gets the name corresponding to a particular hazard.
+ * @brief Test the consequences of shifting all the rows off of the given world.
  * 
- * @param hazard The hazard to get the name of.
- * @param hazName The character array to store the result in.
- * @return char* The name of the hazard as a string.
+ * @param world The world to display the information of.
  */
-char* getHazName(HazType hazard, char hazName[])
+void testWorldShiftCommon(World *world)
 {
-	switch(hazard)
-	{
-		case CAR_HAZ:
-			hazName = "CAR";
-			break;
-		case FEATHERS_HAZ:
-			hazName = "MR. FEATHERS";
-			break;
-		case TRAIN_HAZ:
-			hazName = "TRAIN";
-			break;
-		case NO_HAZ:
-			hazName = "NO HAZARD";
-			break;
-		default:
-			hazName = "UNKNOWN HAZARD";
-	}
-
-	return hazName;
-}
-
-/**
- * @brief Tests the consequences of shifting all the rows off of the world for
- * both a single and double player world.
- */
-void testWorldShift()
-{
-	World tstWorld;
 	int rowCounter;
 	int shiftCounter;
 	int index;
 
-	initWorld(&tstWorld, 1);
-
-	for (shiftCounter = 0; shiftCounter <= tstWorld.usableRows; shiftCounter++)
+	for (shiftCounter = 0; shiftCounter <= world->usableRows; shiftCounter++)
 	{
 		printf("After shifting World %i time(s):\n", shiftCounter);
-		printf("Bottom Index: %i\n", tstWorld.bottom);
-		printf("Top Index: %i\n\n", tstWorld.top);
+		printf("Bottom Index: %i\n", world->bottom);
+		printf("Top Index: %i\n\n", world->top);
 		
-		for (index = tstWorld.bottom, rowCounter = 0;
-			 rowCounter < tstWorld.usableRows;
-			 index = (index + 1) % tstWorld.usableRows, rowCounter++)
+		for (index = world->bottom, rowCounter = 0;
+			 rowCounter < world->usableRows;
+			 index = (index + 1) % world->usableRows, rowCounter++)
 		{
-			outRowInfo(&tstWorld.rows[index], rowCounter + 1, index);
+			outRowInfo(&world->rows[index], rowCounter + 1, index, stdout);
 			putchar('\n');
-			Cconin();
+			getBKey();
 		}
 
-		shiftWorld(&tstWorld);
+		shiftWorld(world);
 	}
 }
 
@@ -406,26 +611,26 @@ void testWorldShift()
  * @param row The row to print the information of.
  * @param id A integral identifier for the cell.
  * @param index The row's index.
+ * @param stream The stream to write the scoreBox information to.
  */
-void outRowInfo(const Row* const row, int id, int index)
+void outRowInfo(const Row* const row, int id, int index, FILE *stream)
 {
-	CellName cellName;
-	DirName  dirName;
-
-	printf("Row %i (index %i):\n", id, index);
-	printf("Cell Type: %s\n", getCellTypeName(row->cellType, cellName));
-	printf("Direction: %s\n", getDirName(row->horzDirection, dirName));
-	printf("Hazard Count: %i\n", row->hazardCount);
-	printf("Hedge Count: %i\n", row->hedgeCount);
-	printf("Spike Count: %i\n", row->spikeCount);
-	printf("Y Coordinate: %i\n", row->y);
+	fprintf(stream, "Row %i (index %i):\n", id, index);
+	fprintf(stream, "Cell Type: %s\n", getCellTypeName(row->cellType));
+	fprintf(stream, "Direction: %s\n", getDirName(row->horzDirection));
+	fprintf(stream, "Hazard Count: %i\n", row->hazardCount);
+	fprintf(stream, "Hedge Count: %i\n", row->hedgeCount);
+	fprintf(stream, "Spike Count: %i\n", row->spikeCount);
+	fprintf(stream, "Y Coordinate: %i\n", row->y);
 }
 
 /**
  * @brief Prints information about hazard addition, movement, and removal over
  * 40 clock ticks.
+ * 
+ * @param args Holds a list of arguments. (Unused)
  */
-void testHazAdd()
+void t1HazAdd(ArgList *args)
 {
 	const int MAX_ITER = 40;
 
@@ -442,57 +647,55 @@ void testHazAdd()
 	for (iter = 1; iter <= MAX_ITER; iter++)
 	{
 		printf("Number of Iterations: %i/%i\n\n", iter, MAX_ITER);
-		Cconin();
+		getBKey();
 
 		puts("Hazards after adding:");
 		for (rowIndex = 0; rowIndex < NUM_ROW_TYPES; rowIndex++)
 		{
 			addHazard(&tstRows[rowIndex]);
-			outRowInfo(&tstRows[rowIndex], rowIndex + 1, rowIndex);
+			outRowInfo(&tstRows[rowIndex], rowIndex + 1, rowIndex, stdout);
 			putchar('\n');
 
 			for (hazIndex = 0; hazIndex < tstRows[rowIndex].hazardCount;
 				 hazIndex++)
 			{
-				outHazInfo(&tstRows[rowIndex].hazards[hazIndex]);
+				outHazInfo(&tstRows[rowIndex].hazards[hazIndex], stdout);
 				putchar('\n');
 			}
 
-			Cconin();
+			getBKey();
 		}
 
 		puts("Hazards after moving:");
 		for (rowIndex = 0; rowIndex < NUM_ROW_TYPES; rowIndex++)
 		{
 			moveHazard(&tstRows[rowIndex]);
-			outRowInfo(&tstRows[rowIndex], rowIndex + 1, rowIndex);
+			outRowInfo(&tstRows[rowIndex], rowIndex + 1, rowIndex, stdout);
 			putchar('\n');
 
 			for (hazIndex = 0; hazIndex < tstRows[rowIndex].hazardCount;
 				 hazIndex++)
 			{
-				outHazInfo(&tstRows[rowIndex].hazards[hazIndex]);
+				outHazInfo(&tstRows[rowIndex].hazards[hazIndex], stdout);
 				putchar('\n');
 			}
 
-			Cconin();
+			getBKey();
 		}
 
 		puts("Hazards after Removing:");
 		for (rowIndex = 0; rowIndex < NUM_ROW_TYPES; rowIndex++)
 		{
 			removeHazard(&tstRows[rowIndex]);
-			outRowInfo(&tstRows[rowIndex], rowIndex + 1, rowIndex);
+			outRowInfo(&tstRows[rowIndex], rowIndex + 1, rowIndex, stdout);
 			putchar('\n');
 
 			for (hazIndex = 0; hazIndex < tstRows[rowIndex].hazardCount;
 				 hazIndex++)
 			{
-				outHazInfo(&tstRows[rowIndex].hazards[hazIndex]);
+				outHazInfo(&tstRows[rowIndex].hazards[hazIndex], stdout);
 				putchar('\n');
 			}
-
-			Cconin();
 		}
 	}
 }
@@ -501,19 +704,17 @@ void testHazAdd()
  * @brief Outputs all information about a hazard to stdout.
  * 
  * @param hazard The hazard to print the information of.
+ * @param stream The stream to write the scoreBox information to.
  */
-void outHazInfo(const Hazard* const hazard)
+void outHazInfo(const Hazard* const hazard, FILE *stream)
 {
-	HazName    hazName;
-	OrientName orientName;
-
-	printf("Hazard: %s\n", getHazName(hazard->hazardType, hazName));
-	printf("Orientation: %s\n", getOrientName(hazard->orientation, orientName));
-	printf("Current X Location: %i\n", hazard->x);
+	fprintf(stream, "Hazard: %s\n", getHazName(hazard->hazardType));
+	fprintf(stream, "Orientation: %s\n", getOrientName(hazard->orientation));
+	fprintf(stream, "Current X Location: %i\n", hazard->x);
 }
 
 /**
- * @brief Allows the player to move across a static World.
+ * @brief Shows the player to move across a static World.
  * @details No hazards will be moving. Lives and score will be displayed every
  * time a key is entered. The arrow keys are supported for navigation. Entering
  * 'q' will cause the test to quit. Pressing 'r' will cause the World and Player
@@ -521,8 +722,10 @@ void outHazInfo(const Hazard* const hazard)
  * 
  * If a player has been hit by a hazard and immunity has been activated, every
  * subsequent valid key press will count for a second of immunity.
+ * 
+ * @param args Holds a list of arguments. (Unused)
  */
-void testPlayerMove()
+void t1PlayerMove(ArgList *args)
 {
 	BOOL   keyValid;
 	BOOL   quitter;
@@ -533,8 +736,6 @@ void testPlayerMove()
 	int cellIdx;
 
 	IKBD_Scancode keyIn;
-
-	BoolName immunityStatus;
 
 	int secSinceDmg = -1;
 
@@ -554,7 +755,7 @@ void testPlayerMove()
 			printf
 			(
 				"Immunity is %s.\n\n",
-				getBoolName(tstWorld.mainPlayer.immune, immunityStatus)
+				getBoolName(tstWorld.mainPlayer.immune)
 			);
 			secSinceDmg = -1;
 		}
@@ -572,7 +773,7 @@ void testPlayerMove()
 			printf
 			(
 				"Immunity is %s.\n\n",
-				getBoolName(tstWorld.mainPlayer.immune, immunityStatus)
+				getBoolName(tstWorld.mainPlayer.immune)
 			);
 		}
 
@@ -611,34 +812,34 @@ void testPlayerMove()
 
 			printf("To the left of you is a ");
 			outObjInPos(&tstWorld, tstWorld.mainPlayer.x - CELL_LEN,
-						tstWorld.mainPlayer.y);
+						tstWorld.mainPlayer.y, stdout);
 			putchar('\n');
 
 			printf("To the right of you is a ");
 			outObjInPos(&tstWorld, tstWorld.mainPlayer.x + CELL_LEN,
-						tstWorld.mainPlayer.y);
+						tstWorld.mainPlayer.y, stdout);
 			putchar('\n');
 
 			printf("Above you is a ");
 			outObjInPos(&tstWorld, tstWorld.mainPlayer.x,
-						tstWorld.mainPlayer.y - CELL_LEN);
+						tstWorld.mainPlayer.y - CELL_LEN, stdout);
 			putchar('\n');
 
 			printf("Below you is a ");
 			outObjInPos(&tstWorld, tstWorld.mainPlayer.x,
-						tstWorld.mainPlayer.y + CELL_LEN);
+						tstWorld.mainPlayer.y + CELL_LEN, stdout);
 			putchar('\n');
 		}
 
 		do
 		{
-			puts("Where do you want to do?\n");
+			puts("What do you want to do?\n");
 			puts("Use the arrow keys to move.");
 			puts("Press 'q' to quit and 'r' to reset the state of the World.");
 			puts("Press the Space Bar to stay in place while the time advances \
 by one second.");
 
-			keyIn = getKeyBlocking();
+			keyIn = getBKey();
 			keyValid = TRUE;
 
 			switch(keyIn)
@@ -662,6 +863,8 @@ by one second.");
 				case IKBD_DOWN_SCANCODE:
 					setPlayerDir(&tstWorld.mainPlayer, M_DOWN);
 					break;
+				case IKBD_SPACE_SCANCODE:
+					break;
 				default:
 					keyValid = FALSE;
 					puts("\nThe provided key is invalid. Please try again.\n");
@@ -670,9 +873,9 @@ by one second.");
 
 		while (playerMayMove(&tstWorld.mainPlayer))
 		{
-			oldSsp = Super(0);
+			oldSsp = Su(0);
 			movePlayer(&tstWorld, &tstWorld.mainPlayer);
-			Super(oldSsp);
+			Su(oldSsp);
 		}
 
 		if (secSinceDmg >= 0)
@@ -693,93 +896,54 @@ by one second.");
  * @param world The World to look for an object in.
  * @param x The x coordinate of an object.
  * @param y The y coordinate of an object.
+ * @param stream The stream to write the scoreBox information to.
  */
-void outObjInPos(const World* const world, int x, int y)
+void outObjInPos(const World* const world, int x, int y, FILE *stream)
 {
 	int rowIdx;
 	int cellIdx;
 
 	coordToIndex(world, &rowIdx, &cellIdx, x, y);
 
-	if (world->rows[rowIdx].cells[cellIdx].collectableValue != NO_COLLECT)
-	{
-		switch(world->rows[rowIdx].cells[cellIdx].collectableValue)
-		{
-			case A_COLLECT_VAL:
-				printf("A ");
-				break;
-			case B_COLLECT_VAL:
-				printf("B ");
-				break;
-			case C_COLLECT_VAL:
-				printf("C ");
-				break;
-			default:
-				printf("Unknown ");
-		}
-
-		printf("collectable and a ");
-	}
-
 	if (chkBorderCollision(x, y))
 	{
-		printf("border.\n");
-	}
-	else if (chkHedgeCollision(world, x, y))
-	{
-		printf("hedge.\n");
-	}
-	else if (chkHazardCollision(world, x, y))
-	{
-		printf("hazard.\n");
+		fprintf(stream, "border.\n");
 	}
 	else
 	{
-		printf("cell.\n");
+		if (world->rows[rowIdx].cells[cellIdx].collectableValue != NO_COLLECT)
+		{
+			switch(world->rows[rowIdx].cells[cellIdx].collectableValue)
+			{
+				case A_COLLECT_VAL:
+					fprintf(stream, "A ");
+					break;
+				case B_COLLECT_VAL:
+					fprintf(stream, "B ");
+					break;
+				case C_COLLECT_VAL:
+					fprintf(stream, "C ");
+					break;
+				default:
+					fprintf(stream, "UNKNOWN ");
+			}
+
+			fprintf(stream, "collectable and a ");
+		}
+
+		if (chkHedgeCollision(world, x, y))
+		{
+			fprintf(stream, "hedge.\n");
+		}
+		else if (chkHazardCollision(world, x, y))
+		{
+			fprintf(stream, "hazard.\n");
+		}
+		else
+		{
+			fprintf(stream, "cell.\n");
+		}
 	}
-}
-
-/**
- * @brief Holds everything hostage while awaiting a key press.
- * 
- * @return An IKBD scancode.
- */
-IKBD_Scancode getKeyBlocking()
-{
-	return Cnecin() >> 16;
-}
-
-/**
- * @brief Gets the name corresponding to a particular orientation.
- * 
- * @param orient The orientation to get the name of.
- * @param orientName The character array to store the result in.
- * @return char* The name of the orientation as a string.
- */
-char* getOrientName(Direction orient, char orientName[])
-{
-	switch(orient)
-	{
-		case M_NORTH:
-			orientName = "NORTH";
-			break;
-		case M_DOWN:
-			orientName = "SOUTH";
-			break;
-		case M_WEST:
-			orientName = "WEST";
-			break;
-		case M_EAST:
-			orientName = "EAST";
-			break;
-		case M_NONE:
-			orientName = "SYMMETRIC";
-			break;
-		default:
-			orientName = "Unknown";
-	}
-
-	return orientName;
 }
 
 /**
@@ -788,13 +952,12 @@ char* getOrientName(Direction orient, char orientName[])
  * @param cell The cell to print the information of.
  * @param id A integral identifier for the cell.
  * @param index The cell's index.
+ * @param stream The stream to write the scoreBox information to.
  */
-void outCellInfo(const Cell* const cell, int id, int index)
+void outCellInfo(const Cell* const cell, int id, int index, FILE *stream)
 {
-	CellName cellName;
-
-	printf("Cell %i (index %i):\n", id, index);
-	printf("Cell Type: %s\n", getCellTypeName(cell->cellType, cellName));
-	printf("Collectable Value: %i\n", cell->collectableValue);
-	printf("X coord: %i\n", cell->x);
+	fprintf(stream, "Cell %i (index %i):\n", id, index);
+	fprintf(stream, "Cell Type: %s\n", getCellTypeName(cell->cellType));
+	fprintf(stream, "Collectable Value: %i\n", cell->collectableValue);
+	fprintf(stream, "X coord: %i\n", cell->x);
 }

@@ -12,6 +12,11 @@
 #include "move.h"
 #include "types.h"
 
+#define NUM_BLOCKY_SIZES 3
+#define BLOCKY8_HEIGHT 8
+#define BLOCKY16_HEIGHT 16
+#define BLOCKY32_HEIGHT 32
+
 #define CAR_HEIGHT 32
 #define CAR_LEN 32
 
@@ -87,6 +92,19 @@
 
 #define NUM_ORIENTATIONS 4
 #define NUM_HORZ_ORIENTATIONS 2
+
+/**
+ * @brief Returns an array representing a square with a face.
+ * @details A copy of the array will also be returned in dest unless dest is
+ * NULL or the size is invalid.
+ * 
+ * @param size The length and height of the bitmap desired (in pixels). Only 8,
+ * 16, and 32 are valid.
+ * @param dest The location in memory to copy the bitmap to. Can be NULL.
+ * @return The address of the bitmap representing the square. Will be NULL if
+ * the size is invalid.
+ */
+const void *getBlockyBitmap(int size, void *dest);
 
 /**
  * @brief Returns an array of UINT32 resembling a car.

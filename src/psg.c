@@ -7,26 +7,36 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
-
+#include "bool.h"
 #include "num_util.h"
 #include "psg.h"
+#include "super.h"
 #include "types.h"
 
 void write_psg(PsgReg reg, UINT8 val)
 {
+	const BOOL IS_SUPER = isSu();
+	UINT32 oldSsp;
+
 	volatile UINT8* const REG_SELECT = 0xFFFF8800;
 	volatile UINT8* const WRITE_PSG  = 0xFFFF8802;
 
 	if (reg >= MIN_PSG_REG_NUM && reg <= MAX_PSG_REG_NUM)
 	{
+		if (!IS_SUPER) oldSsp = Su(0);
+
 		*REG_SELECT = reg;
 		*WRITE_PSG  = val;
+
+		if (!IS_SUPER) Su(oldSsp);
 	}
 }
 
 UINT8 read_psg(PsgReg reg)
 {
+	const BOOL IS_SUPER = isSu();
+	UINT32 oldSsp;
+
 	volatile UINT8* const REG_SELECT = 0xFFFF8800;
 	volatile UINT8* const READ_PSG   = 0xFFFF8800;
 
@@ -34,8 +44,12 @@ UINT8 read_psg(PsgReg reg)
 
 	if (reg >= MIN_PSG_REG_NUM && reg <= MAX_PSG_REG_NUM)
 	{
+		if (!IS_SUPER) oldSsp = Su(0);
+
 		*REG_SELECT = reg;
 		psgData     = *READ_PSG;
+
+		if (!IS_SUPER) Su(oldSsp);
 	}
 
 	return psgData;
@@ -163,12 +177,15 @@ void enable_channel(Channel channel, Toggle tone_on, Toggle noise_on)
 
 void stop_sound()
 {
-	UINT32 old_ssp = Super(0);
+	const BOOL IS_SUPER = isSu();
+	UINT32 old_ssp;
+
+	if (!IS_SUPER) old_ssp = Su(0);
 
 	write_psg(A_LEVEL_REG, 0);
 	write_psg(B_LEVEL_REG, 0);
 	write_psg(C_LEVEL_REG, 0);
 	write_psg(MIXER_REG, read_psg(MIXER_REG) | 0077);
 
-	Super(old_ssp);
+	if (!IS_SUPER) Su(old_ssp);
 }

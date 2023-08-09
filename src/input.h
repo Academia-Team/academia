@@ -110,12 +110,32 @@ void restoreKybd(Vector sysKybdVec);
 UINT32 getKybdRaw();
 
 /**
+ * @brief Returns a value from the keyboard.
+ * @details It does block for input.
+ * 
+ * @return A 32-bit number where the bottom 8-bits is the ASCII code
+ * corresponding to a key that was pressed and the bits 16-23 correspond to the
+ * physical location of the key on the keyboard (the scancode). All other bits
+ * are guaranteed to be zero.
+ */
+UINT32 getKybdBRaw();
+
+/**
  * @brief Retrieves an ascii value corresponding to a key that was pressed.
  * 
  * @return The ascii value of a pressed key (or zero if no key was pressed or
  * there is no corresponding ascii value).
  */
 UINT8 getAscii();
+
+/**
+ * @brief Retrieves an ascii value corresponding to a key that was pressed.
+ * @details It blocks while awaiting input. If a key is pressed that does not
+ * correspond to an ASCII value, then it will continue to block.
+ * 
+ * @return The ascii value of a pressed key.
+ */
+UINT8 getBAscii();
 
 /**
  * @brief Gets a number representing a location of a pressed key on the keyboard
@@ -126,6 +146,17 @@ UINT8 getAscii();
  * will be returned (NO_KEY).
  */
 IKBD_Scancode getKey();
+
+/**
+ * @brief Gets a number representing a location of a pressed key on the
+ * keyboard.
+ * @details It blocks while awaiting input.
+ * 
+ * @return A 16-bit number with the lower 8-bits representing a key on the
+ * keyboard if a key was pressed. Otherwise, a negative integral 16-bit number
+ * will be returned (NO_KEY).
+ */
+IKBD_Scancode getBKey();
 
 /**
  * @brief Checks if a left mouse click has happened.

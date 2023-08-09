@@ -62,7 +62,6 @@ typedef enum
  * @brief Writes the given byte value (0-255) to the given PSG register (0-15)
  * @details If any invalid parameter is provided, nothing will be written to a
  * PSG register.
- * @note Requires super privileges.
  * 
  * @param reg The register to write to. (0-15)
  * @param val The byte to write to the register (0-255)
@@ -73,7 +72,7 @@ void write_psg(PsgReg reg, UINT8 val);
  * @brief Reads the current value stored in the PSG register.
  * 
  * @param reg The register to read from. (0-15)
- * @note Requires super privileges.
+ * 
  * @return The byte value stored in the given register. If the given register is
  * invalid, zero will be returned.
  */
@@ -84,7 +83,6 @@ UINT8 read_psg(PsgReg reg);
  * (0=A, 1=B, 2=C) with the given 12-bit tuning.
  * @details If any invalid parameter is provided, no tone registers will be
  * loaded.
- * @note Requires super privileges.
  * 
  * @param channel The channel to set the tone registers for. Any value outside
  * the valid range for channels (0=A, 1=B, 2=C) will be ignored.
@@ -100,7 +98,6 @@ void set_tone(Channel channel, int tuning);
  * @brief Loads the volume register for the given channel.
  * @details If any invalid parameter is provided, no volume registers will be
  * loaded.
- * @note Requires super privileges.
  * 
  * @param channel The channel to set the volume registers for. Any value outside
  * the valid range for channels (0=A, 1=B, 2=C) will be ignored.
@@ -116,7 +113,6 @@ void set_volume(Channel channel, int volume);
  * generator gives. Enabling the envelope for a specific channel will cause the
  * currently held volume settings for that channel to be lost. If any invalid
  * parameter is provided, no volume registers will be loaded.
- * @note Requires super privileges.
  * 
  * @param channel The channel to set the volume registers for. Any value outside
  * the valid range for channels (0=A, 1=B, 2=C) will be ignored.
@@ -126,7 +122,6 @@ void enable_envelope(Channel channel);
 /**
  * @brief Loads the noise register with the given tuning.
  * @details If the given tuning value is invalid, nothing will change.
- * @note Requires super privileges.
  * 
  * @param tuning The value to use to set the noise register. Only the first
  * 5-bits are used. If the given tuning value is larger than 5-bits in magnitude
@@ -138,7 +133,6 @@ void set_noise(int tuning);
  * @brief Loads the PSG envelope control registers with the given envelope shape
  * and 16-bit sustain.
  * @details If any invalid parameter is provided, no registers will be loaded.
- * @note Requires super privileges.
  * 
  * @param shape The lower four bits are used to control the shape of the
  * envelope. If more than the lowest four bits are set, or if the value is
@@ -149,12 +143,11 @@ void set_noise(int tuning);
 void set_envelope(int shape, UINT16 sustain);
 
 /**
- * @brief Turns the given channel’s tone/noise signals on/off (0=off, 1=on).
+ * @brief Turns the given channel's tone/noise signals on/off (0=off, 1=on).
  * @details If any invalid parameter is provided, nothing will be set. The
  * bits to set the signals in the registers are the complements of tone_on and
  * noise_on. Therefore, bits will be zeroed out in order to enable some of these
  * signals.
- * @note Requires super privileges.
  * 
  * @param channel The channel to set the signals for. Any value outside the
  * valid range for channels (0=A, 1=B, 2=C) will be ignored.
@@ -164,9 +157,8 @@ void set_envelope(int shape, UINT16 sustain);
 void enable_channel(Channel channel, Toggle tone_on, Toggle noise_on);
 
 /**
- * @brief Disables the given channel’s tone and noise signals.
+ * @brief Disables the given channel's tone and noise signals.
  * @details If a invalid channel is provided, nothing will be disabled.
- * @note Requires super privileges.
  * 
  * @param channel The channel to set the signals for. Any value outside the
  * valid range for channels (0=A, 1=B, 2=C) will be ignored.

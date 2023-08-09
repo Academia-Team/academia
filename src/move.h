@@ -32,6 +32,87 @@ typedef enum
 } Direction;
 
 /**
+ * @brief The maximum number of characters returned by getDirName().
+ */
+#define MAX_DIR_NAME_LEN 7
+
+/**
+ * @brief A type of string guaranteed to be able to hold the string returned by
+ * getDirName().
+ */
+typedef char DirName[MAX_DIR_NAME_LEN + 1];
+
+/**
+ * @brief The maximum number of characters returned by getOrientName().
+ */
+#define MAX_ORIENT_NAME_LEN MAX_DIR_NAME_LEN
+
+/**
+ * @brief A type of string guaranteed to be able to hold the string returned by
+ * getOrientName().
+ */
+typedef DirName OrientName;
+
+
+/**
+ * @brief Gets the name corresponding to the given body relative direction
+ * (UP, DOWN, LEFT, RIGHT).
+ * 
+ * @param dirValue The direction to get the name of.
+ * @return The name of the direction as a string or "NONE" if no direction is
+ * set, or "UNKNOWN" if the given value is not recognized.
+ */
+#define getBodyRelDir(dirValue) \
+	(dirValue == M_UP ? "UP" : \
+		(dirValue == M_DOWN ? "DOWN" : \
+			(dirValue == M_LEFT ? "LEFT" : \
+				(dirValue == M_RIGHT ? "RIGHT" : \
+					(dirValue == M_NONE ? "NONE" : "UNKNOWN") \
+				) \
+			) \
+		) \
+	)
+
+/**
+ * @brief Gets the name corresponding to the given compass direction
+ * (NORTH, SOUTH, WEST, EAST).
+ * 
+ * @param dirValue The direction to get the name of.
+ * @return The name of the direction as a string or "NONE" if no direction is
+ * set, or "UNKNOWN" if the given value is not recognized.
+ */
+#define getCompassDir(dirValue) \
+	(dirValue == M_NORTH ? "NORTH" : \
+		(dirValue == M_SOUTH ? "SOUTH" : \
+			(dirValue == M_WEST ? "WEST" : \
+				(dirValue == M_EAST ? "EAST" : \
+					(dirValue == M_NONE ? "NONE" : "UNKNOWN") \
+				) \
+			) \
+		) \
+	)
+
+/**
+ * @brief Gets the name corresponding to the given body relative direction
+ * (UP, DOWN, LEFT, RIGHT).
+ * 
+ * @param dirValue The direction to get the name of.
+ * @return The name of the direction as a string or "NONE" if no direction is
+ * set, or "UNKNOWN" if the given value is not recognized.
+ */
+#define getDirName(dirValue) getBodyRelDir(dirValue)
+
+/**
+ * @brief Gets the name corresponding to the given orientation
+ * (NORTH, SOUTH, WEST, EAST).
+ * 
+ * @param orientValue The orientation to get the name of.
+ * @return The name of the orientation as a string or "NONE" if no orientation
+ * is set, or "UNKNOWN" if the given value is not recognized.
+ */
+#define getOrientName(orientValue) getCompassDir(orientValue)
+
+/**
  * @brief The direction that has the highest value in the Direction enum.
  */
 #define MOVE_MAX_DIR M_NORTH

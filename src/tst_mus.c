@@ -6,49 +6,77 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
 #include <stdio.h>
 
+#include "arg_list.h"
+#include "input.h"
 #include "music.h"
 #include "psg.h"
+#include "super.h"
 #include "test.h"
+#include "tst_hndl.h"
 #include "types.h"
+#include "vector.h"
 
-void playSong();
+void musTstMgr(void (*tstFunc)(ArgList *args));
+
+void t1Mus(ArgList *args);
+
 UINT32 getTime();
 
 int main()
 {
-	UINT32 oldSsp;
+	TestSuiteID suiteID;
 
-	off_curs();
-	stop_sound();
+	suiteID = registerTestSuite("Plays music used in game.", musTstMgr);
 
-	run_test(playSong());
+	registerTestCase(suiteID, "Plays the main game music", NULL, t1Mus);
 
-	stop_sound();
-	on_curs();
+	handleTests();
+
+	return 0;
 }
 
 /**
- * @brief Tests the music module by playing a song until the 'q' key is pressed.
+ * @brief Sets up an environment for testing the playing of music.
+ * @details It ensures all audio is reset before moving on to the next test.
+ * 
+ * @param tstFunc The function to test the music.
  */
-void playSong()
+void musTstMgr(void (*tstFunc)(ArgList *args))
+{
+	ArgList args;
+	Vector origKybd = initKybd();
+
+	initArgList(&args);
+
+	tstFunc(&args);
+
+	restoreKybd(origKybd);
+	stop_sound();
+}
+
+/**
+ * @brief Tests the music module by playing the main game song until the 'q' key
+ * is pressed.
+ * 
+ * @param args Holds a list of arguments. (Unused)
+ */
+void t1Mus(ArgList *args)
 {
 	UINT32 curTime;
 	UINT32 timeMusUpdated;
-	UINT32 oldSsp;
 
-	printf("Press q to stop playing the song\n");
+	puts("Press q to stop playing the song");
 	start_music();
 	timeMusUpdated = getTime();
 	
 	do
 	{
 		curTime = getTime();
-		doSu(update_music(curTime - timeMusUpdated), oldSsp);
+		update_music(curTime - timeMusUpdated);
 		timeMusUpdated = getTime();
-	} while (Cconis() ? (Cnecin() & 0xFF) != 'q' : TRUE);
+	} while (getAscii() != 'q' && getAscii() != 'Q');
 }
 
 /**
@@ -62,9 +90,9 @@ UINT32 getTime()
 	UINT32 *timer = (UINT32 *)0x462;
 	UINT32 oldSsp;
 
-	oldSsp = Super(0);
+	oldSsp = Su(0);
 	curTime = *timer;
-	Super(oldSsp);
+	Su(oldSsp);
 
 	return curTime;
 }

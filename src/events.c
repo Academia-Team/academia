@@ -7,13 +7,12 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
-
 #include "effects.h"
 #include "events.h"
 #include "ints.h"
 #include "model.h"
 #include "move.h"
+#include "super.h"
 
 int handleHazardCollision(World* world, Player* player)
 {
@@ -362,15 +361,20 @@ void removeHazard(Row* row)
 
 void setPlayerDir(Player* player, Direction dir)
 {
+	const BOOL IS_SUPER = isSu();
+
 	MoveFrame futureMovement;
 
 	BOOL dirValid = TRUE;
 	int  desiredX = player->x;
 	int  desiredY = player->y;
 
-	UINT32 oldSsp = Super(0);
-	int    oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
-	Super(oldSsp);
+	UINT32 oldSsp;
+	int    oldIpl;
+
+	if (!IS_SUPER) oldSsp = Su(0);
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	if (!IS_SUPER) Su(oldSsp);
 
 	if (isPlayerAlive(*player) && (
 		dir == M_UP || dir == M_DOWN || dir == M_RIGHT || dir == M_LEFT)
@@ -381,9 +385,9 @@ void setPlayerDir(Player* player, Direction dir)
 		enqueueMoveFrame(&player->moveQueue, dir, dir);
 	}
 
-	oldSsp = Super(0);
+	if (!IS_SUPER) oldSsp = Su(0);
 	set_ipl(oldIpl);
-	Super(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }
 
 BOOL playerMoveOpposite(const Player * const player, Direction dir)
@@ -446,11 +450,16 @@ void shiftWorld(World* world)
 
 void handleInvalidKeyPress()
 {
-	UINT32 oldSsp  = Super(0);
-	int    origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	const BOOL IS_SUPER = isSu();
+
+	UINT32 oldSsp;
+	int    origIpl;
+
+	if (!IS_SUPER) oldSsp  = Su(0);
+	origIpl = set_ipl(MASK_ALL_INTERRUPTS);
 
 	play_beep();
 
 	set_ipl(origIpl);
-	Super(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }

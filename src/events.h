@@ -20,8 +20,6 @@
  * These tasks should be run each time only after a caller defined amount of
  * time has elapsed.
  * @note Only a 0.2sec delay between calls of the function have been tested.
- * 
- * @note Requires super privileges.
  */
 #define handleDeath() play_death()
 
@@ -48,10 +46,9 @@
  * 
  * @param world The world to check for player-hazard collisions in.
  * @param player The player to check for hazard collision.
+ * 
  * @return A integral value representing the number of seconds left of immunity.
  * This value will be negative if and only if no collision has occurred.
- * 
- * @note Requires super privileges.
  */
 int handleHazardCollision(World* world, Player* player);
 
@@ -112,8 +109,6 @@ BOOL chkBorderCollision(int x, int y);
  * @param world The World in which the player exists.
  * @param player The Player object to look for.
  * @return A boolean value. TRUE if a collision has occurred; false otherwise.
- * 
- * @note Requires super privileges.
  */
 void handleCollectableCollision(World* world, Player* player);
 
@@ -161,7 +156,6 @@ void removeHazard(Row* row);
  * @param world The World the player is in.
  * @param player The Player to move.
  * 
- * @note Requires super privileges.
  * @return FALSE if a move has been cancelled. True otherwise.
  */
 BOOL movePlayer(World *world, Player* player);

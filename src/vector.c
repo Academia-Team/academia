@@ -6,18 +6,23 @@
  * @copyright Copyright 2023 Academia Team
  */
 
-#include <osbind.h>
+#include "bool.h"
+#include "super.h"
 #include "vector.h"
 
 Vector install_vector(int num, Vector vector)
 {
+	const BOOL IS_SUPER = isSu();
+
 	Vector orig;
 	Vector *vectp = (Vector *)((long) num << 2);
-	long old_ssp = Super(0);
+	long oldSsp;
+	
+	if (!IS_SUPER) oldSsp = Su(0);
 
 	orig = *vectp;
 	*vectp = vector;
 
-	Super(old_ssp);
+	if (!IS_SUPER) Su(oldSsp);
 	return orig;
 }

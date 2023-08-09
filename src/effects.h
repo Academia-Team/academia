@@ -18,7 +18,6 @@
 
 /**
  * @brief Plays the pain sound effect (an ooh sound).
- * @note Requires super privileges.
  */
 void play_pain();
 
@@ -28,37 +27,27 @@ void play_pain();
  * @details It must be run three times in order to get the full sound effect.
  * Each call should be separated by an amount of time handled by the caller.
  * @note Only a 0.2sec delay between calls of the function have been tested.
- * 
- * @note Requires super privileges.
  */
 void play_death();
 
 /**
  * @brief Plays the walking sound effect (a "plucking" sound).
- * 
- * @note Requires super privileges.
  */
 void play_walk();
 
 /**
  * @brief Plays the train horn sound effect.
- * 
- * @note Requires super privileges.
  */
 void play_train();
 
 /**
  * @brief Plays the collecting a collectable sound effect (similar to the sound
  * when Mario collects a coin).
- * 
- * @note Requires super privileges.
  */
 void play_collect();
 
 /**
  * @brief Plays a deep beeping noise.
- * 
- * @note Requires super privileges.
  */
 void play_beep();
 

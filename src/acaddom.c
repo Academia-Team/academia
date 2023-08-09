@@ -6,7 +6,6 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
 #include <string.h>
 
 #include "bool.h"
@@ -20,6 +19,7 @@
 #include "music.h"
 #include "psg.h"
 #include "renderer.h"
+#include "super.h"
 #include "types.h"
 #include "vector.h"
 #include "vbl.h"
@@ -609,16 +609,19 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 				UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
 				World *gameWorld)
 {
-	UINT32 oldSsp = Super(0);
-	int    oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	const BOOL IS_SUPER = isSu();
 
-	/* This may look weird, but without using these constants, these values
-	might change while the function is still running, leading to hard to
-	diagnose issues. */
-	const BOOL RENDER_CELLS = gameWorld->renderCells;
-	const BOOL COPY_CELLS   = gameWorld->copyCells;
+	UINT32 oldSsp;
+	int    oldIpl;
+	BOOL   RENDER_CELLS;
+	BOOL   COPY_CELLS;
+	
+	if (!IS_SUPER) oldSsp = Su(0);
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	if (!IS_SUPER) Su(oldSsp);
 
-	Super(oldSsp);
+	RENDER_CELLS = gameWorld->renderCells;
+	COPY_CELLS   = gameWorld->copyCells;
 
 	if (RENDER_CELLS)
 	{
@@ -653,17 +656,8 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 		*nextScreenBuffer = PRIMARY_SCREEN_BUFFER;
 	}
 
-	oldSsp = Super(0);
-	set_ipl(oldIpl);
-	Super(oldSsp);
-	vert_sync();
-
 	if (COPY_CELLS || RENDER_CELLS)
 	{
-		oldSsp = Super(0);
-		oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
-		Super(oldSsp);
-
 		if (*nextScreenBuffer == PRIMARY_SCREEN_BUFFER)
 		{
 			copyScrnBuffer((UINT8 *)screenBuffer, (UINT8 *)otherScreenBuffer, 0,
@@ -677,11 +671,12 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
 
 		gameWorld->copyCells   = FALSE;
 		gameWorld->renderCells = FALSE;
-		
-		oldSsp = Super(0);
-		set_ipl(oldIpl);
-		Super(oldSsp);
 	}
+
+	if (!IS_SUPER) oldSsp = Su(0);
+	set_ipl(oldIpl);
+	if (!IS_SUPER) Su(oldSsp);
+	vert_sync();
 }
 
 /**

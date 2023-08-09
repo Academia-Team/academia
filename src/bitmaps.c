@@ -44,6 +44,29 @@ int trainCurrPart = 0;
 			index = -1; \
 	}
 
+const UINT32 blocky32Bitmap[BLOCKY32_HEIGHT] =
+{
+	0xFFFFFFFF, 0xE1FFFF0F, 0xC0FFFE07, 0xC0FFFE07,
+	0xC4FFFE47, 0xC0FFFE07, 0xC0FFFE07, 0xE1FFFF0F,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFC7FFF,
+	0xFFFC7FFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
+};
+
+const UINT16 blocky16Bitmap[BLOCKY16_HEIGHT] =
+{
+	0xFFFF, 0xCFF3, 0xCFF3, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF,
+	0x0000, 0xFFFF, 0xFFFF, 0xFE7F, 0xFE7F, 0xFFFF, 0xFFFF, 0xFFFF
+};
+
+const UINT8 blocky8Bitmap[BLOCKY8_HEIGHT] =
+{
+	0xFF, 0xBD, 0xFF, 0xFF, 0x00, 0xFF, 0xE7, 0xFF
+};
+
 const UINT32 carBitmap[NUM_HORZ_ORIENTATIONS][CAR_HEIGHT] =
 {
 	/* West */
@@ -1731,6 +1754,33 @@ const UINT32 spikeCell[SPIKE_CELL_HEIGHT] =
 	0x8E1C3871, 0xC4881223, 0x80000001, 0x92228889,
 	0x80000001, 0xC8882223, 0x80000001, 0xFFFFFFFF
 };
+
+const void *getBlockyBitmap(int size, void *dest)
+{
+	const void *returnAddr;
+
+	switch(size)
+	{
+		case 8:
+			returnAddr = blocky8Bitmap;
+			break;
+		case 16:
+			returnAddr = blocky16Bitmap;
+			break;
+		case 32:
+			returnAddr = blocky32Bitmap;
+			break;
+		default:
+			returnAddr = NULL;
+	}
+
+	if (returnAddr != NULL && dest != NULL)
+	{
+		memcpy(dest, returnAddr, size * (size >> DIV_SHIFT_BY_8));
+	}
+
+	return returnAddr;
+}
 
 const UINT32 *getCarBitmap(Direction orientation, UINT32 *dest)
 {

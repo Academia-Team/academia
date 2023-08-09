@@ -13,6 +13,7 @@
 #include "bool.h"
 #include "model.h"
 #include "move.h"
+#include "num_util.h"
 #include "scrn.h"
 #include "types.h"
 
@@ -30,18 +31,6 @@
 #define initSafeRow(row, rowY) prepRow(row, rowY, GRASS_CELL, M_NONE)
 
 BOOL probPlaceHazard(HazType hazard);
-
-int random(int rangeMax)
-{
-	int value;
-
-	do
-	{
-		value = rand();
-	} while (value == 0);
-	
-	return (value % (rangeMax + 1));
-}
 
 void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels, ...)
 {

@@ -6,13 +6,13 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <osbind.h>
 #include <stdlib.h>
 
 #include "bool.h"
 #include "ints.h"
 #include "music.h"
 #include "psg.h"
+#include "super.h"
 #include "types.h"
 
 int curSongPos = 0;
@@ -87,7 +87,6 @@ const NoteInfo song[NUM_NOTES_IN_SONG] =
 /**
  * @brief Loads the given note into the PSG and sets the time to hold it
  * accordingly.
- * @note Requires super privileges.
  * 
  * @param noteInfo The information pertaining to the note to be loaded into the
  * PSG.
@@ -113,48 +112,76 @@ void load_note(NoteInfo* noteInfo)
 
 void start_music()
 {
-	int oldSsp  = Super(0);
-	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	const BOOL IS_SUPER = isSu();
+
+	UINT32 oldSsp;
+	int origIpl;
+
+	if (!IS_SUPER) oldSsp = Su(0);
+	origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	if (!IS_SUPER) Su(oldSsp);
 
 	curSongPos  = 0;
 	musPaused   = FALSE;
 
+	if (!IS_SUPER) oldSsp = Su(0);
 	set_ipl(origIpl);
-	Super(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }
 
 void pause_music()
 {
-	int oldSsp  = Super(0);
-	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	const BOOL IS_SUPER = isSu();
+
+	UINT32 oldSsp;
+	int origIpl;
+
+	if (!IS_SUPER) oldSsp = Su(0);
+	origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	if (!IS_SUPER) oldSsp = Su(oldSsp);
 
 	musPaused   = TRUE;
 
+	if (!IS_SUPER) oldSsp = Su(0);
 	set_ipl(origIpl);
-	Super(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }
 
 void resume_music()
 {
-	int oldSsp  = Super(0);
-	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	const BOOL IS_SUPER = isSu();
+
+	UINT32 oldSsp;
+	int origIpl;
+
+	if (!IS_SUPER) oldSsp = Su(0);
+	origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	if (!IS_SUPER) Su(oldSsp);
 
 	musPaused   = FALSE;
 
+	if (!IS_SUPER) oldSsp = Su(0);
 	set_ipl(origIpl);
-	Super(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }
 
 void stop_music()
 {
-	int oldSsp  = Super(0);
-	int origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	const BOOL IS_SUPER = isSu();
+
+	UINT32 oldSsp;
+	int origIpl;
+
+	if (!IS_SUPER) oldSsp = Su(0);
+	origIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	if (!IS_SUPER) Su(oldSsp);
 
 	curSongPos  = 0;
 	musPaused   = TRUE;
 
+	if (!IS_SUPER) oldSsp = Su(0);
 	set_ipl(origIpl);
-	Super(oldSsp);
+	if (!IS_SUPER) Su(oldSsp);
 }
 
 void update_music(UINT32 time_elapsed)
