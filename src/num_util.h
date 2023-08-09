@@ -29,4 +29,17 @@
 	swVal2  ^= swVal1; \
 	swVal1  ^= swVal2
 
+/**
+ * @brief Generates an integral random number between 0 and rangeMax, inclusive.
+ * 
+ * @param rangeMax The max limit on the random number generator.
+ * @return An integral number between 0 and rangeMax, inclusive.
+ */
+int random(int rangeMax);
+
+/**
+ * @brief Resets the rng to its original state.
+ */
+void resetRandom();
+
 #endif

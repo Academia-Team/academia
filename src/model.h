@@ -432,14 +432,6 @@ void getPlayerNextMove(const Player * const player, MoveFrame *nextMovement);
 	(playerObj).immune = !((playerObj).immune)
 
 /**
- * @brief Generates an integral random number between 0 and rangeMax, inclusive.
- * 
- * @param rangeMax The max limit on the random number generator.
- * @return An integral number between 0 and rangeMax, inclusive.
- */
-int random(int rangeMax);
-
-/**
  * @brief Initializes a InfoBar object.
  * @details The InfoBar will generate and manage labels corresponding to the
  * given text. All the labels will be given values such that they will be

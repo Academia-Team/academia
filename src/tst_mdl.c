@@ -14,6 +14,7 @@
 #include "input.h"
 #include "model.h"
 #include "move.h"
+#include "num_util.h"
 #include "super.h"
 #include "test.h"
 #include "tst_hndl.h"
@@ -160,6 +161,11 @@ void modelTstMgr(void (*tstFunc)(ArgList *args))
 	IKBD_Scancode scancode;
 
 	initArgList(&args);
+
+	/* Since the model takes advantage of random numbers, make sure the rng is
+	reset before every test so that choosing to do/skip certain tests won't
+	affect the results of all the other tests. */
+	resetRandom();
 
 	tstFunc(&args);
 
