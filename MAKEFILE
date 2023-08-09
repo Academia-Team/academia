@@ -1,6 +1,9 @@
-all: acaddom tests
+acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints_asm.o src\model.o src\move.o src\music.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl_asm.o src\vector.o
+	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints_asm.o src\model.o src\move.o src\music.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl_asm.o src\vector.o -o bin\acaddom.tos
 
 tests: tst_bmp tst_mdl tst_mse tst_mus tst_psg tst_shp tst_sfx
+
+all: acaddom tests
 
 tst_mdl: src\model.o src\arg_list.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\tst_hndl.o src\tst_mdl.o src\move.o src\test.o src\vector.o
 	cc68x -g src\model.o src\arg_list.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\tst_hndl.o src\tst_mdl.o src\test.o src\vector.o -o bin\tst_mdl.tos
@@ -55,9 +58,6 @@ src\test.o: src\test.c src\test.h src\bool.h src\types.h
 
 src\arg_list.o: src\arg_list.c src\arg_list.h src\bool.h
 	cc68x -g -c src\arg_list.c
-
-acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints_asm.o src\model.o src\move.o src\music.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl_asm.o src\vector.o
-	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints_asm.o src\model.o src\move.o src\music.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl_asm.o src\vector.o -o bin\acaddom.tos
 
 src\vbl_asm.o:	src\vbl_asm.s src\vbl.h
 	gen -D -L2 src\vbl_asm.s
