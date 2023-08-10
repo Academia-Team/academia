@@ -30,7 +30,7 @@ void t11PlotPx(ArgList *args);
 void t12PlotPx(ArgList *args);
 void t13PlotPx(ArgList *args);
 
-void regHlineTests();
+void regHlineTests(void);
 void t1Hline(ArgList *args);
 void t2Hline(ArgList *args);
 void t3Hline(ArgList *args);
@@ -61,7 +61,7 @@ void t27Hline(ArgList *args);
 void t28Hline(ArgList *args);
 void t29Hline(ArgList *args);
 
-void regRectAreaTests();
+void regRectAreaTests(void);
 void t1RectArea(ArgList *args);
 void t2RectArea(ArgList *args);
 void t3RectArea(ArgList *args);
@@ -76,7 +76,7 @@ void t11RectArea(ArgList *args);
 void t12RectArea(ArgList *args);
 void t13RectArea(ArgList *args);
 
-void regClrAreaTests();
+void regClrAreaTests(void);
 void t1ClrArea(ArgList *args);
 void t2ClrArea(ArgList *args);
 void t3ClrArea(ArgList *args);
@@ -376,7 +376,7 @@ void t13PlotPx(ArgList *args)
 /**
  * @brief Handle the registration of all tests related to the hline() function.
  */
-void regHlineTests()
+void regHlineTests(void)
 {
 	TestSuiteID suiteID;
 
@@ -905,7 +905,7 @@ void t29Hline(ArgList *args)
  * @brief Handle the registration of all tests related to the rect_area()
  * function.
  */
-void regRectAreaTests()
+void regRectAreaTests(void)
 {
 	TestSuiteID suiteID;
 
@@ -1202,7 +1202,7 @@ void t13RectArea(ArgList *args)
  * @brief Handle the registration of all tests related to the clr_area()
  * function.
  */
-void regClrAreaTests()
+void regClrAreaTests(void)
 {
 	TestSuiteID suiteID;
 
