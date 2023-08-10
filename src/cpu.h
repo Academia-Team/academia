@@ -1,7 +1,7 @@
 /**
  * @file cpu.h
  * @author Academia Team
- * @brief Contains a macro designed to identify the CPU being targetted at
+ * @brief Contains a macro designed to identify the CPU being targeted at
  * build time.
  * 
  * @copyright Copyright Academia Team 2023
