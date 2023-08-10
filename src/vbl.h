@@ -18,7 +18,7 @@
  * @brief Stops the VBL ISR from showing a cursor on the screen.
  * @details Any remaining cursors on screen will be erased.
  */
-void hide_cursor();
+void hide_cursor(void);
 
 /**
  * @brief Causes the VBL to replot the cursor to the screen.
@@ -31,7 +31,7 @@ void hide_cursor();
 /**
  * @brief Allows the VBL ISR to show a cursor on the screen.
  */
-void show_cursor();
+void show_cursor(void);
 
 /**
  * @brief Temporarily pauses any game-related operations.
@@ -46,19 +46,19 @@ void show_cursor();
 /**
  * @brief Handles the cleanup after a game ends.
  */
-void game_end();
+void game_end(void);
 
 /**
  * @brief Sets the appropriate values for the start of a game.
  */
-void game_start();
+void game_start(void);
 
 /**
  * @brief Returns the current time provided by the VBL clock.
  * 
  * @return The current VBL clock value as a UINT32.
  */
-UINT32 get_time();
+UINT32 get_time(void);
 
 /**
  * @brief Checks to see if it is okay to render to the screen.
@@ -67,16 +67,16 @@ UINT32 get_time();
  * 
  * @return TRUE if it is safe; FALSE otherwise.
  */
-BOOL rend_req();
+BOOL rend_req(void);
 
 /**
  * @brief Manages all timed events and music.
  */
-void vbl_isr();
+void vbl_isr(void);
 
 /**
  * @brief Blocks processing until a vertical sync has occurred.
  */
-void vert_sync();
+void vert_sync(void);
 
 #endif
