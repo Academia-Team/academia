@@ -29,7 +29,7 @@ UINT32 Su(UINT32 ssp);
  * 
  * @return 1 if in Super mode; else 0.
  */
-UINT8 isSu();
+UINT8 isSu(void);
 
 /**
  * @brief Runs the given function call with super privileges.
