@@ -24,6 +24,8 @@
 		) \
 	)
 
+#define B_ENDIAN
+
 #ifdef L_ENDIAN
 #define swap16OnBE(value) (value)
 #define swap32OnBE(value) (value)
