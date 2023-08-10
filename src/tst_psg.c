@@ -41,7 +41,7 @@ void testSetTone(Channel channel);
 void testMultipleTones(Channel firstChannel, Channel secondChannel);
 void outChannelInfo(Channel channel);
 
-int main()
+int main(int argc, char **argv)
 {
 	TestSuiteID suiteID;
 

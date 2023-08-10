@@ -24,7 +24,7 @@ void t1Mus(ArgList *args);
 
 UINT32 getTime();
 
-int main()
+int main(int argc, char **argv)
 {
 	TestSuiteID suiteID;
 

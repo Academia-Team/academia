@@ -101,7 +101,7 @@ UINT8	worldFrameBufferMEM[SCRN_BYTES + SCRN_ALIGN];
  * player to the Title screen. Only if the player has played the game and died
  * will the Game Over screen ever be shown.
  */
-int main()
+int main(int argc, char **argv)
 {
 	BOOL         quitToTitleScrn = FALSE;
 	BOOL		 playAgain = FALSE;

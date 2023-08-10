@@ -91,7 +91,7 @@ void t11ClrArea(ArgList *args);
 void t12ClrArea(ArgList *args);
 void t13ClrArea(ArgList *args);
 
-int main()
+int main(int argc, char **argv)
 {
 	regPlotPxTests(BLACK_SCREEN_OFF);
 	regPlotPxTests(BLACK_SCREEN_ON);
