@@ -25,6 +25,19 @@
 						xref			_isSu
 						xref			_Su
 
+						xref			_timeNow
+						xref			_timeDesired
+						xref			_immunityTimer
+						xref			_playerMoveTimer
+						xref			_vertTimer
+						xref			_oldCursX
+						xref			_oldCursY
+						xref			_loopCounter
+						xref			_deathCounter
+						xref			_rendReq
+						xref			_gameStart
+						xref			_plotMouse
+
 
 UNSET_CURS_X:			equ				-1
 UNSET_CURS_Y:			equ				-1
@@ -79,23 +92,23 @@ HC_GET_FRAMEBUFFER:		jsr				_get_video_base
 						; Clear the old mouse position by plotting over it.
 						; Only attempt to clear if both the x and y coordinates
 						; are not equal to the unset value.
-						move.w			oldCursX,d0
+						move.w			_oldCursX,d0
 						cmp.w			#UNSET_CURS_X,d0
 						bne				HC_CLEAR_CURS
-						move.w			oldCursY,d0
+						move.w			_oldCursY,d0
 						cmp.w			#UNSET_CURS_Y,d0
 						beq				HC_RESET
 
-HC_CLEAR_CURS:			move.w			oldCursY,-(sp)
-						move.w			oldCursX,-(sp)
+HC_CLEAR_CURS:			move.w			_oldCursY,-(sp)
+						move.w			_oldCursX,-(sp)
 						move.l			d6,-(sp)
 						jsr				_renderCursor
 						addq.l			#8,sp
 
 						; Reset the other mouse related values.
-HC_RESET:				move.b			#FALSE,plotMouse
-						move.w			#UNSET_CURS_X,oldCursX
-						move.w			#UNSET_CURS_Y,oldCursY
+HC_RESET:				move.b			#FALSE,_plotMouse
+						move.w			#UNSET_CURS_X,_oldCursX
+						move.w			#UNSET_CURS_Y,_oldCursY
 
 						; Enter Supervisor Mode.
 						tst.b			d7
@@ -151,7 +164,7 @@ SC_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						addq.l			#2,sp
 						move.w			d0,d5
 
-						move.b			#TRUE,plotMouse
+						move.b			#TRUE,_plotMouse
 
 						; Restore previous interrupt mask.
 						move.w			d5,-(sp)
@@ -213,12 +226,12 @@ GSTART_MASK_INTS:		move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						; already been assigned to a non-zero value. This allows
 						; games that have been stopped to be resumed without any
 						; ill effect.
-GSTART_SETUP:			tst.l			timeDesired
+GSTART_SETUP:			tst.l			_timeDesired
 						bne				GSTART_TDES_ASSIGNED
 						jsr				_get_time
 						add.l			#MIN_NUM_TICKS,d0
-						move.l			d0,timeDesired
-GSTART_TDES_ASSIGNED:	move.b			#TRUE,gameStart
+						move.l			d0,_timeDesired
+GSTART_TDES_ASSIGNED:	move.b			#TRUE,_gameStart
 
 						; Enter Supervisor Mode.
 						tst.b			d7
@@ -274,7 +287,7 @@ GEND_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						addq.l			#2,sp
 						move.w			d0,d5
 
-						move.b			#FALSE,gameStart
+						move.b			#FALSE,_gameStart
 
 						; Restore previous interrupt mask.
 						move.w			d5,-(sp)
@@ -294,7 +307,7 @@ GEND_RETURN:			movem.l			(sp)+,d0-d7/a0-a6
 ; UINT32 get_time(void)
 ;
 ; Brief: Returns the current time provided by the VBL clock.
-_get_time:				move.l			vertTimer,d0
+_get_time:				move.l			_vertTimer,d0
 						rts
 
 ; BOOL rend_req(void)
@@ -330,8 +343,8 @@ R_REQ_MASK_INTS:		move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						addq.l			#2,sp
 						move.w			d0,d5
 
-						move.w			rendReq,d6
-						move.w			#FALSE,rendReq
+						move.w			_rendReq,d6
+						move.w			#FALSE,_rendReq
 
 						; Restore previous interrupt mask.
 						move.w			d5,-(sp)
@@ -363,7 +376,7 @@ R_REQ_RETURN:			move.w			d6,d0
 
 _vbl_isr:				movem.l			d0-d7/a0-a6,-(sp)
 
-						addq.l			#1,vertTimer
+						addq.l			#1,_vertTimer
 
 						; Since update_music wants the time changed as provided
 						; by the vertical blank clock, the change in duration
@@ -371,37 +384,37 @@ _vbl_isr:				movem.l			d0-d7/a0-a6,-(sp)
 						move.l			#1,-(sp)
 						jsr				_update_music
 						addq.l			#4,sp
-						cmpi.b			#TRUE,plotMouse
+						cmpi.b			#TRUE,_plotMouse
 						bne				VBL_HANDLE_SYNC_EVENTS
 
 						; Only handle the mouse if it has actually moved since
 						; last checked.
 						lea				_mouse,a0
 						move.w			MOUSE_X(a0),d0
-						cmp.w			oldCursX,d0
+						cmp.w			_oldCursX,d0
 						bne				VBL_HANDLE_MOUSE
 						move.w			MOUSE_Y(a0),d0
-						cmp.w			oldCursY,d0
+						cmp.w			_oldCursY,d0
 						beq				VBL_HANDLE_SYNC_EVENTS
 
 						; If there is no previous valid cursor position, then
 						; nothing should be cleared.
-VBL_HANDLE_MOUSE:		cmpi.w			#UNSET_CURS_X,oldCursX
+VBL_HANDLE_MOUSE:		cmpi.w			#UNSET_CURS_X,_oldCursX
 						bne				VBL_CLR_OLD_MOUSE
-						cmpi.w			#UNSET_CURS_Y,oldCursY
+						cmpi.w			#UNSET_CURS_Y,_oldCursY
 						beq				VBL_SET_OLD_MOUSE_POS
 
 						; Clear the old mouse position by plotting over it.
-VBL_CLR_OLD_MOUSE:		move.w			oldCursY,-(sp)
-						move.w			oldCursX,-(sp)
+VBL_CLR_OLD_MOUSE:		move.w			_oldCursY,-(sp)
+						move.w			_oldCursX,-(sp)
 						jsr				_get_video_base
 						move.l			d0,-(sp)
 						jsr				_renderCursor
 						addq.l			#8,sp
 
 VBL_SET_OLD_MOUSE_POS:	lea				_mouse,a0
-						move.w			MOUSE_X(a0),oldCursX
-						move.w			MOUSE_Y(a0),oldCursY
+						move.w			MOUSE_X(a0),_oldCursX
+						move.w			MOUSE_Y(a0),_oldCursY
 
 						; Plot the cursor at its new position.
 						move.w			MOUSE_Y(a0),-(sp)
@@ -411,21 +424,21 @@ VBL_SET_OLD_MOUSE_POS:	lea				_mouse,a0
 						jsr				_renderCursor
 						addq.l			#8,sp
 
-VBL_HANDLE_SYNC_EVENTS:	cmpi.b			#TRUE,gameStart
+VBL_HANDLE_SYNC_EVENTS:	cmpi.b			#TRUE,_gameStart
 						bne				VBL_RETURN
-						pea				deathCounter
-						pea				loopCounter
-						pea				playerMoveTimer
-						pea				immunityTimer
-						pea				timeDesired
-						pea				timeNow
+						pea				_deathCounter
+						pea				_loopCounter
+						pea				_playerMoveTimer
+						pea				_immunityTimer
+						pea				_timeDesired
+						pea				_timeNow
 						pea				_dead
 						pea				_gameWorld
 						jsr				_processSync
 						add.l			#32,sp
 
 						; Set rendReq to true before leaving.
-VBL_RETURN:				move.w			#TRUE,rendReq
+VBL_RETURN:				move.w			#TRUE,_rendReq
 						movem.l			(sp)+,d0-d7/a0-a6
 						rte
 
@@ -460,7 +473,7 @@ RESET_REQ_MASK_INTS:	move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						addq.l			#2,sp
 						move.w			d0,d5
 
-						move.w			#FALSE,rendReq
+						move.w			#FALSE,_rendReq
 
 						; Restore previous interrupt mask.
 						move.w			d5,-(sp)
@@ -496,16 +509,3 @@ VERT_SYNC_LOOP:			jsr				_rend_req
 
 						movem.l			(sp)+,d0
 						rts
-
-oldCursX:				dc.w			UNSET_CURS_X
-oldCursY:				dc.w			UNSET_CURS_Y
-timeNow:				dc.l			0
-timeDesired:			dc.l			0
-immunityTimer:			dc.l			-1
-playerMoveTimer:		dc.l			-1
-vertTimer:				dc.l			0
-loopCounter:			dc.w			1
-deathCounter:			dc.w			1
-rendReq:				dc.w			FALSE
-gameStart:				dc.b			FALSE
-plotMouse:				dc.b			FALSE
