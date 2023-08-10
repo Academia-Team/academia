@@ -31,6 +31,15 @@ UINT8  plotMouse       =  FALSE;
 
 void reset_rend_req(void);
 
+void game_end(void)
+{
+	int    oldIpl;
+
+	set_ipl(MASK_ALL_INTERRUPTS);
+	gameStart = FALSE;
+	set_ipl(oldIpl);
+}
+
 UINT32 get_time(void)
 {
 	return vertTimer;
