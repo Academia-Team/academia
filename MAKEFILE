@@ -89,7 +89,7 @@ src\input.o: src\input.c src\input.h src\ints.h src\super.h src\types.h src\vect
 src\renderer.o: src\renderer.c src\renderer.h src\bitmaps.h src\bool.h src\font16.h src\model.h src\raster.h src\types.h
 	cc68x -g -c src\renderer.c
 
-src\raster.o: src\raster.c src\raster.h src\bool.h src\scrn.h src\types.h
+src\raster.o: src\raster.c src\raster.h src\bool.h src\cpu.h src\endian.h src\scrn.h src\types.h
 	cc68x -g -c src\raster.c
 
 src\font16.o: src\font16.c src\font16.h src\types.h
