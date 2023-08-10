@@ -15,6 +15,6 @@
  * @details Before each test suite and test case is run, the user is prompted
  * if they want to run it or not.
  */
-void handleTests();
+void handleTests(void);
 
 #endif

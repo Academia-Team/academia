@@ -40,6 +40,6 @@ int random(int rangeMax);
 /**
  * @brief Resets the rng to its original state.
  */
-void resetRandom();
+void resetRandom(void);
 
 #endif

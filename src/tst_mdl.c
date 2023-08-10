@@ -59,7 +59,7 @@ void t1PlayerMove(ArgList *args);
 void outObjInPos(const World* const world, int x, int y, FILE *stream);
 void outCellInfo(const Cell* const cell, int id, int index, FILE *stream);
 
-int main()
+int main(int argc, char **argv)
 {
 	TestSuiteID suiteID;
 

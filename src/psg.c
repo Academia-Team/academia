@@ -175,7 +175,7 @@ void enable_channel(Channel channel, Toggle tone_on, Toggle noise_on)
 	}
 }
 
-void stop_sound()
+void stop_sound(void)
 {
 	const BOOL IS_SUPER = isSu();
 	UINT32 old_ssp;

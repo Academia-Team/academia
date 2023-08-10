@@ -30,7 +30,7 @@ UNSET_CURS_X:			equ				-1
 UNSET_CURS_Y:			equ				-1
 MIN_NUM_TICKS:			equ				14
 
-; void cursor_hide();
+; void cursor_hide(void);
 ;
 ; Brief: Stops the VBL ISR from showing a cursor on the screen.
 ;
@@ -120,7 +120,7 @@ HC_RESTORE_INTS:		move.w			d5,-(sp)
 HC_RETURN:				movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
-; void cursor_show();
+; void cursor_show(void);
 ;
 ; Brief: Allows the VBL ISR to show a cursor on the screen.
 ;
@@ -168,7 +168,7 @@ SC_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
 SC_RETURN:				movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
-; void game_start()
+; void game_start(void)
 ;
 ; Brief: Initializes all the values neccessary for a proper game start.
 ;
@@ -243,7 +243,7 @@ GSTART_RESTORE_INTS:	move.w			d5,-(sp)
 GSTART_RETURN:			movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
-; void game_end()
+; void game_end(void)
 ;
 ; Brief: Informs the VBL ISR that the game is over.
 ;
@@ -291,13 +291,13 @@ GEND_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
 GEND_RETURN:			movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
-; UINT32 get_time()
+; UINT32 get_time(void)
 ;
 ; Brief: Returns the current time provided by the VBL clock.
 _get_time:				move.l			vertTimer,d0
 						rts
 
-; BOOL rend_req()
+; BOOL rend_req(void)
 ;
 ; Brief: Returns whether it is appropriate render or not.
 ;
@@ -350,7 +350,7 @@ R_REQ_RETURN:			move.w			d6,d0
 						rts
 
 
-; void vbl_isr()
+; void vbl_isr(void)
 ;
 ; Brief: Manages all timed events and music.
 ;
@@ -429,7 +429,7 @@ VBL_RETURN:				move.w			#TRUE,rendReq
 						movem.l			(sp)+,d0-d7/a0-a6
 						rte
 
-; void reset_rend_req()
+; void reset_rend_req(void)
 ;
 ; Brief: Removes any requests to render.
 ;
@@ -478,7 +478,7 @@ RESET_REQ_RETURN:		movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
 
-; void vert_sync()
+; void vert_sync(void)
 ;
 ; Brief: Blocks processing until a vertical sync has occurred.
 ;

@@ -190,6 +190,6 @@ void shiftWorld(World* world);
 /**
  * @brief Emits a beeping noise for when an unhandled key has been pressed.
  */
-void handleInvalidKeyPress();
+void handleInvalidKeyPress(void);
 
 #endif 

@@ -19,7 +19,7 @@
 /**
  * @brief Plays the pain sound effect (an ooh sound).
  */
-void play_pain();
+void play_pain(void);
 
 /**
  * @brief Plays the death sound effect (a "wa wa wa" sound with each wa
@@ -28,27 +28,27 @@ void play_pain();
  * Each call should be separated by an amount of time handled by the caller.
  * @note Only a 0.2sec delay between calls of the function have been tested.
  */
-void play_death();
+void play_death(void);
 
 /**
  * @brief Plays the walking sound effect (a "plucking" sound).
  */
-void play_walk();
+void play_walk(void);
 
 /**
  * @brief Plays the train horn sound effect.
  */
-void play_train();
+void play_train(void);
 
 /**
  * @brief Plays the collecting a collectable sound effect (similar to the sound
  * when Mario collects a coin).
  */
-void play_collect();
+void play_collect(void);
 
 /**
  * @brief Plays a deep beeping noise.
  */
-void play_beep();
+void play_beep(void);
 
 #endif

@@ -18,7 +18,7 @@
 void mseTstMgr(void (*tstFunc)(ArgList *args));
 void t1Mse(ArgList *args);
 
-int main()
+int main(int argc, char **argv)
 {
 	TestSuiteID suiteID;
 

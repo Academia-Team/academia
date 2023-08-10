@@ -66,7 +66,7 @@ fill_scrn_ones:		dcb.l			13,-1
 VBASE_REG:			equ				$FFFF8201
 
 
-; UINT16 *get_video_base()
+; UINT16 *get_video_base(void)
 ;
 ; Returns the current frame buffer start address.
 ;

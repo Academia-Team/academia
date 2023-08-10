@@ -9,7 +9,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-typedef void (*Vector)();
+typedef void (*Vector)(void);
 Vector install_vector(int num, Vector vector);
 
 #endif

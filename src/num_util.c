@@ -22,7 +22,7 @@ int random(int rangeMax)
 	return (value % (rangeMax + 1));
 }
 
-void resetRandom()
+void resetRandom(void)
 {
 	srand(1);
 }

@@ -9,7 +9,7 @@
 #include "super.h"
 #include "types.h"
 
-UINT8 isSu()
+UINT8 isSu(void)
 {
 	return (Su(1) == -1);
 }

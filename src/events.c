@@ -448,7 +448,7 @@ void shiftWorld(World* world)
 	world->renderCells = TRUE;
 }
 
-void handleInvalidKeyPress()
+void handleInvalidKeyPress(void)
 {
 	const BOOL IS_SUPER = isSu();
 

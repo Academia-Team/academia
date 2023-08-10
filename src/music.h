@@ -19,23 +19,23 @@
 /**
  * @brief Loads the first note from a song into the PSG.
  */
-void start_music();
+void start_music(void);
 
 /**
  * @brief Temporarily halts the playback of music upon the next call to
  * update_music().
  */
-void pause_music();
+void pause_music(void);
 
 /**
  * @brief Resumes the playback of music upon the next call to update_music().
  */
-void resume_music();
+void resume_music(void);
 
 /**
  * @brief Halts the playback of music upon the next call to update_music().
  */
-void stop_music();
+void stop_music(void);
 
 /**
  * @brief Provides the PSG with the next note from a song.

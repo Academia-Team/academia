@@ -129,7 +129,7 @@ void t33Rast8(ArgList *args);
 void t34Rast8(ArgList *args);
 void t35Rast8(ArgList *args);
 
-int main()
+int main(int argc, char **argv)
 {
 	regRast32Tests(BLACK_SCREEN_OFF, DESTRUCT_OFF);
 	regRast32Tests(BLACK_SCREEN_OFF, DESTRUCT_ON);

@@ -39,7 +39,7 @@ MFP_IN_SERVICE_B_REG:	equ		$FFFFFA11
 IKBD_MFP_SERVICE_BIT:	equ		6
 
 
-; void IKBD_isr()
+; void IKBD_isr(void)
 ;
 ; Brief: Handles keyboard and mouse input.
 ;

@@ -22,9 +22,9 @@ void musTstMgr(void (*tstFunc)(ArgList *args));
 
 void t1Mus(ArgList *args);
 
-UINT32 getTime();
+UINT32 getTime(void);
 
-int main()
+int main(int argc, char **argv)
 {
 	TestSuiteID suiteID;
 
@@ -84,7 +84,7 @@ void t1Mus(ArgList *args)
  * 
  * @return The current system clock value as a UINT32.
  */
-UINT32 getTime()
+UINT32 getTime(void)
 {
 	UINT32 curTime;
 	UINT32 *timer = (UINT32 *)0x462;

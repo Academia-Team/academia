@@ -10,7 +10,7 @@
 
 UINT8 deathNotesRemaining = NUM_NOTES_IN_DEATH_SFX;
 
-void play_pain()
+void play_pain(void)
 {
 	disable_channel(PLAYER_SOUND_CHANNEL);
 	set_tone(PLAYER_SOUND_CHANNEL, 1388);
@@ -19,7 +19,7 @@ void play_pain()
 	set_envelope(MAX_ENVELOPE_SHAPE_VAL, 0x0700);
 }
 
-void play_death()
+void play_death(void)
 {
 	switch(deathNotesRemaining)
 	{
@@ -49,7 +49,7 @@ void play_death()
 	}
 }
 
-void play_walk()
+void play_walk(void)
 {
 	disable_channel(PLAYER_SOUND_CHANNEL);
 	set_tone(PLAYER_SOUND_CHANNEL, 1032);
@@ -58,7 +58,7 @@ void play_walk()
 	set_envelope(9, 0x0400);
 }
 
-void play_train()
+void play_train(void)
 {
 	disable_channel(OTHER_SOUND_CHANNEL);
 	set_tone(OTHER_SOUND_CHANNEL, 306);
@@ -68,7 +68,7 @@ void play_train()
 	set_envelope(4, 0x25FF);
 }
 
-void play_collect()
+void play_collect(void)
 {
 	disable_channel(PLAYER_SOUND_CHANNEL);
 	set_tone(PLAYER_SOUND_CHANNEL, 0xF0);
@@ -77,7 +77,7 @@ void play_collect()
 	set_envelope(9, 0x1700);
 }
 
-void play_beep()
+void play_beep(void)
 {
 	disable_channel(PLAYER_SOUND_CHANNEL);
 	set_tone(PLAYER_SOUND_CHANNEL, 3408);

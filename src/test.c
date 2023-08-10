@@ -113,7 +113,7 @@ void showTestPrompt(FILE *stream)
 	}
 }
 
-TestSuite *getNextTestSuite()
+TestSuite *getNextTestSuite(void)
 {
 	TestSuite *nextTestSuite = NULL;
 

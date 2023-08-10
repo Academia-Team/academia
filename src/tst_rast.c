@@ -19,8 +19,8 @@
 void rastTstCommon(void (*tstFunc)(ArgList *args), BOOL blackScreen,
 				   BOOL enableGridDots, BOOL destructive);
 void gridDots(UINT32 *base);
-void off_curs();
-void on_curs();
+void off_curs(void);
+void on_curs(void);
 
 void rastTstWhite(void (*tstFunc)(ArgList *args))
 {
@@ -122,7 +122,7 @@ void gridDots(UINT32 *base)
 /**
  * @brief Disables the cursor.
  */
-void off_curs()
+void off_curs(void)
 {
 	printf("\033f");
 	fflush(stdout);
@@ -131,7 +131,7 @@ void off_curs()
 /**
  * @brief Enables the cursor.
  */
-void on_curs()
+void on_curs(void)
 {
 	printf("\033e");
 	fflush(stdout);

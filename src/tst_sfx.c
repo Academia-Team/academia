@@ -25,7 +25,7 @@ void t4SFX(ArgList *args);
 void t5SFX(ArgList *args);
 void t6SFX(ArgList *args);
 
-int main()
+int main(int argc, char **argv)
 {
 	TestSuiteID suiteID;
 

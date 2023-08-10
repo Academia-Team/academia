@@ -80,7 +80,7 @@ typedef struct
 /**
  * @brief Empties all the keyboard buffers.
  */
-void flushKybd();
+void flushKybd(void);
 
 /**
  * @brief Initializes everything required for the keyboard to work.
@@ -89,7 +89,7 @@ void flushKybd();
  * @note Due to the way the Atari ST is set up, it will also setup the mouse.
  * @return The original keyboard ISR.
  */
-Vector initKybd();
+Vector initKybd(void);
 
 /**
  * @brief Restores the keyboard back to the way it was before.
@@ -107,7 +107,7 @@ void restoreKybd(Vector sysKybdVec);
  * physical location of the key on the keyboard (the scancode). All other bits
  * are guaranteed to be zero.
  */
-UINT32 getKybdRaw();
+UINT32 getKybdRaw(void);
 
 /**
  * @brief Returns a value from the keyboard.
@@ -118,7 +118,7 @@ UINT32 getKybdRaw();
  * physical location of the key on the keyboard (the scancode). All other bits
  * are guaranteed to be zero.
  */
-UINT32 getKybdBRaw();
+UINT32 getKybdBRaw(void);
 
 /**
  * @brief Retrieves an ascii value corresponding to a key that was pressed.
@@ -126,7 +126,7 @@ UINT32 getKybdBRaw();
  * @return The ascii value of a pressed key (or zero if no key was pressed or
  * there is no corresponding ascii value).
  */
-UINT8 getAscii();
+UINT8 getAscii(void);
 
 /**
  * @brief Retrieves an ascii value corresponding to a key that was pressed.
@@ -135,7 +135,7 @@ UINT8 getAscii();
  * 
  * @return The ascii value of a pressed key.
  */
-UINT8 getBAscii();
+UINT8 getBAscii(void);
 
 /**
  * @brief Gets a number representing a location of a pressed key on the keyboard
@@ -145,7 +145,7 @@ UINT8 getBAscii();
  * keyboard if a key was pressed. Otherwise, a negative integral 16-bit number
  * will be returned (NO_KEY).
  */
-IKBD_Scancode getKey();
+IKBD_Scancode getKey(void);
 
 /**
  * @brief Gets a number representing a location of a pressed key on the
@@ -156,7 +156,7 @@ IKBD_Scancode getKey();
  * keyboard if a key was pressed. Otherwise, a negative integral 16-bit number
  * will be returned (NO_KEY).
  */
-IKBD_Scancode getBKey();
+IKBD_Scancode getBKey(void);
 
 /**
  * @brief Checks if a left mouse click has happened.
@@ -165,7 +165,7 @@ IKBD_Scancode getBKey();
  * @param mouse The mouse object to check for clicking.
  * @return TRUE if the mouse has been clicked; FALSE otherwise.
  */
-BOOL mouseLclick();
+BOOL mouseLclick(void);
 
 /**
  * @brief Checks if a right mouse click has happened.
@@ -173,7 +173,7 @@ BOOL mouseLclick();
  * 
  * @return TRUE if the mouse has been clicked; FALSE otherwise.
  */
-BOOL mouseRclick();
+BOOL mouseRclick(void);
 
 /**
  * @brief Checks if the mouse has moved since last getting the position of it.
@@ -182,7 +182,7 @@ BOOL mouseRclick();
  * 
  * @return TRUE if the mouse has been moved; FALSE otherwise.
  */
-BOOL mouseMoved();
+BOOL mouseMoved(void);
 
 /**
  * @brief Returns the mouse's current position by reference.

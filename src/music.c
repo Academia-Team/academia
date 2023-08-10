@@ -110,7 +110,7 @@ void load_note(NoteInfo* noteInfo)
 	musHoldTimeRemaining = noteInfo->duration;
 }
 
-void start_music()
+void start_music(void)
 {
 	const BOOL IS_SUPER = isSu();
 
@@ -129,7 +129,7 @@ void start_music()
 	if (!IS_SUPER) Su(oldSsp);
 }
 
-void pause_music()
+void pause_music(void)
 {
 	const BOOL IS_SUPER = isSu();
 
@@ -147,7 +147,7 @@ void pause_music()
 	if (!IS_SUPER) Su(oldSsp);
 }
 
-void resume_music()
+void resume_music(void)
 {
 	const BOOL IS_SUPER = isSu();
 
@@ -165,7 +165,7 @@ void resume_music()
 	if (!IS_SUPER) Su(oldSsp);
 }
 
-void stop_music()
+void stop_music(void)
 {
 	const BOOL IS_SUPER = isSu();
 
