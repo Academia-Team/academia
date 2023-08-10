@@ -35,6 +35,15 @@ UINT8  plotMouse       =  FALSE;
 
 void reset_rend_req(void);
 
+void show_cursor(void)
+{
+	int    oldIpl;
+
+	set_ipl(MASK_ALL_INTERRUPTS);
+	plotMouse = TRUE;
+	set_ipl(oldIpl);
+}
+
 void game_end(void)
 {
 	int    oldIpl;

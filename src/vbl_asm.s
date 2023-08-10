@@ -7,7 +7,6 @@
 						include			mouse.i
 
 						xdef			_hide_cursor
-						xdef			_show_cursor
 						xdef			_rend_req
 						xdef			_vbl_isr
 
@@ -126,54 +125,6 @@ HC_RESTORE_INTS:		move.w			d5,-(sp)
 						addq.l			#4,sp
 
 HC_RETURN:				movem.l			(sp)+,d0-d7/a0-a6
-						rts
-
-; void cursor_show(void);
-;
-; Brief: Allows the VBL ISR to show a cursor on the screen.
-;
-; Register Table
-; --------------
-; d0	-	Holds a value indicating if the subroutine is currently running in
-;			supervisor mode.
-;		-	Holds the original system stack pointer.
-;		-	Holds the original 68000 interrupt mask.
-; d4	-	Holds the original system stack pointer.
-; d5	-	Holds the original 68000 interrupt mask.
-; d7	-	Holds a value indicating if the subroutine has entered supervisor
-;			mode.
-_show_cursor:			movem.l			d0-d7/a0-a6,-(sp)
-
-						; Enter Supervisor Mode.
-						jsr				_isSu
-						move.b			d0,d7
-						bne				SC_MASK_INTS
-						clr.l			-(sp)
-						jsr				_Su
-						move.l			d0,d4
-						addq.l			#4,sp
-
-						; Mask all interrupts.
-SC_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
-						jsr				_set_ipl
-						addq.l			#2,sp
-						move.w			d0,d5
-
-						move.b			#TRUE,_plotMouse
-
-						; Restore previous interrupt mask.
-						move.w			d5,-(sp)
-						jsr				_set_ipl
-						addq.l			#2,sp
-
-						; Leave Supervisor Mode.
-						tst.b			d7
-						bne				SC_RETURN
-						move.l			d4,-(sp)
-						jsr				_Su
-						addq.l			#4,sp
-
-SC_RETURN:				movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
 
