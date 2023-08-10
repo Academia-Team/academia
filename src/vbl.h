@@ -12,6 +12,12 @@
 #include "bool.h"
 #include "types.h"
 
+/**
+ * @brief The minimum number of ticks after which some of the async events can
+ * begin.
+*/
+#define MIN_NUM_TICKS 14
+
 #define VBL_VECTOR 28
 
 /**

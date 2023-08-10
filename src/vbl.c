@@ -15,8 +15,6 @@
 #include "types.h"
 #include "vbl.h"
 
-#define MIN_NUM_TICKS 14
-
 UINT32 timeNow         =  0;
 
 /* Holds the total number of clock ticks that must be reached before handling
