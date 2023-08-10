@@ -14,12 +14,12 @@
 						xref			_mouse
 						xref			_get_video_base
 						xref			_renderCursor
+						xref			_vbl_main
 
 						xref			_timeNow
 						xref			_timeDesired
 						xref			_immunityTimer
 						xref			_playerMoveTimer
-						xref			_vertTimer
 						xref			_oldCursX
 						xref			_oldCursY
 						xref			_loopCounter
@@ -42,7 +42,7 @@
 
 _vbl_isr:				movem.l			d0-d7/a0-a6,-(sp)
 
-						addq.l			#1,_vertTimer
+						jsr				_vbl_main
 
 						; Since update_music wants the time changed as provided
 						; by the vertical blank clock, the change in duration

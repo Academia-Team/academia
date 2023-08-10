@@ -76,7 +76,13 @@ UINT32 get_time(void);
 BOOL rend_req(void);
 
 /**
- * @brief Manages all timed events and music.
+ * @brief The function that handles the core VBL functionality and runs the
+ * desired registered functions.
+ */
+void vbl_main(void);
+
+/**
+ * @brief Executes vbl_main() every time the vertical blank clock interrupts.
  */
 void vbl_isr(void);
 

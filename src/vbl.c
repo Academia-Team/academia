@@ -23,7 +23,12 @@ UINT32 timeDesired     =  0;
 
 UINT32 immunityTimer   = -1;
 UINT32 playerMoveTimer = -1;
+
+/**
+ * @brief The number of ticks since the VBL ISR has been registered.
+ */
 UINT32 vertTimer       =  0;
+
 UINT16 oldCursX;
 UINT16 oldCursY;
 UINT16 loopCounter     =  1;
@@ -122,6 +127,11 @@ void reset_rend_req(void)
 	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	rendReq = FALSE;
 	set_ipl(oldIpl);
+}
+
+void vbl_main(void)
+{
+	vertTimer++;
 }
 
 void vert_sync(void)
