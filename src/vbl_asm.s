@@ -7,7 +7,6 @@
 
 						xdef			_vbl_isr
 
-						xref			_update_music
 						xref			_processSync
 						xref			_dead
 						xref			_gameWorld
@@ -44,12 +43,6 @@ _vbl_isr:				movem.l			d0-d7/a0-a6,-(sp)
 
 						jsr				_vbl_main
 
-						; Since update_music wants the time changed as provided
-						; by the vertical blank clock, the change in duration
-						; will always be one since it is run by the VBL ISR.
-						move.l			#1,-(sp)
-						jsr				_update_music
-						addq.l			#4,sp
 						cmpi.b			#TRUE,_plotMouse
 						bne				VBL_HANDLE_SYNC_EVENTS
 

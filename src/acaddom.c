@@ -17,6 +17,7 @@
 #include "raster.h"
 #include "move.h"
 #include "music.h"
+#include "mus_vbl.h"
 #include "psg.h"
 #include "renderer.h"
 #include "super.h"
@@ -122,6 +123,8 @@ int main(int argc, char **argv)
 	const Vector sysVbl  = vbl_init();
 	const Vector sysKybd = initKybd();
 
+	reg_music_vbl();
+
 	while (!exitPgrm)
 	{
 		if (!playAgain)
@@ -148,6 +151,8 @@ int main(int argc, char **argv)
 
 	set_video_base((UINT16 *)screenBuffer);
 	vert_sync();
+	
+	unreg_music_vbl();
 	restoreKybd(sysKybd);
 	vbl_restore(sysVbl);
 	stop_sound();

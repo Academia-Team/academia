@@ -1,5 +1,5 @@
-acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints_asm.o src\model.o src\move.o src\music.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vbl_asm.o src\vector.o
-	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints_asm.o src\model.o src\move.o src\music.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vbl_asm.o src\vector.o -o bin\acaddom.tos
+acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints_asm.o src\model.o src\move.o src\music.o src\mus_vbl.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vbl_asm.o src\vector.o
+	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints_asm.o src\model.o src\move.o src\music.o src\mus_vbl.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vbl_asm.o src\vector.o -o bin\acaddom.tos
 
 tests: tst_bmp tst_mdl tst_mse tst_mus tst_psg tst_shp tst_sfx
 
@@ -76,6 +76,9 @@ src\effects.o: src\effects.c src\effects.h src\psg.h
 
 src\music.o: src\music.c src\music.h src\ints.h src\psg.h src\super.h src\types.h
 	cc68x -g -c src\music.c
+
+src\mus_vbl.o: src\mus_vbl.c src\mus_vbl.h src\bool.h src\music.h src\vbl.h
+	cc68x -g -c src\mus_vbl.c
 
 src\psg.o: src\psg.h src\bool.h src\num_util.h src\super.h src\toggle.h src\types.h
 	cc68x -g -c src\psg.c
