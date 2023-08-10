@@ -17,7 +17,11 @@
 #define MIN_NUM_TICKS 14
 
 UINT32 timeNow         =  0;
+
+/* Holds the total number of clock ticks that must be reached before handling
+synchronous events. */
 UINT32 timeDesired     =  0;
+
 UINT32 immunityTimer   = -1;
 UINT32 playerMoveTimer = -1;
 UINT32 vertTimer       =  0;
@@ -37,6 +41,24 @@ void game_end(void)
 
 	set_ipl(MASK_ALL_INTERRUPTS);
 	gameStart = FALSE;
+	set_ipl(oldIpl);
+}
+
+void game_start(void)
+{
+	int    oldIpl;
+
+	set_ipl(MASK_ALL_INTERRUPTS);
+
+	/* Only adjust the time desired if and only if it hasn't already been
+	assigned a non-zero value. This allows games that have been stopped to be
+	resumed without any ill effect. */
+	if (timeDesired == 0)
+	{
+		timeDesired = get_time() + MIN_NUM_TICKS;
+	}
+	gameStart = TRUE;
+
 	set_ipl(oldIpl);
 }
 

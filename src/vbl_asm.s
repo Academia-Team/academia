@@ -8,7 +8,6 @@
 
 						xdef			_hide_cursor
 						xdef			_show_cursor
-						xdef			_game_start
 						xdef			_rend_req
 						xdef			_vbl_isr
 
@@ -34,12 +33,10 @@
 						xref			_rendReq
 						xref			_gameStart
 						xref			_plotMouse
-						xref			_get_time
 
 
 UNSET_CURS_X:			equ				-1
 UNSET_CURS_Y:			equ				-1
-MIN_NUM_TICKS:			equ				14
 
 ; void cursor_hide(void);
 ;
@@ -177,81 +174,6 @@ SC_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						addq.l			#4,sp
 
 SC_RETURN:				movem.l			(sp)+,d0-d7/a0-a6
-						rts
-
-; void game_start(void)
-;
-; Brief: Initializes all the values neccessary for a proper game start.
-;
-; Register Table
-; --------------
-; d0	-	Holds a value indicating if the subroutine is currently running in
-;			supervisor mode.
-;		-	Holds the original system stack pointer.
-;		-	Holds the original 68000 interrupt mask.
-;		-	Holds the current number of clock ticks.
-;		-	Holds the total number of clock ticks that must be reached before
-;			handling synchronous events.
-; d4	-	Holds the original system stack pointer.
-; d5	-	Holds the original 68000 interrupt mask.
-; d7	-	Holds a value indicating if the subroutine has entered supervisor
-;			mode.
-_game_start:			movem.l			d0-d7/a0-a6,-(sp)
-
-						; Enter Supervisor Mode.
-						jsr				_isSu
-						move.b			d0,d7
-						bne				GSTART_MASK_INTS
-						clr.l			-(sp)
-						jsr				_Su
-						move.l			d0,d4
-						addq.l			#4,sp
-
-						; Mask all interrupts.
-GSTART_MASK_INTS:		move.w			#MASK_ALL_INTERRUPTS,-(sp)
-						jsr				_set_ipl
-						addq.l			#2,sp
-						move.w			d0,d5
-
-						; Leave Supervisor Mode.
-						tst.b			d7
-						bne				GSTART_SETUP
-						move.l			d4,-(sp)
-						jsr				_Su
-						addq.l			#4,sp
-
-						; Only adjust the time desired if and only if it hasn't
-						; already been assigned to a non-zero value. This allows
-						; games that have been stopped to be resumed without any
-						; ill effect.
-GSTART_SETUP:			tst.l			_timeDesired
-						bne				GSTART_TDES_ASSIGNED
-						jsr				_get_time
-						add.l			#MIN_NUM_TICKS,d0
-						move.l			d0,_timeDesired
-GSTART_TDES_ASSIGNED:	move.b			#TRUE,_gameStart
-
-						; Enter Supervisor Mode.
-						tst.b			d7
-						bne				GSTART_RESTORE_INTS
-						clr.l			-(sp)
-						jsr				_Su
-						move.l			d0,d4
-						addq.l			#4,sp
-
-						; Restore previous interrupt mask.
-GSTART_RESTORE_INTS:	move.w			d5,-(sp)
-						jsr				_set_ipl
-						addq.l			#2,sp
-
-						; Leave Supervisor Mode.
-						tst.b			d7
-						bne				GSTART_RETURN
-						move.l			d4,-(sp)
-						jsr				_Su
-						addq.l			#4,sp
-
-GSTART_RETURN:			movem.l			(sp)+,d0-d7/a0-a6
 						rts
 
 
