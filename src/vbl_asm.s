@@ -10,7 +10,6 @@
 						xdef			_show_cursor
 						xdef			_game_start
 						xdef			_game_end
-						xdef			_get_time
 						xdef			_rend_req
 						xdef			_vbl_isr
 						xdef			_vert_sync
@@ -37,6 +36,7 @@
 						xref			_rendReq
 						xref			_gameStart
 						xref			_plotMouse
+						xref			_get_time
 
 
 UNSET_CURS_X:			equ				-1
@@ -302,12 +302,6 @@ GEND_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
 						addq.l			#4,sp
 
 GEND_RETURN:			movem.l			(sp)+,d0-d7/a0-a6
-						rts
-
-; UINT32 get_time(void)
-;
-; Brief: Returns the current time provided by the VBL clock.
-_get_time:				move.l			_vertTimer,d0
 						rts
 
 ; BOOL rend_req(void)

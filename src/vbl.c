@@ -8,6 +8,7 @@
 
 #include "bool.h"
 #include "types.h"
+#include "vbl.h"
 
 #define UNSET_CURS_X  -1
 #define UNSET_CURS_Y  -1
@@ -25,3 +26,8 @@ UINT16 deathCounter    =  1;
 UINT16 rendReq         =  FALSE;
 UINT8  gameStart       =  FALSE;
 UINT8  plotMouse       =  FALSE;
+
+UINT32 get_time(void)
+{
+	return vertTimer;
+}
