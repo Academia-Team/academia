@@ -510,7 +510,7 @@ void clr_scrn(UINT32 *base);
  * 
  * @note The low 8-bits are always zero.
  */
-UINT16 *get_video_base();
+UINT16 *get_video_base(void);
 
 /**
  * @brief Sets the frame buffer start address to the desired address.
