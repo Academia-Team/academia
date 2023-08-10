@@ -7,11 +7,7 @@
  */
 
 #include "bool.h"
-#include "input.h"
 #include "ints.h"
-#include "raster.h"
-#include "renderer.h"
-#include "super.h"
 #include "types.h"
 #include "vbl.h"
 #include "vector.h"
@@ -30,51 +26,15 @@ UINT32 playerMoveTimer = -1;
  */
 UINT32 vertTimer       =  0;
 
-UINT16 oldCursX;
-UINT16 oldCursY;
 UINT16 loopCounter     =  1;
 UINT16 deathCounter    =  1;
 UINT16 rendReq         =  FALSE;
 UINT8  gameStart       =  FALSE;
-UINT8  plotMouse       =  FALSE;
 
 void (*registeredFuncs[MAX_REGISTERED_VBL_FUNCS])(void);
 int fillLevel = 0;
 
 void reset_rend_req(void);
-
-void hide_cursor(void)
-{
-	int    oldIpl;
-
-	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
-	
-	if (plotMouse)
-	{
-		renderCursor(get_video_base(), oldCursX, oldCursY);
-
-		plotMouse = FALSE;
-	}
-
-	set_ipl(oldIpl);
-}
-
-void show_cursor(void)
-{
-	int    oldIpl;
-
-	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
-
-	if (!plotMouse)
-	{
-		renderCursor(get_video_base(), mouse.x, mouse.y);
-
-		oldCursX  = mouse.x;
-		oldCursY  = mouse.y;
-		plotMouse = TRUE;
-	}
-	set_ipl(oldIpl);
-}
 
 void game_end(void)
 {
@@ -155,6 +115,8 @@ void vbl_main(void)
 	{
 		registeredFuncs[index]();
 	}
+
+	rendReq = TRUE;
 }
 
 BOOL vbl_register(void (*func)(void))

@@ -3,80 +3,30 @@
 ; Copyright 2023 Academia Team
 
 						include			bool_asm.i
-						include			mouse.i
 
 						xdef			_vbl_isr
 
 						xref			_processSync
 						xref			_dead
 						xref			_gameWorld
-						xref			_mouse
-						xref			_get_video_base
-						xref			_renderCursor
 						xref			_vbl_main
 
 						xref			_timeNow
 						xref			_timeDesired
 						xref			_immunityTimer
 						xref			_playerMoveTimer
-						xref			_oldCursX
-						xref			_oldCursY
 						xref			_loopCounter
 						xref			_deathCounter
-						xref			_rendReq
 						xref			_gameStart
-						xref			_plotMouse
 
 
 ; void vbl_isr(void)
 ;
-; Brief: Manages all timed events and music.
-;
-; Register Table
-; --------------
-; d0	-	Holds the x coordinate of the mouse.
-;		-	Holds the y coordinate of the mouse.
-;		-	Holds the current frame buffer start address.
-; a0	-	Holds the address to the _mouse structure.
+; Brief: Executes vbl_main() every time the vertical blank clock interrupts.
 
-_vbl_isr:				movem.l			d0-d7/a0-a6,-(sp)
+_vbl_isr:				jsr				_vbl_main
 
-						jsr				_vbl_main
-
-						cmpi.b			#TRUE,_plotMouse
-						bne				VBL_HANDLE_SYNC_EVENTS
-
-						; Only handle the mouse if it has actually moved since
-						; last checked.
-						lea				_mouse,a0
-						move.w			MOUSE_X(a0),d0
-						cmp.w			_oldCursX,d0
-						bne				VBL_HANDLE_MOUSE
-						move.w			MOUSE_Y(a0),d0
-						cmp.w			_oldCursY,d0
-						beq				VBL_HANDLE_SYNC_EVENTS
-
-						; Clear the old mouse position by plotting over it.
-VBL_HANDLE_MOUSE:		move.w			_oldCursY,-(sp)
-						move.w			_oldCursX,-(sp)
-						jsr				_get_video_base
-						move.l			d0,-(sp)
-						jsr				_renderCursor
-						addq.l			#8,sp
-
-VBL_SET_OLD_MOUSE_POS:	lea				_mouse,a0
-						move.w			MOUSE_X(a0),_oldCursX
-						move.w			MOUSE_Y(a0),_oldCursY
-
-						; Plot the cursor at its new position.
-						move.w			MOUSE_Y(a0),-(sp)
-						move.w			MOUSE_X(a0),-(sp)
-						jsr				_get_video_base
-						move.l			d0,-(sp)
-						jsr				_renderCursor
-						addq.l			#8,sp
-
-VBL_HANDLE_SYNC_EVENTS:	cmpi.b			#TRUE,_gameStart
+						cmpi.b			#TRUE,_gameStart
 						bne				VBL_RETURN
 						pea				_deathCounter
 						pea				_loopCounter
@@ -89,7 +39,4 @@ VBL_HANDLE_SYNC_EVENTS:	cmpi.b			#TRUE,_gameStart
 						jsr				_processSync
 						add.l			#32,sp
 
-						; Set rendReq to true before leaving.
-VBL_RETURN:				move.w			#TRUE,_rendReq
-						movem.l			(sp)+,d0-d7/a0-a6
-						rte
+VBL_RETURN:				rte

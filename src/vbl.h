@@ -24,25 +24,6 @@
 #define VBL_VECTOR 28
 
 /**
- * @brief Stops the VBL ISR from showing a cursor on the screen.
- * @details Any remaining cursors on screen will be erased.
- */
-void hide_cursor(void);
-
-/**
- * @brief Causes the VBL to replot the cursor to the screen.
- * @details All previous cursors will be cleared.
- */
-#define reset_cursor() \
-	hide_cursor(); \
-	show_cursor()
-
-/**
- * @brief Allows the VBL ISR to show a cursor on the screen.
- */
-void show_cursor(void);
-
-/**
  * @brief Temporarily pauses any game-related operations.
  */
 #define game_pause() game_end()

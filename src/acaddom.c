@@ -11,6 +11,7 @@
 #include "bool.h"
 #include "events.h"
 #include "input.h"
+#include "in_vbl.h"
 #include "ikbdcode.h"
 #include "ints.h"
 #include "model.h"
@@ -151,7 +152,7 @@ int main(int argc, char **argv)
 
 	set_video_base((UINT16 *)screenBuffer);
 	vert_sync();
-	
+
 	unreg_music_vbl();
 	restoreKybd(sysKybd);
 	vbl_restore(sysVbl);
