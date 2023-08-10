@@ -7,6 +7,8 @@
  */
 
 #include "bool.h"
+#include "ints.h"
+#include "super.h"
 #include "types.h"
 #include "vbl.h"
 
@@ -27,7 +29,27 @@ UINT16 rendReq         =  FALSE;
 UINT8  gameStart       =  FALSE;
 UINT8  plotMouse       =  FALSE;
 
+void reset_rend_req(void);
+
 UINT32 get_time(void)
 {
 	return vertTimer;
+}
+
+/**
+ * @brief Removes any request to render.
+ */
+void reset_rend_req(void)
+{
+	int    oldIpl;
+
+	set_ipl(MASK_ALL_INTERRUPTS);
+	rendReq = FALSE;
+	set_ipl(oldIpl);
+}
+
+void vert_sync(void)
+{
+	reset_rend_req();
+	while (!rendReq);
 }
