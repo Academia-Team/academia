@@ -67,6 +67,17 @@ typedef struct
 	const UINT8 *alt;
 } KybdTransTables;
 
+typedef struct
+{
+	int  x;
+	int  y;
+	BOOL leftClick;
+	BOOL rightClick;
+	BOOL posChange;
+} Mouse;
+
+extern Mouse mouse;
+
 /**
  * @brief Checks if a left or right mouse click has happened with the given
  * mouse.

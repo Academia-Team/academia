@@ -29,10 +29,6 @@
 						xref			_plotMouse
 
 
-UNSET_CURS_X:			equ				-1
-UNSET_CURS_Y:			equ				-1
-
-
 ; void vbl_isr(void)
 ;
 ; Brief: Manages all timed events and music.
@@ -67,15 +63,8 @@ _vbl_isr:				movem.l			d0-d7/a0-a6,-(sp)
 						cmp.w			_oldCursY,d0
 						beq				VBL_HANDLE_SYNC_EVENTS
 
-						; If there is no previous valid cursor position, then
-						; nothing should be cleared.
-VBL_HANDLE_MOUSE:		cmpi.w			#UNSET_CURS_X,_oldCursX
-						bne				VBL_CLR_OLD_MOUSE
-						cmpi.w			#UNSET_CURS_Y,_oldCursY
-						beq				VBL_SET_OLD_MOUSE_POS
-
 						; Clear the old mouse position by plotting over it.
-VBL_CLR_OLD_MOUSE:		move.w			_oldCursY,-(sp)
+VBL_HANDLE_MOUSE:		move.w			_oldCursY,-(sp)
 						move.w			_oldCursX,-(sp)
 						jsr				_get_video_base
 						move.l			d0,-(sp)

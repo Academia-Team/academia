@@ -7,6 +7,7 @@
  */
 
 #include "bool.h"
+#include "input.h"
 #include "ints.h"
 #include "raster.h"
 #include "renderer.h"
@@ -14,8 +15,6 @@
 #include "types.h"
 #include "vbl.h"
 
-#define UNSET_CURS_X  -1
-#define UNSET_CURS_Y  -1
 #define MIN_NUM_TICKS 14
 
 UINT32 timeNow         =  0;
@@ -27,8 +26,8 @@ UINT32 timeDesired     =  0;
 UINT32 immunityTimer   = -1;
 UINT32 playerMoveTimer = -1;
 UINT32 vertTimer       =  0;
-UINT16 oldCursX        =  UNSET_CURS_X;
-UINT16 oldCursY        =  UNSET_CURS_Y;
+UINT16 oldCursX;
+UINT16 oldCursY;
 UINT16 loopCounter     =  1;
 UINT16 deathCounter    =  1;
 UINT16 rendReq         =  FALSE;
@@ -43,14 +42,12 @@ void hide_cursor(void)
 
 	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	
-	if (oldCursX != UNSET_CURS_X || oldCursY != UNSET_CURS_Y)
+	if (plotMouse)
 	{
 		renderCursor(get_video_base(), oldCursX, oldCursY);
-	}
 
-	plotMouse = FALSE;
-	oldCursX = UNSET_CURS_X;
-	oldCursY = UNSET_CURS_Y;
+		plotMouse = FALSE;
+	}
 
 	set_ipl(oldIpl);
 }
@@ -60,7 +57,15 @@ void show_cursor(void)
 	int    oldIpl;
 
 	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
-	plotMouse = TRUE;
+
+	if (!plotMouse)
+	{
+		renderCursor(get_video_base(), mouse.x, mouse.y);
+
+		oldCursX  = mouse.x;
+		oldCursY  = mouse.y;
+		plotMouse = TRUE;
+	}
 	set_ipl(oldIpl);
 }
 

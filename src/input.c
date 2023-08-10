@@ -711,15 +711,6 @@ const KybdTransTables DEFAULT_KYBD_TRANS_TABLES =
 
 const KybdTransTables *currTransTables = &DEFAULT_KYBD_TRANS_TABLES;
 
-typedef struct
-{
-	int  x;
-	int  y;
-	BOOL leftClick;
-	BOOL rightClick;
-	BOOL posChange;
-} Mouse;
-
 Mouse mouse = {INITIAL_MOUSE_X, INITIAL_MOUSE_Y, FALSE, FALSE, FALSE};
 
 void IKBD_isr(void);
