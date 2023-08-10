@@ -38,7 +38,7 @@ typedef struct
 {
 	char description[MAX_TEST_DESCRIPTION_LEN + 1];
 	void (*tstMgr)(void (*tstFunc)(ArgList *args));
-	void (*tstFunc)();
+	void (*tstFunc)(ArgList *args);
 	UINT8 ID;
 } TestCase;
 
@@ -130,7 +130,7 @@ void showTestPrompt(FILE *stream);
  * @return A pointer to a TestSuite or NULL if there are no more TestSuites to
  * return.
  */
-TestSuite *getNextTestSuite();
+TestSuite *getNextTestSuite(void);
 
 /**
  * @brief Get the next Test Suite object associated with the given Test Suite.
