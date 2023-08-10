@@ -6,7 +6,6 @@
 						include			ints.i
 						include			mouse.i
 
-						xdef			_hide_cursor
 						xdef			_rend_req
 						xdef			_vbl_isr
 
@@ -36,96 +35,6 @@
 
 UNSET_CURS_X:			equ				-1
 UNSET_CURS_Y:			equ				-1
-
-; void cursor_hide(void);
-;
-; Brief: Stops the VBL ISR from showing a cursor on the screen.
-;
-; Register Table
-; --------------
-; d0	-	Holds a value indicating if the subroutine is currently running in
-;			supervisor mode.
-;		-	Holds the original system stack pointer.
-;		-	Holds the original 68000 interrupt mask.
-;		-	Holds the current frame buffer start address.
-;		-	Holds the old x coordinate of the mouse.
-;		-	Holds the old y coordinate of the mouse.
-;		-	Holds the y coordinate of the mouse.
-; d4	-	Holds the original system stack pointer.
-; d5	-	Holds the original 68000 interrupt mask.
-; d6	-	Holds the current frame buffer start address.
-; d7	-	Holds a value indicating if the subroutine has entered supervisor
-;			mode.
-_hide_cursor:			movem.l			d0-d7/a0-a6,-(sp)
-
-						; Enter Supervisor Mode.
-						jsr				_isSu
-						move.b			d0,d7
-						bne				HC_MASK_INTS
-						clr.l			-(sp)
-						jsr				_Su
-						move.l			d0,d4
-						addq.l			#4,sp
-
-						; Mask all interrupts.
-HC_MASK_INTS:			move.w			#MASK_ALL_INTERRUPTS,-(sp)
-						jsr				_set_ipl
-						addq.l			#2,sp
-						move.w			d0,d5
-
-						; Leave Supervisor Mode.
-						tst.b			d7
-						bne				HC_GET_FRAMEBUFFER
-						move.l			d4,-(sp)
-						jsr				_Su
-						addq.l			#4,sp
-
-HC_GET_FRAMEBUFFER:		jsr				_get_video_base
-						move.l			d0,d6
-
-						; Clear the old mouse position by plotting over it.
-						; Only attempt to clear if both the x and y coordinates
-						; are not equal to the unset value.
-						move.w			_oldCursX,d0
-						cmp.w			#UNSET_CURS_X,d0
-						bne				HC_CLEAR_CURS
-						move.w			_oldCursY,d0
-						cmp.w			#UNSET_CURS_Y,d0
-						beq				HC_RESET
-
-HC_CLEAR_CURS:			move.w			_oldCursY,-(sp)
-						move.w			_oldCursX,-(sp)
-						move.l			d6,-(sp)
-						jsr				_renderCursor
-						addq.l			#8,sp
-
-						; Reset the other mouse related values.
-HC_RESET:				move.b			#FALSE,_plotMouse
-						move.w			#UNSET_CURS_X,_oldCursX
-						move.w			#UNSET_CURS_Y,_oldCursY
-
-						; Enter Supervisor Mode.
-						tst.b			d7
-						bne				HC_RESTORE_INTS
-						clr.l			-(sp)
-						jsr				_Su
-						move.l			d0,d4
-						addq.l			#4,sp
-
-						; Restore previous interrupt mask.
-HC_RESTORE_INTS:		move.w			d5,-(sp)
-						jsr				_set_ipl
-						addq.l			#2,sp
-
-						; Leave Supervisor Mode.
-						tst.b			d7
-						bne				HC_RETURN
-						move.l			d4,-(sp)
-						jsr				_Su
-						addq.l			#4,sp
-
-HC_RETURN:				movem.l			(sp)+,d0-d7/a0-a6
-						rts
 
 
 ; BOOL rend_req(void)

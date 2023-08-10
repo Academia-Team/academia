@@ -8,6 +8,8 @@
 
 #include "bool.h"
 #include "ints.h"
+#include "raster.h"
+#include "renderer.h"
 #include "super.h"
 #include "types.h"
 #include "vbl.h"
@@ -34,6 +36,24 @@ UINT8  gameStart       =  FALSE;
 UINT8  plotMouse       =  FALSE;
 
 void reset_rend_req(void);
+
+void hide_cursor(void)
+{
+	int    oldIpl;
+
+	set_ipl(MASK_ALL_INTERRUPTS);
+	
+	if (oldCursX != UNSET_CURS_X || oldCursY != UNSET_CURS_Y)
+	{
+		renderCursor(get_video_base(), oldCursX, oldCursY);
+	}
+
+	plotMouse = FALSE;
+	oldCursX = UNSET_CURS_X;
+	oldCursY = UNSET_CURS_Y;
+
+	set_ipl(oldIpl);
+}
 
 void show_cursor(void)
 {
