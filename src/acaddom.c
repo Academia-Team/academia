@@ -119,7 +119,7 @@ int main(int argc, char **argv)
 	UINT32 const *worldScreenBuffer =
 					(UINT32 *)(&worldFrameBufferMEM[worldFBOffset]);
 
-	const Vector sysVbl  = install_vector(VBL_VECTOR, vbl_isr);
+	const Vector sysVbl  = vbl_init();
 	const Vector sysKybd = initKybd();
 
 	while (!exitPgrm)
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 	set_video_base((UINT16 *)screenBuffer);
 	vert_sync();
 	restoreKybd(sysKybd);
-	install_vector(VBL_VECTOR, sysVbl);
+	vbl_restore(sysVbl);
 	stop_sound();
 
 	return 0;

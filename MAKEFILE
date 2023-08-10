@@ -59,7 +59,7 @@ src\test.o: src\test.c src\test.h src\bool.h src\types.h
 src\arg_list.o: src\arg_list.c src\arg_list.h src\bool.h
 	cc68x -g -c src\arg_list.c
 
-src\vbl.o: src\vbl.c src\vbl.h src\bool.h src\input.h src\ints.h src\raster.h src\renderer.h src\super.h src\types.h
+src\vbl.o: src\vbl.c src\vbl.h src\bool.h src\input.h src\ints.h src\raster.h src\renderer.h src\super.h src\types.h src\vector.h
 	cc68x -g -c src\vbl.c
 
 src\vbl_asm.o: src\vbl_asm.s src\vbl.h

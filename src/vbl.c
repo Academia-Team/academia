@@ -14,6 +14,7 @@
 #include "super.h"
 #include "types.h"
 #include "vbl.h"
+#include "vector.h"
 
 UINT32 timeNow         =  0;
 
@@ -129,9 +130,30 @@ void reset_rend_req(void)
 	set_ipl(oldIpl);
 }
 
+Vector vbl_init(void)
+{
+	int    oldIpl;
+	Vector oldVector;
+
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	oldVector = install_vector(VBL_VECTOR, vbl_isr);
+	set_ipl(oldIpl);
+
+	return oldVector;
+}
+
 void vbl_main(void)
 {
 	vertTimer++;
+}
+
+void vbl_restore(Vector sysVblVec)
+{
+	int    oldIpl;
+
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
+	install_vector(VBL_VECTOR, sysVblVec);
+	set_ipl(oldIpl);
 }
 
 void vert_sync(void)

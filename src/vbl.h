@@ -11,6 +11,7 @@
 
 #include "bool.h"
 #include "types.h"
+#include "vector.h"
 
 /**
  * @brief The minimum number of ticks after which some of the async events can
@@ -82,9 +83,23 @@ BOOL rend_req(void);
 void vbl_main(void);
 
 /**
+ * @brief Sets up the VBL ISR.
+ * 
+ * @return The original VBL ISR vector.
+ */
+Vector vbl_init(void);
+
+/**
  * @brief Executes vbl_main() every time the vertical blank clock interrupts.
  */
 void vbl_isr(void);
+
+/**
+ * @brief Restores the given VBL ISR vector.
+ * 
+ * @param sysVblVec The vector to restore.
+ */
+void vbl_restore(Vector sysVblVec);
 
 /**
  * @brief Blocks processing until a vertical sync has occurred.
