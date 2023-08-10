@@ -15,7 +15,7 @@
 #include "tst_hndl.h"
 #include "vector.h"
 
-void handleTests()
+void handleTests(void)
 {
 	TestSuite *tstSuite;
 	TestCase  *tstCase;
