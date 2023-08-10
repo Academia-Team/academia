@@ -13,6 +13,8 @@
 #include "types.h"
 #include "vector.h"
 
+#define MAX_REGISTERED_VBL_FUNCS 12
+
 /**
  * @brief The minimum number of ticks after which some of the async events can
  * begin.
@@ -95,11 +97,28 @@ Vector vbl_init(void);
 void vbl_isr(void);
 
 /**
+ * @brief Register a function to be run while the VBL ISR runs.
+ * @details The functions will be run in the order that they are defined.
+ * 
+ * @param func The function to set to run during the VBL ISR.
+ * @return TRUE if the function was successfully registered; FALSE otherwise.
+ */
+BOOL vbl_register(void (*func)(void));
+
+/**
  * @brief Restores the given VBL ISR vector.
  * 
  * @param sysVblVec The vector to restore.
  */
 void vbl_restore(Vector sysVblVec);
+
+/**
+ * @brief Removes a function from being run while the VBL ISR runs.
+ * 
+ * @param func The function that should be removed.
+ * @return TRUE if the function was found and removed; FALSE otherwise.
+ */
+BOOL vbl_unregister(void (*func)(void));
 
 /**
  * @brief Blocks processing until a vertical sync has occurred.
