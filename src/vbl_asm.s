@@ -3,10 +3,8 @@
 ; Copyright 2023 Academia Team
 
 						include			bool_asm.i
-						include			ints.i
 						include			mouse.i
 
-						xdef			_rend_req
 						xdef			_vbl_isr
 
 						xref			_update_music
@@ -16,8 +14,6 @@
 						xref			_mouse
 						xref			_get_video_base
 						xref			_renderCursor
-						xref			_isSu
-						xref			_Su
 
 						xref			_timeNow
 						xref			_timeDesired
@@ -35,59 +31,6 @@
 
 UNSET_CURS_X:			equ				-1
 UNSET_CURS_Y:			equ				-1
-
-
-; BOOL rend_req(void)
-;
-; Brief: Returns whether it is appropriate render or not.
-;
-; Register Table
-; --------------
-; d0	-	Holds a value indicating if the subroutine is currently running in
-;			supervisor mode.
-;		-	Holds the original system stack pointer.
-;		-	Holds the original 68000 interrupt mask.
-;		-	Holds the Boolean value to be returned.
-; d4	-	Holds the original system stack pointer.
-; d5	-	Holds the original 68000 interrupt mask.
-; d6	-	Temporary holding spot for the Boolean value to be returned.
-; d7	-	Holds a value indicating if the subroutine has entered supervisor
-;			mode.
-_rend_req:				movem.l			d1-d7/a0-a6,-(sp)
-
-						; Enter Supervisor Mode.
-						jsr				_isSu
-						move.b			d0,d7
-						bne				R_REQ_MASK_INTS
-						clr.l			-(sp)
-						jsr				_Su
-						move.l			d0,d4
-						addq.l			#4,sp
-
-						; Mask all interrupts.
-R_REQ_MASK_INTS:		move.w			#MASK_ALL_INTERRUPTS,-(sp)
-						jsr				_set_ipl
-						addq.l			#2,sp
-						move.w			d0,d5
-
-						move.w			_rendReq,d6
-						move.w			#FALSE,_rendReq
-
-						; Restore previous interrupt mask.
-						move.w			d5,-(sp)
-						jsr				_set_ipl
-						addq.l			#2,sp
-
-						; Leave Supervisor Mode.
-						tst.b			d7
-						bne				R_REQ_RETURN
-						move.l			d4,-(sp)
-						jsr				_Su
-						addq.l			#4,sp
-
-R_REQ_RETURN:			move.w			d6,d0
-						movem.l			(sp)+,d1-d7/a0-a6
-						rts
 
 
 ; void vbl_isr(void)

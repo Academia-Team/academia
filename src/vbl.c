@@ -96,6 +96,19 @@ UINT32 get_time(void)
 	return vertTimer;
 }
 
+BOOL rend_req(void)
+{
+	BOOL returnVal;
+	int  oldIpl;
+
+	set_ipl(MASK_ALL_INTERRUPTS);
+	returnVal = rendReq;
+	rendReq   = FALSE;
+	set_ipl(oldIpl);
+
+	return returnVal;
+}
+
 /**
  * @brief Removes any request to render.
  */
