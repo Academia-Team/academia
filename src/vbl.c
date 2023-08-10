@@ -41,7 +41,7 @@ void hide_cursor(void)
 {
 	int    oldIpl;
 
-	set_ipl(MASK_ALL_INTERRUPTS);
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	
 	if (oldCursX != UNSET_CURS_X || oldCursY != UNSET_CURS_Y)
 	{
@@ -59,7 +59,7 @@ void show_cursor(void)
 {
 	int    oldIpl;
 
-	set_ipl(MASK_ALL_INTERRUPTS);
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	plotMouse = TRUE;
 	set_ipl(oldIpl);
 }
@@ -68,7 +68,7 @@ void game_end(void)
 {
 	int    oldIpl;
 
-	set_ipl(MASK_ALL_INTERRUPTS);
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	gameStart = FALSE;
 	set_ipl(oldIpl);
 }
@@ -77,7 +77,7 @@ void game_start(void)
 {
 	int    oldIpl;
 
-	set_ipl(MASK_ALL_INTERRUPTS);
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 
 	/* Only adjust the time desired if and only if it hasn't already been
 	assigned a non-zero value. This allows games that have been stopped to be
@@ -101,7 +101,7 @@ BOOL rend_req(void)
 	BOOL returnVal;
 	int  oldIpl;
 
-	set_ipl(MASK_ALL_INTERRUPTS);
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	returnVal = rendReq;
 	rendReq   = FALSE;
 	set_ipl(oldIpl);
@@ -116,7 +116,7 @@ void reset_rend_req(void)
 {
 	int    oldIpl;
 
-	set_ipl(MASK_ALL_INTERRUPTS);
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
 	rendReq = FALSE;
 	set_ipl(oldIpl);
 }
