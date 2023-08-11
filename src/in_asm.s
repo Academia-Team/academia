@@ -11,6 +11,7 @@
 
 						xref	_addToKeyBuffer
 						xref	_kybdShiftBuffer
+						xref	_handleSpecialAction
 
 IKBD_STATUS_REG:		equ		$FFFFFC00
 IKBD_RDR_REG:			equ		$FFFFFC02
@@ -43,6 +44,8 @@ IKBD_MFP_SERVICE_BIT:	equ		6
 ;
 ; Register Table:
 ; ---------------
+; d0	-	Holds a boolean value indicating whether a special action has
+;			occurred.
 ; d5	-	Holds the value recieved by the keyboard.
 _IKBD_isr:				movem.l	d0-d7/a0-a6,-(sp)
 
@@ -146,11 +149,20 @@ IKBD_NOT_LSHIFT_MAKE:	cmpi.b	#IKBD_RSHIFT_SCANCODE,d5
 						bra		IKBD_RETURN
 
 IKBD_NOT_RSHIFT_MAKE:	cmpi.b	#IKBD_CAPS_SCANCODE,d5
-						bne		IKBD_REG_KEY
+						bne		IKBD_HANDLE_KEY
 						ori.b	#IKBD_CAPS_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_REG_KEY:			move.w	d5,-(sp)
+						; Handle any special actions associated with the
+						; current key and modifiers.
+IKBD_HANDLE_KEY:		move.w	d5,-(sp)
+						jsr		_handleSpecialAction
+						addq.l	#2,sp
+
+						cmpi.b	#TRUE,d0
+						beq		IKBD_RETURN
+
+						move.w	d5,-(sp)
 						jsr 	_addToKeyBuffer
 						addq.l	#2,sp
 
@@ -161,6 +173,7 @@ IKBD_RETURN:			movem.l	(sp)+,d0-d7/a0-a6
 						bne		_IKBD_isr
 						btst.b	#IRQ_BIT,MIDI_STATUS_REG
 						bne		_IKBD_isr
+
 						bclr.b	#IKBD_MFP_SERVICE_BIT,MFP_IN_SERVICE_B_REG
 						rte
 

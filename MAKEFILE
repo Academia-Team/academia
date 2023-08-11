@@ -89,7 +89,7 @@ src\acaddom.o: src\acaddom.c src\bool.h src\events.h src\input.h src\model.h src
 src\in_asm.o: src\in_asm.s src\bool.h
 	gen -D -L2 src\in_asm.s
 
-src\input.o: src\input.c src\input.h src\ints.h src\super.h src\types.h src\vector.h
+src\input.o: src\input.c src\input.h src\ints.h src\scrn.h src\super.h src\types.h src\vector.h
 	cc68x -g -c src\input.c
 
 src\in_vbl.o: src\in_vbl.c src\in_vbl.h src\bool.h src\input.h src\ints.h src\raster.h src\renderer.h src\types.h src\vbl.h

@@ -12,6 +12,7 @@
 #include "input.h"
 #include "ints.h"
 #include "ikbdcode.h"
+#include "scrn.h"
 #include "super.h"
 #include "types.h"
 #include "vector.h"
@@ -30,6 +31,12 @@
 #define CTRL_CODE              0x04
 #define LSHIFT_CODE            0x02
 #define RSHIFT_CODE            0x01
+
+/**
+ * @brief The number of pixels to move the mouse cursor when a mouse-changing
+ * keyboard key is pressed.
+ */
+#define KEYBOARD_M_MOVE_DIST      8
 
 /**
  * @brief The amount that the scancode is supposed to be shifted by before
@@ -638,18 +645,18 @@ const UINT8 ALT_SCANCODE_TO_ASCII[SCANCODE_TO_ASCII_LEN] =
 	0			/* 0x44 */,
 	0			/* Unutilized */,
 	0			/* Unutilized */,
-	0			/* 0x47 - Used to activate right mouse button (not implemented) */,
-	0			/* 0x48 - Used to move the mouse cursor up (not implemented) */,
+	0			/* 0x47 - Used to activate right mouse button */,
+	0			/* 0x48 - Used to move the mouse cursor up */,
 	0			/* Unutilized */,
 	'-'			/* 0x4A */,
-	0			/* 0x4B - Used to move the mouse cursor left (not implemented) */,
+	0			/* 0x4B - Used to move the mouse cursor left */,
 	0			/* Unutilized */,
-	0			/* 0x4D - Used to move the mouse cursor right (not implemented) */,
+	0			/* 0x4D - Used to move the mouse cursor right */,
 	'+'			/* 0x4E */,
 	0			/* Unutilized */,
-	0			/* 0x50 - Used to move the mouse cursor down (not implemented) */,
+	0			/* 0x50 - Used to move the mouse cursor down */,
 	0			/* Unutilized */,
-	0			/* 0x52 - Used to activate left mouse button (not implemented) */,
+	0			/* 0x52 - Used to activate left mouse button */,
 	DEL_CHAR	/* 0x53 */,
 	0			/* Unutilized */,
 	0			/* Unutilized */,
@@ -879,6 +886,86 @@ IKBD_Scancode getKey(void)
 IKBD_Scancode getBKey(void)
 {
 	return (int)(getKybdBRaw() >> SCANCODE_BUFFER_SHIFT_VAL);
+}
+
+/**
+ * @brief Handles any special actions associated with the current combination
+ * of scancode and key modifiers.
+ * 
+ * @param scancode The scancode to check for a special action.
+ * @return TRUE if there is a special action associated with the given scancode;
+ * FALSE otherwise.
+ */
+UINT8 handleSpecialAction(UINT8 scancode)
+{
+	UINT8 specialAction = FALSE;
+
+	if (kybdShiftBuffer == ALT_CODE)
+	{
+		switch(scancode)
+		{
+			case IKBD_INSERT_SCANCODE:
+				mouse.leftClick = TRUE;
+				specialAction   = TRUE;
+
+				break;
+			case IKBD_CLHM_SCANCODE:
+				mouse.rightClick = TRUE;
+				specialAction    = TRUE;
+
+				break;
+			case IKBD_UP_SCANCODE:
+				mouse.y -= KEYBOARD_M_MOVE_DIST;
+
+				if (mouse.y < 0)
+				{
+					mouse.y = 0;
+				}
+
+				mouse.posChange = TRUE;
+				specialAction   = TRUE;
+
+				break;
+			case IKBD_DOWN_SCANCODE:
+				mouse.y += KEYBOARD_M_MOVE_DIST;
+
+				if (mouse.y > SCRN_MAX_Y)
+				{
+					mouse.y = SCRN_MAX_Y;
+				}
+
+				mouse.posChange = TRUE;
+				specialAction   = TRUE;
+
+				break;
+			case IKBD_LEFT_SCANCODE:
+				mouse.x -= KEYBOARD_M_MOVE_DIST;
+
+				if (mouse.x < 0)
+				{
+					mouse.x = 0;
+				}
+
+				mouse.posChange = TRUE;
+				specialAction   = TRUE;
+
+				break;
+			case IKBD_RIGHT_SCANCODE:
+				mouse.x += KEYBOARD_M_MOVE_DIST;
+
+				if (mouse.x > SCRN_MAX_X)
+				{
+					mouse.x = SCRN_MAX_X;
+				}
+
+				mouse.posChange = TRUE;
+				specialAction   = TRUE;
+
+				break;
+		}
+	}
+
+	return specialAction;
 }
 
 BOOL mouseLclick(void)
