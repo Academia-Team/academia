@@ -24,7 +24,9 @@
 ;
 ; Brief: Executes vbl_main() every time the vertical blank clock interrupts.
 
-_vbl_isr:				jsr				_vbl_main
+_vbl_isr:				movem.l			d0-d7/a0-a6,-(sp)
+
+						jsr				_vbl_main
 
 						cmpi.b			#TRUE,_gameStart
 						bne				VBL_RETURN
@@ -39,4 +41,5 @@ _vbl_isr:				jsr				_vbl_main
 						jsr				_processSync
 						add.l			#32,sp
 
-VBL_RETURN:				rte
+VBL_RETURN:				movem.l			(sp)+,d0-d7/a0-a6
+						rte
