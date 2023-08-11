@@ -5,19 +5,7 @@
 						include			bool_asm.i
 
 						xdef			_vbl_isr
-
-						xref			_processSync
-						xref			_dead
-						xref			_gameWorld
 						xref			_vbl_main
-
-						xref			_timeNow
-						xref			_timeDesired
-						xref			_immunityTimer
-						xref			_playerMoveTimer
-						xref			_loopCounter
-						xref			_deathCounter
-						xref			_gameStart
 
 
 ; void vbl_isr(void)
@@ -28,18 +16,5 @@ _vbl_isr:				movem.l			d0-d7/a0-a6,-(sp)
 
 						jsr				_vbl_main
 
-						cmpi.b			#TRUE,_gameStart
-						bne				VBL_RETURN
-						pea				_deathCounter
-						pea				_loopCounter
-						pea				_playerMoveTimer
-						pea				_immunityTimer
-						pea				_timeDesired
-						pea				_timeNow
-						pea				_dead
-						pea				_gameWorld
-						jsr				_processSync
-						add.l			#32,sp
-
-VBL_RETURN:				movem.l			(sp)+,d0-d7/a0-a6
+						movem.l			(sp)+,d0-d7/a0-a6
 						rte

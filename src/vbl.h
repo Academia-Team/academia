@@ -24,26 +24,6 @@
 #define VBL_VECTOR 28
 
 /**
- * @brief Temporarily pauses any game-related operations.
- */
-#define game_pause() game_end()
-
-/**
- * @brief Resumes any game-related operations.
- */
-#define game_resume() game_start()
-
-/**
- * @brief Handles the cleanup after a game ends.
- */
-void game_end(void);
-
-/**
- * @brief Sets the appropriate values for the start of a game.
- */
-void game_start(void);
-
-/**
  * @brief Returns the current time provided by the VBL clock.
  * 
  * @return The current VBL clock value as a UINT32.

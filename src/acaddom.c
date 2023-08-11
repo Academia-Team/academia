@@ -58,6 +58,28 @@ typedef enum
 World  gameWorld;
 BOOL   dead = FALSE;
 
+UINT32 timeNow         =  0;
+
+/* Holds the total number of clock ticks that must be reached before handling
+synchronous events. */
+UINT32 timeDesired     =  0;
+
+UINT32 immunityTimer   = -1;
+UINT32 playerMoveTimer = -1;
+int    loopCounter     =  1;
+int    deathCounter    =  1;
+UINT8  gameStart       =  FALSE;
+
+/**
+ * @brief Temporarily pauses any game-related operations.
+ */
+#define game_pause() game_end()
+
+/**
+ * @brief Resumes any game-related operations.
+ */
+#define game_resume() game_start()
+
 /**
  * @brief Sets the frame buffer start address if and only if it is not already
  * set to the desired address.
@@ -90,6 +112,10 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld);
 void prepGameOverScrn(UINT32 *screenBuffer, World *gameWorld,
 					  Button *playAgainButton, Button *retreatButton,
 					  Label *winnerLabel);
+
+void game_end(void);
+void game_start(void);
+void sync_events_vbl(void);
 
 UINT8	otherFrameBufferMEM[SCRN_BYTES + SCRN_ALIGN];
 UINT8	worldFrameBufferMEM[SCRN_BYTES + SCRN_ALIGN];
@@ -953,4 +979,56 @@ void prepGameOverScrn(UINT32 *screenBuffer, World *gameWorld,
 
 	renderButton(screenBuffer, playAgainButton, TRUE);
 	renderButton(screenBuffer, retreatButton, TRUE);
+}
+
+/**
+ * @brief Handles the cleanup after a game ends.
+ */
+void game_end(void)
+{
+	int    oldIpl;
+
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
+
+	if (gameStart)
+	{
+		vbl_unregister(sync_events_vbl);
+		gameStart = FALSE;
+	}
+	set_ipl(oldIpl);
+}
+
+/**
+ * @brief Sets the appropriate values for the start of a game.
+ */
+void game_start(void)
+{
+	int    oldIpl;
+
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
+
+	if (!gameStart)
+	{
+		vbl_register(sync_events_vbl);
+
+		/* Only adjust the time desired if and only if it hasn't already been
+		assigned a non-zero value. This allows games that have been stopped to be
+		resumed without any ill effect. */
+		if (timeDesired == 0)
+		{
+			timeDesired = get_time() + MIN_NUM_TICKS;
+		}
+		gameStart = TRUE;
+
+		set_ipl(oldIpl);
+	}
+}
+
+/**
+ * @brief The function that handles synchronous events within the VBL ISR.
+ */
+void sync_events_vbl(void)
+{
+	processSync(&gameWorld, &dead, &timeNow, &timeDesired, &immunityTimer,
+				&playerMoveTimer, &loopCounter, &deathCounter);
 }
