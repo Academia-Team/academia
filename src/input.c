@@ -781,7 +781,7 @@ void restoreKybd(Vector sysKybdVec)
  * 
  * @param scancode The code representing a key on a keyboard.
  */
-void addToKeyBuffer(UINT8 scancode)
+void addToKeyBuffer(UINT16 scancode)
 {
 	if (kybdKeyBuffer[keyPlacePos] != 0)
 	{
@@ -896,7 +896,7 @@ IKBD_Scancode getBKey(void)
  * @return TRUE if there is a special action associated with the given scancode;
  * FALSE otherwise.
  */
-UINT8 handleSpecialAction(UINT8 scancode)
+UINT8 handleSpecialAction(UINT16 scancode)
 {
 	UINT8 specialAction = FALSE;
 
