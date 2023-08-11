@@ -44,6 +44,14 @@
  */
 #define SCANCODE_BUFFER_SHIFT_VAL 24
 
+enum
+{
+	CAPS_IDLE     = 0,
+	CAPS_PRESSED  = 1,
+	CAPS_RELEASED = 2,
+	CAPS_RESET    = 3
+} capsState = CAPS_IDLE;
+
 const UINT8 UNSHIFT_SCANCODE_TO_ASCII[SCANCODE_TO_ASCII_LEN] =
 {
 	0			/* Unutilized.*/,
@@ -773,6 +781,52 @@ void restoreKybd(Vector sysKybdVec)
 }
 
 /**
+ * @brief Adds a value to the shift buffer based on the given scancode.
+ * @details If the scancode does not correspond to a key modifier, nothing will
+ * happen.
+ * 
+ * @param scancode The scancode corresponding to a key modifier.
+ */
+void addToShiftBuffer(UINT16 scancode)
+{
+	switch(scancode)
+	{
+		case IKBD_CTRL_SCANCODE:
+			kybdShiftBuffer ^= CTRL_CODE;
+			break;
+		case IKBD_ALT_SCANCODE:
+			kybdShiftBuffer ^= ALT_CODE;
+			break;
+		case IKBD_LSHIFT_SCANCODE:
+			kybdShiftBuffer ^= ALT_CODE;
+			break;
+		case IKBD_RSHIFT_SCANCODE:
+			kybdShiftBuffer ^= RSHIFT_CODE;
+			break;
+		case IKBD_CAPS_SCANCODE:
+			switch(capsState)
+			{
+				case CAPS_IDLE:
+					capsState = CAPS_PRESSED;
+					kybdShiftBuffer |= CAPS_CODE;
+					break;
+				case CAPS_PRESSED:
+					capsState = CAPS_RELEASED;
+					break;
+				case CAPS_RELEASED:
+					capsState = CAPS_RESET;
+					kybdShiftBuffer ^= CAPS_CODE;
+					break;
+				case CAPS_RESET:
+					capsState = CAPS_IDLE;
+					break;
+			}
+
+			break;
+	}
+}
+
+/**
  * @brief Adds the given scancode (with the corresponding ascii value) to the
  * key buffer.
  * @details If it is detected that placing a key will overwrite a key still
@@ -966,6 +1020,21 @@ UINT8 handleSpecialAction(UINT16 scancode)
 	}
 
 	return specialAction;
+}
+
+/**
+ * @brief Returns whether the given scancode corresponds to a key modifier.
+ * 
+ * @param scancode The scancode to check.
+ * @return TRUE if it is a key modifier; FALSE otherwise.
+ */
+UINT8 isKeyMod(UINT16 scancode)
+{
+	return (scancode == IKBD_LSHIFT_SCANCODE ||
+			scancode == IKBD_RSHIFT_SCANCODE ||
+			scancode == IKBD_ALT_SCANCODE    ||
+			scancode == IKBD_CAPS_SCANCODE   ||
+			scancode == IKBD_CTRL_SCANCODE);
 }
 
 BOOL mouseLclick(void)

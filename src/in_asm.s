@@ -9,9 +9,10 @@
 
 						xdef	_IKBD_isr
 
+						xref	_addToShiftBuffer
 						xref	_addToKeyBuffer
-						xref	_kybdShiftBuffer
 						xref	_handleSpecialAction
+						xref	_isKeyMod
 
 IKBD_STATUS_REG:		equ		$FFFFFC00
 IKBD_RDR_REG:			equ		$FFFFFC02
@@ -26,12 +27,6 @@ IKBD_MIN_MOUSE_PKT_VAL:	equ		$F8
 MOUSE_RCLICK_BIT:		equ		0
 MOUSE_LCLICK_BIT:		equ		1
 
-IKBD_CAPS_BITMASK:		equ		$10
-IKBD_CTRL_BITMASK:		equ		$04
-IKBD_ALT_BITMASK:		equ		$08
-IKBD_LSHIFT_BITMASK:	equ		$02
-IKBD_RSHIFT_BITMASK:	equ		$01
-
 IKBD_CHANNEL_LEV:		equ		6
 
 MFP_IN_SERVICE_B_REG:	equ		$FFFFFA11
@@ -44,9 +39,13 @@ IKBD_MFP_SERVICE_BIT:	equ		6
 ;
 ; Register Table:
 ; ---------------
-; d0	-	Holds a boolean value indicating whether a special action has
+; d0	-	Holds a boolean value indicating whether a scancode corresponds to
+;			a key modifier.
+;		-	Holds a boolean value indicating whether a special action has
 ;			occurred.
 ; d5	-	Holds the value recieved by the keyboard.
+; d6	-	Holds a boolean value that indicates TRUE when a make code is being
+;			handled and FALSE when a break code is being handled.
 _IKBD_isr:				movem.l	d0-d7/a0-a6,-(sp)
 
 						; If the keyboard doesn't have anything in its buffer,
@@ -82,80 +81,40 @@ IKBD_MANAGE_MOUSE:		move.b	d5,-(sp)
 						addq.l	#2,sp
 						bra		IKBD_RETURN
 
-						; Check if it is a make or break code.
+						; Determine whether we are dealing with a make or break
+						; code.
 IKBD_HANDLE_KEYS:		bclr.l	#IKBD_BREAK_BIT,d5
-						beq		IKBD_HANDLE_MAKE_CODE
+						bne		IKBD_BREAK_CODE
+						move.l	#TRUE,d6
+						bra		IKBD_CHK_SCANCODE
+IKBD_BREAK_CODE:		move.l	#FALSE,d6
 
 						; Check if the scancode is valid.
-						cmpi.b	#IKBD_MAX_SCANCODE,d5
+IKBD_CHK_SCANCODE:		cmpi.b	#IKBD_MAX_SCANCODE,d5
 						bhi		IKBD_RETURN
 						cmpi.b	#IKBD_MIN_SCANCODE,d5
 						blo		IKBD_RETURN
 
-						; Check if something should be removed from the shift
-						; buffer.
-						cmpi.b	#IKBD_CTRL_SCANCODE,d5
-						bne		IKBD_NOT_CTRL_BREAK
-						eori.b	#IKBD_CTRL_BITMASK,_kybdShiftBuffer
-						bra		IKBD_RETURN
-
-IKBD_NOT_CTRL_BREAK:	cmpi.b	#IKBD_ALT_SCANCODE,d5
-						bne		IKBD_NOT_ALT_BREAK
-						eori.b	#IKBD_ALT_BITMASK,_kybdShiftBuffer
-						bra		IKBD_RETURN
-
-IKBD_NOT_ALT_BREAK:		cmpi.b	#IKBD_LSHIFT_SCANCODE,d5
-						bne		IKBD_NOT_LSHIFT_BREAK
-						eori.b	#IKBD_LSHIFT_BITMASK,_kybdShiftBuffer
-						bra		IKBD_RETURN
-
-IKBD_NOT_LSHIFT_BREAK:	cmpi.b	#IKBD_RSHIFT_SCANCODE,d5
-						bne		IKBD_NOT_RSHIFT_BREAK
-						eori.b	#IKBD_RSHIFT_BITMASK,_kybdShiftBuffer
-						bra		IKBD_RETURN
-
-IKBD_NOT_RSHIFT_BREAK:	cmpi.b	#IKBD_CAPS_SCANCODE,d5
-						bne		IKBD_RETURN
-						eori.b	#IKBD_CAPS_BITMASK,_kybdShiftBuffer
-						bra		IKBD_RETURN
-
-
-						; Check if the scancode is valid.
-IKBD_HANDLE_MAKE_CODE:	cmpi.b	#IKBD_MAX_SCANCODE,d5
-						bhi		IKBD_RETURN
-						cmpi.b	#IKBD_MIN_SCANCODE,d5
-						blo		IKBD_RETURN
-
-						; Check if something should be added to the shift
-						; buffer.
-						cmpi.b	#IKBD_CTRL_SCANCODE,d5
-						bne		IKBD_NOT_CTRL_MAKE
-						ori.b	#IKBD_CTRL_BITMASK,_kybdShiftBuffer
-						bra		IKBD_RETURN
-
-IKBD_NOT_CTRL_MAKE:		cmpi.b	#IKBD_ALT_SCANCODE,d5
-						bne		IKBD_NOT_ALT_MAKE
-						ori.b	#IKBD_ALT_BITMASK,_kybdShiftBuffer
-						bra		IKBD_RETURN
-
-IKBD_NOT_ALT_MAKE:		cmpi.b	#IKBD_LSHIFT_SCANCODE,d5
-						bne		IKBD_NOT_LSHIFT_MAKE
-						ori.b	#IKBD_LSHIFT_BITMASK,_kybdShiftBuffer
-						bra		IKBD_RETURN
-
-IKBD_NOT_LSHIFT_MAKE:	cmpi.b	#IKBD_RSHIFT_SCANCODE,d5
-						bne		IKBD_NOT_RSHIFT_MAKE
-						ori.b	#IKBD_RSHIFT_BITMASK,_kybdShiftBuffer
-						bra		IKBD_RETURN
-
-IKBD_NOT_RSHIFT_MAKE:	cmpi.b	#IKBD_CAPS_SCANCODE,d5
+						; Handle any key modifiers
+						move.w	d5,-(sp)
+						jsr		_isKeyMod
+						addq.l	#2,sp
+						cmpi.b	#TRUE,d0
 						bne		IKBD_HANDLE_KEY
-						ori.b	#IKBD_CAPS_BITMASK,_kybdShiftBuffer
+
+						move.w	d5,-(sp)
+						jsr		_addToShiftBuffer
+						addq.l	#2,sp
 						bra		IKBD_RETURN
 
-						; Handle any special actions associated with the
-						; current key and modifiers.
-IKBD_HANDLE_KEY:		move.w	d5,-(sp)
+						; Do not handle any break codes; otherwise, everything
+						; would be handled twice.
+IKBD_HANDLE_KEY:		cmpi.b	#TRUE,d6
+						bne		IKBD_RETURN
+
+						; Handle any special actions associated with the current
+						; key and modifiers.
+						move.w	d5,-(sp)
 						jsr		_handleSpecialAction
 						addq.l	#2,sp
 
