@@ -15,9 +15,9 @@
 /**
  * @brief The number of ticks since the VBL ISR has been registered.
  */
-UINT32 vertTimer       =  0;
+UINT32 vertTimer =  0;
 
-UINT16 rendReq         =  FALSE;
+UINT16 rendReq   =  FALSE;
 
 void (*registeredFuncs[MAX_REGISTERED_VBL_FUNCS])(void);
 int fillLevel = 0;
