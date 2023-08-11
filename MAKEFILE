@@ -1,5 +1,5 @@
-acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints_asm.o src\model.o src\move.o src\music.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl_asm.o src\vector.o
-	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\ints_asm.o src\model.o src\move.o src\music.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl_asm.o src\vector.o -o bin\acaddom.tos
+acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\in_vbl.o src\ints_asm.o src\model.o src\move.o src\music.o src\mus_vbl.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vbl_asm.o src\vector.o
+	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\in_vbl.o src\ints_asm.o src\model.o src\move.o src\music.o src\mus_vbl.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vbl_asm.o src\vector.o -o bin\acaddom.tos
 
 tests: tst_bmp tst_mdl tst_mse tst_mus tst_psg tst_shp tst_sfx
 
@@ -17,10 +17,10 @@ tst_mse: src\tst_mse.o src\arg_list.o src\in_asm.o src\input.o src\ints_asm.o sr
 src\tst_mse.o: src\tst_mse.c src\arg_list.h src\input.h src\test.h src\tst_hndl.h src\types.h src\vector.h
 	cc68x -g -c src\tst_mse.c
 
-tst_mus: src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\music.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o
-	cc68x -g src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\music.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o -o bin\tst_mus.tos
+tst_mus: src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\music.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o src\vbl.o src\vbl_asm.o
+	cc68x -g src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\music.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o src\vbl.o src\vbl_asm.o -o bin\tst_mus.tos
 
-src\tst_mus.o: src\tst_mus.c src\arg_list.h src\input.h src\music.h src\psg.h src\super.h src\test.h src\tst_hndl.h src\types.h src\vector.h
+src\tst_mus.o: src\tst_mus.c src\arg_list.h src\input.h src\music.h src\psg.h src\super.h src\test.h src\tst_hndl.h src\types.h src\vbl.h src\vector.h
 	cc68x -g -c src\tst_mus.c
 
 tst_psg: src\psg.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\num_util.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\tst_psg.o src\vector.o
@@ -59,7 +59,10 @@ src\test.o: src\test.c src\test.h src\bool.h src\types.h
 src\arg_list.o: src\arg_list.c src\arg_list.h src\bool.h
 	cc68x -g -c src\arg_list.c
 
-src\vbl_asm.o:	src\vbl_asm.s src\vbl.h
+src\vbl.o: src\vbl.c src\vbl.h src\bool.h src\ints.h src\types.h src\vector.h
+	cc68x -g -c src\vbl.c
+
+src\vbl_asm.o: src\vbl_asm.s src\vbl.h
 	gen -D -L2 src\vbl_asm.s
 
 src\ints_asm.o: src\ints_asm.s src\ints.h
@@ -74,6 +77,9 @@ src\effects.o: src\effects.c src\effects.h src\psg.h
 src\music.o: src\music.c src\music.h src\ints.h src\psg.h src\super.h src\types.h
 	cc68x -g -c src\music.c
 
+src\mus_vbl.o: src\mus_vbl.c src\mus_vbl.h src\bool.h src\music.h src\vbl.h
+	cc68x -g -c src\mus_vbl.c
+
 src\psg.o: src\psg.h src\bool.h src\num_util.h src\super.h src\toggle.h src\types.h
 	cc68x -g -c src\psg.c
 
@@ -85,6 +91,9 @@ src\in_asm.o: src\in_asm.s src\bool.h
 
 src\input.o: src\input.c src\input.h src\ints.h src\super.h src\types.h src\vector.h
 	cc68x -g -c src\input.c
+
+src\in_vbl.o: src\in_vbl.c src\in_vbl.h src\bool.h src\input.h src\ints.h src\raster.h src\renderer.h src\types.h src\vbl.h
+	cc68x -g -c src\in_vbl.c
 
 src\renderer.o: src\renderer.c src\renderer.h src\bitmaps.h src\bool.h src\font16.h src\model.h src\raster.h src\types.h
 	cc68x -g -c src\renderer.c
