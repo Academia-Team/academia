@@ -16,13 +16,12 @@
 #include "test.h"
 #include "tst_hndl.h"
 #include "types.h"
+#include "vbl.h"
 #include "vector.h"
 
 void musTstMgr(void (*tstFunc)(ArgList *args));
 
 void t1Mus(ArgList *args);
-
-UINT32 getTime(void);
 
 int main(int argc, char **argv)
 {
@@ -45,6 +44,8 @@ int main(int argc, char **argv)
  */
 void musTstMgr(void (*tstFunc)(ArgList *args))
 {
+	const Vector ORIG_VBL = vbl_init();
+
 	ArgList args;
 	Vector origKybd = initKybd();
 
@@ -53,6 +54,7 @@ void musTstMgr(void (*tstFunc)(ArgList *args))
 	tstFunc(&args);
 
 	restoreKybd(origKybd);
+	vbl_restore(ORIG_VBL);
 	stop_sound();
 }
 
@@ -69,30 +71,12 @@ void t1Mus(ArgList *args)
 
 	puts("Press q to stop playing the song");
 	start_music();
-	timeMusUpdated = getTime();
+	timeMusUpdated = get_time();
 	
 	do
 	{
-		curTime = getTime();
+		curTime = get_time();
 		update_music(curTime - timeMusUpdated);
-		timeMusUpdated = getTime();
+		timeMusUpdated = get_time();
 	} while (getAscii() != 'q' && getAscii() != 'Q');
-}
-
-/**
- * @brief Returns the current time provided by the system clock.
- * 
- * @return The current system clock value as a UINT32.
- */
-UINT32 getTime(void)
-{
-	UINT32 curTime;
-	UINT32 *timer = (UINT32 *)0x462;
-	UINT32 oldSsp;
-
-	oldSsp = Su(0);
-	curTime = *timer;
-	Su(oldSsp);
-
-	return curTime;
 }

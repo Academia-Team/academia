@@ -17,10 +17,10 @@ tst_mse: src\tst_mse.o src\arg_list.o src\in_asm.o src\input.o src\ints_asm.o sr
 src\tst_mse.o: src\tst_mse.c src\arg_list.h src\input.h src\test.h src\tst_hndl.h src\types.h src\vector.h
 	cc68x -g -c src\tst_mse.c
 
-tst_mus: src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\music.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o
-	cc68x -g src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\music.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o -o bin\tst_mus.tos
+tst_mus: src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\music.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o src\vbl.o src\vbl_asm.o
+	cc68x -g src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\music.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o src\vbl.o src\vbl_asm.o -o bin\tst_mus.tos
 
-src\tst_mus.o: src\tst_mus.c src\arg_list.h src\input.h src\music.h src\psg.h src\super.h src\test.h src\tst_hndl.h src\types.h src\vector.h
+src\tst_mus.o: src\tst_mus.c src\arg_list.h src\input.h src\music.h src\psg.h src\super.h src\test.h src\tst_hndl.h src\types.h src\vbl.h src\vector.h
 	cc68x -g -c src\tst_mus.c
 
 tst_psg: src\psg.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\num_util.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\tst_psg.o src\vector.o
