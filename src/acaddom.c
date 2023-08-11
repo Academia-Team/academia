@@ -32,6 +32,12 @@
 #define LICENSE_INFO               "Licensed under the GPL-2.0-only"
 #define VER_INFO                   "v2023.06.27-NEXT"
 
+/**
+ * @brief The minimum number of ticks after which some of the async events can
+ * begin.
+*/
+#define MIN_NUM_TICKS 14
+
 #define MIN_NUM_TICKS_IN_SEC         5
 #define MIN_NUM_TICKS_IN_0_8_SEC     4
 #define MIN_NUM_TICKS_IN_0_6_SEC     3
