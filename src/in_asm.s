@@ -47,9 +47,6 @@ IKBD_MFP_SERVICE_BIT:	equ		6
 ; ---------------
 ; d0	-	Holds the value recieved by the keyboard.
 ; a0	-	Holds the keyboard status register for reading.
-; a1	-	Holds the MIDI status register for reading.
-;		-	Holds the address of the receiver register of the MIDI.
-; a2	-	Holds the address of the receiver register of the keyboard.
 _IKBD_isr:				movem.l	d0-d7/a0-a6,-(sp)
 
 						; If the keyboard doesn't have anything in its buffer,
@@ -61,8 +58,7 @@ _IKBD_isr:				movem.l	d0-d7/a0-a6,-(sp)
 						bne		IKBD_GET_VAL
 
 						; Check if MIDI is causing an interrupt.
-						movea.l	#MIDI_STATUS_REG,a0
-						btst.b	#IRQ_BIT,(a0)
+						btst.b	#IRQ_BIT,MIDI_STATUS_REG
 						beq		IKBD_READ_MIDI
 						; A spurious interupt is not good. Time to fail
 						; ungracefully.
@@ -70,14 +66,12 @@ _IKBD_isr:				movem.l	d0-d7/a0-a6,-(sp)
 
 						; Don't need to store value. Just read it and get out
 						; of there.
-IKBD_READ_MIDI:			movea.l	#MIDI_RDR_REG,a1
-						tst.b	(a1)
+IKBD_READ_MIDI:			tst.b	MIDI_RDR_REG
 						bra IKBD_RETURN
 
 						; Get the value held by the keyboard.
 IKBD_GET_VAL:			clr.l	d0
-						movea.l	#IKBD_RDR_REG,a2
-						move.b	(a2),d0
+						move.b	IKBD_RDR_REG,d0
 
 						; Check if a mouse packet has previously been received.
 						; If no mouse packets have been processed before, check
