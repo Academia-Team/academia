@@ -43,7 +43,7 @@ IKBD_MFP_SERVICE_BIT:	equ		6
 ;
 ; Register Table:
 ; ---------------
-; d0	-	Holds the value recieved by the keyboard.
+; d5	-	Holds the value recieved by the keyboard.
 _IKBD_isr:				movem.l	d0-d7/a0-a6,-(sp)
 
 						; If the keyboard doesn't have anything in its buffer,
@@ -64,93 +64,93 @@ IKBD_READ_MIDI:			tst.b	MIDI_RDR_REG
 						bra IKBD_RETURN
 
 						; Get the value held by the keyboard.
-IKBD_GET_VAL:			clr.l	d0
-						move.b	IKBD_RDR_REG,d0
+IKBD_GET_VAL:			clr.l	d5
+						move.b	IKBD_RDR_REG,d5
 
 						; Check if a mouse packet has previously been received.
 						; If no mouse packets have been processed before, check
 						; for a mouse header packet.
 						tst.b	mouse_packets_received
 						bhi		IKBD_MANAGE_MOUSE
-						cmpi.b	#IKBD_MIN_MOUSE_PKT_VAL,d0
+						cmpi.b	#IKBD_MIN_MOUSE_PKT_VAL,d5
 						blo		IKBD_HANDLE_KEYS
-IKBD_MANAGE_MOUSE:		move.b	d0,-(sp)
+IKBD_MANAGE_MOUSE:		move.b	d5,-(sp)
 						jsr		handle_mouse
 						addq.l	#2,sp
 						bra		IKBD_RETURN
 
 						; Check if it is a make or break code.
-IKBD_HANDLE_KEYS:		bclr.l	#IKBD_BREAK_BIT,d0
+IKBD_HANDLE_KEYS:		bclr.l	#IKBD_BREAK_BIT,d5
 						beq		IKBD_HANDLE_MAKE_CODE
 
 						; Check if the scancode is valid.
-						cmpi.b	#IKBD_MAX_SCANCODE,d0
+						cmpi.b	#IKBD_MAX_SCANCODE,d5
 						bhi		IKBD_RETURN
-						cmpi.b	#IKBD_MIN_SCANCODE,d0
+						cmpi.b	#IKBD_MIN_SCANCODE,d5
 						blo		IKBD_RETURN
 
 						; Check if something should be removed from the shift
 						; buffer.
-						cmpi.b	#IKBD_CTRL_SCANCODE,d0
+						cmpi.b	#IKBD_CTRL_SCANCODE,d5
 						bne		IKBD_NOT_CTRL_BREAK
 						eori.b	#IKBD_CTRL_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_CTRL_BREAK:	cmpi.b	#IKBD_ALT_SCANCODE,d0
+IKBD_NOT_CTRL_BREAK:	cmpi.b	#IKBD_ALT_SCANCODE,d5
 						bne		IKBD_NOT_ALT_BREAK
 						eori.b	#IKBD_ALT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_ALT_BREAK:		cmpi.b	#IKBD_LSHIFT_SCANCODE,d0
+IKBD_NOT_ALT_BREAK:		cmpi.b	#IKBD_LSHIFT_SCANCODE,d5
 						bne		IKBD_NOT_LSHIFT_BREAK
 						eori.b	#IKBD_LSHIFT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_LSHIFT_BREAK:	cmpi.b	#IKBD_RSHIFT_SCANCODE,d0
+IKBD_NOT_LSHIFT_BREAK:	cmpi.b	#IKBD_RSHIFT_SCANCODE,d5
 						bne		IKBD_NOT_RSHIFT_BREAK
 						eori.b	#IKBD_RSHIFT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_RSHIFT_BREAK:	cmpi.b	#IKBD_CAPS_SCANCODE,d0
+IKBD_NOT_RSHIFT_BREAK:	cmpi.b	#IKBD_CAPS_SCANCODE,d5
 						bne		IKBD_RETURN
 						eori.b	#IKBD_CAPS_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
 
 						; Check if the scancode is valid.
-IKBD_HANDLE_MAKE_CODE:	cmpi.b	#IKBD_MAX_SCANCODE,d0
+IKBD_HANDLE_MAKE_CODE:	cmpi.b	#IKBD_MAX_SCANCODE,d5
 						bhi		IKBD_RETURN
-						cmpi.b	#IKBD_MIN_SCANCODE,d0
+						cmpi.b	#IKBD_MIN_SCANCODE,d5
 						blo		IKBD_RETURN
 
 						; Check if something should be added to the shift
 						; buffer.
-						cmpi.b	#IKBD_CTRL_SCANCODE,d0
+						cmpi.b	#IKBD_CTRL_SCANCODE,d5
 						bne		IKBD_NOT_CTRL_MAKE
 						ori.b	#IKBD_CTRL_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_CTRL_MAKE:		cmpi.b	#IKBD_ALT_SCANCODE,d0
+IKBD_NOT_CTRL_MAKE:		cmpi.b	#IKBD_ALT_SCANCODE,d5
 						bne		IKBD_NOT_ALT_MAKE
 						ori.b	#IKBD_ALT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_ALT_MAKE:		cmpi.b	#IKBD_LSHIFT_SCANCODE,d0
+IKBD_NOT_ALT_MAKE:		cmpi.b	#IKBD_LSHIFT_SCANCODE,d5
 						bne		IKBD_NOT_LSHIFT_MAKE
 						ori.b	#IKBD_LSHIFT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_LSHIFT_MAKE:	cmpi.b	#IKBD_RSHIFT_SCANCODE,d0
+IKBD_NOT_LSHIFT_MAKE:	cmpi.b	#IKBD_RSHIFT_SCANCODE,d5
 						bne		IKBD_NOT_RSHIFT_MAKE
 						ori.b	#IKBD_RSHIFT_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_NOT_RSHIFT_MAKE:	cmpi.b	#IKBD_CAPS_SCANCODE,d0
+IKBD_NOT_RSHIFT_MAKE:	cmpi.b	#IKBD_CAPS_SCANCODE,d5
 						bne		IKBD_REG_KEY
 						ori.b	#IKBD_CAPS_BITMASK,_kybdShiftBuffer
 						bra		IKBD_RETURN
 
-IKBD_REG_KEY:			move.w	d0,-(sp)
+IKBD_REG_KEY:			move.w	d5,-(sp)
 						jsr 	_addToKeyBuffer
 						addq.l	#2,sp
 
