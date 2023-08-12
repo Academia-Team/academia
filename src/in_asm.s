@@ -16,8 +16,6 @@ IKBD_STATUS_REG:		equ		$FFFFFC00
 IKBD_RDR_REG:			equ		$FFFFFC02
 MIDI_STATUS_REG:		equ		$FFFFFC04
 MIDI_RDR_REG:			equ		$FFFFFC06
-RDRF_BIT:				equ		0
-OVRN_BIT:				equ		5
 IRQ_BIT:				equ		7
 IKBD_BREAK_BIT:			equ		7
 IKBD_MAX_SCANCODE:		equ		$72
@@ -46,20 +44,16 @@ IKBD_MFP_SERVICE_BIT:	equ		6
 ; Register Table:
 ; ---------------
 ; d0	-	Holds the value recieved by the keyboard.
-; a0	-	Holds the keyboard status register for reading.
 _IKBD_isr:				movem.l	d0-d7/a0-a6,-(sp)
 
 						; If the keyboard doesn't have anything in its buffer,
 						; get out of dodge.
-						movea.l	#IKBD_STATUS_REG,a0
-						btst.b	#RDRF_BIT,(a0)
-						bne		IKBD_GET_VAL
-						btst.b	#OVRN_BIT,(a0)
+						btst.b	#IRQ_BIT,IKBD_STATUS_REG
 						bne		IKBD_GET_VAL
 
 						; Check if MIDI is causing an interrupt.
 						btst.b	#IRQ_BIT,MIDI_STATUS_REG
-						beq		IKBD_READ_MIDI
+						bne		IKBD_READ_MIDI
 						; A spurious interupt is not good. Time to fail
 						; ungracefully.
 						illegal
