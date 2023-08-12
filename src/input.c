@@ -12,6 +12,7 @@
 #include "input.h"
 #include "ints.h"
 #include "ikbdcode.h"
+#include "move.h"
 #include "scrn.h"
 #include "super.h"
 #include "types.h"
@@ -728,6 +729,8 @@ const KybdTransTables *currTransTables = &DEFAULT_KYBD_TRANS_TABLES;
 
 Mouse mouse = {INITIAL_MOUSE_X, INITIAL_MOUSE_Y, FALSE, FALSE, FALSE};
 
+Direction kybdMouseMov = M_NONE;
+
 void IKBD_isr(void);
 
 Vector initKybd(void)
@@ -947,66 +950,45 @@ IKBD_Scancode getBKey(void)
  * of scancode and key modifiers.
  * 
  * @param scancode The scancode to check for a special action.
+ * @param isMakeCode Indicates whether the scancode corresponds to a make code
+ * (TRUE) or break code (FALSE).
  */
-void handleSpecialAction(UINT16 scancode)
+void handleSpecialAction(UINT16 scancode, UINT16 isMakeCode)
 {
-	if (kybdShiftBuffer == ALT_CODE)
+	if (isMakeCode)
 	{
-		switch(scancode)
+		if (kybdShiftBuffer == ALT_CODE)
 		{
-			case IKBD_INSERT_SCANCODE:
-				mouse.leftClick = TRUE;
-
-				break;
-			case IKBD_CLHM_SCANCODE:
-				mouse.rightClick = TRUE;
-
-				break;
-			case IKBD_UP_SCANCODE:
-				mouse.y -= KEYBOARD_M_MOVE_DIST;
-
-				if (mouse.y < 0)
-				{
-					mouse.y = 0;
-				}
-
-				mouse.posChange = TRUE;
-
-				break;
-			case IKBD_DOWN_SCANCODE:
-				mouse.y += KEYBOARD_M_MOVE_DIST;
-
-				if (mouse.y > SCRN_MAX_Y)
-				{
-					mouse.y = SCRN_MAX_Y;
-				}
-
-				mouse.posChange = TRUE;
-
-				break;
-			case IKBD_LEFT_SCANCODE:
-				mouse.x -= KEYBOARD_M_MOVE_DIST;
-
-				if (mouse.x < 0)
-				{
-					mouse.x = 0;
-				}
-
-				mouse.posChange = TRUE;
-
-				break;
-			case IKBD_RIGHT_SCANCODE:
-				mouse.x += KEYBOARD_M_MOVE_DIST;
-
-				if (mouse.x > SCRN_MAX_X)
-				{
-					mouse.x = SCRN_MAX_X;
-				}
-
-				mouse.posChange = TRUE;
-
-				break;
+			switch(scancode)
+			{
+				case IKBD_INSERT_SCANCODE:
+					mouse.leftClick = TRUE;
+					break;
+				case IKBD_CLHM_SCANCODE:
+					mouse.rightClick = TRUE;
+					break;
+				case IKBD_UP_SCANCODE:
+					kybdMouseMov = M_UP;
+					kybdMouseUp();
+					break;
+				case IKBD_DOWN_SCANCODE:
+					kybdMouseMov = M_DOWN;
+					kybdMouseDown();
+					break;
+				case IKBD_LEFT_SCANCODE:
+					kybdMouseMov = M_LEFT;
+					kybdMouseLeft();
+					break;
+				case IKBD_RIGHT_SCANCODE:
+					kybdMouseMov = M_RIGHT;
+					kybdMouseRight();
+					break;
+			}
 		}
+	}
+	else
+	{
+		kybdMouseMov = M_NONE;
 	}
 }
 
@@ -1029,7 +1011,8 @@ UINT8 hasSpecial(UINT16 scancode)
 						 scancode == IKBD_UP_SCANCODE     ||
 						 scancode == IKBD_DOWN_SCANCODE   ||
 						 scancode == IKBD_LEFT_SCANCODE   ||
-						 scancode == IKBD_RIGHT_SCANCODE);
+						 scancode == IKBD_RIGHT_SCANCODE  ||
+						 kybdMouseMov != M_NONE);
 	}
 
 	return specialAction;
@@ -1048,6 +1031,54 @@ UINT8 isKeyMod(UINT16 scancode)
 			scancode == IKBD_ALT_SCANCODE    ||
 			scancode == IKBD_CAPS_SCANCODE   ||
 			scancode == IKBD_CTRL_SCANCODE);
+}
+
+void kybdMouseDown(void)
+{
+	mouse.y += KEYBOARD_M_MOVE_DIST;
+
+	if (mouse.y > SCRN_MAX_Y)
+	{
+		mouse.y = SCRN_MAX_Y;
+	}
+
+	mouse.posChange = TRUE;
+}
+
+void kybdMouseLeft(void)
+{
+	mouse.x -= KEYBOARD_M_MOVE_DIST;
+
+	if (mouse.x < 0)
+	{
+		mouse.x = 0;
+	}
+
+	mouse.posChange = TRUE;
+}
+
+void kybdMouseRight(void)
+{
+	mouse.x += KEYBOARD_M_MOVE_DIST;
+
+	if (mouse.x > SCRN_MAX_X)
+	{
+		mouse.x = SCRN_MAX_X;
+	}
+
+	mouse.posChange = TRUE;
+}
+
+void kybdMouseUp(void)
+{
+	mouse.y -= KEYBOARD_M_MOVE_DIST;
+
+	if (mouse.y < 0)
+	{
+		mouse.y = 0;
+	}
+
+	mouse.posChange = TRUE;
 }
 
 BOOL mouseLclick(void)

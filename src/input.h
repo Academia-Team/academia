@@ -11,6 +11,7 @@
 
 #include "bool.h"
 #include "ikbdcode.h"
+#include "move.h"
 #include "scrn.h"
 #include "types.h"
 #include "vector.h"
@@ -76,7 +77,8 @@ typedef struct
 	BOOL posChange;
 } Mouse;
 
-extern Mouse mouse;
+extern Mouse     mouse;
+extern Direction kybdMouseMov;
 
 /**
  * @brief Checks if a left or right mouse click has happened with the given
@@ -168,6 +170,26 @@ IKBD_Scancode getKey(void);
  * will be returned (NO_KEY).
  */
 IKBD_Scancode getBKey(void);
+
+/**
+ * @brief Moves the mouse cursor to the left by a certain amount.
+ */
+void kybdMouseLeft(void);
+
+/**
+ * @brief Moves the mouse cursor to the right by a certain amount.
+ */
+void kybdMouseRight(void);
+
+/**
+ * @brief Moves the mouse cursor downward by a certain amount.
+ */
+void kybdMouseDown(void);
+
+/**
+ * @brief Moves the mouse cursor upward by a certain amount.
+ */
+void kybdMouseUp(void);
 
 /**
  * @brief Checks if a left mouse click has happened.

@@ -15,12 +15,20 @@
 #include "types.h"
 #include "vbl.h"
 
+/**
+ * @brief The cursor will move approximately every 0.25 seconds when controlled
+ * via the keyboard.
+ */
+#define TICKS_BETWEEN_CURSOR_MOV 18
+
 BOOL   plotMouse = FALSE;
 UINT16 oldCursX;
 UINT16 oldCursY;
+UINT32 cursorMovTime = UINT32_MAX;
 
 /**
  * @brief The function that will render the mouse cursor within the VBL ISR.
+ * @details It also handles any cursor movement from the keyboard.
  * 
  * @details Only does anything if the mouse cursor has been moved since the last
  * time a cursor has been rendered. It plots over the outdated cursor image to
@@ -29,6 +37,40 @@ UINT16 oldCursY;
 void input_vbl(void)
 {
 	UINT16 *currVideoBase;
+
+	if (kybdMouseMov != M_NONE)
+	{
+		if (cursorMovTime == UINT32_MAX)
+		{
+			cursorMovTime = get_time() + TICKS_BETWEEN_CURSOR_MOV;
+		}
+		else if (cursorMovTime >= get_time())
+		{
+			switch(kybdMouseMov)
+			{
+				case M_LEFT:
+					kybdMouseLeft();
+					break;
+				case M_RIGHT:
+					kybdMouseRight();
+					break;
+				case M_UP:
+					kybdMouseUp();
+					break;
+				case M_DOWN:
+					kybdMouseDown();
+					break;
+				default:
+					break;
+			}
+
+			cursorMovTime += TICKS_BETWEEN_CURSOR_MOV;
+		}
+	}
+	else if (cursorMovTime != UINT32_MAX)
+	{
+		cursorMovTime = UINT32_MAX;
+	}
 
 	if (!(mouse.x == oldCursX && mouse.y == oldCursY))
 	{

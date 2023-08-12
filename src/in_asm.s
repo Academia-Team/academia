@@ -40,10 +40,12 @@ IKBD_MFP_SERVICE_BIT:	equ		6
 ;
 ; Register Table:
 ; ---------------
-; d0	-	Holds a boolean value indicating whether a scancode corresponds to
-;			a key modifier.
+; d0	-	Holds the returned result indicating whether a scancode corresponds
+;			to a key modifier.
 ;		-	Holds a boolean value indicating whether a special action has
 ;			occurred.
+; d4	-	Holds a boolean value indicating whether a scancode corresponds to
+;			a key modifier.
 ; d5	-	Holds the value recieved by the keyboard.
 ; d6	-	Holds a boolean value that indicates TRUE when a make code is being
 ;			handled and FALSE when a break code is being handled.
@@ -100,34 +102,38 @@ IKBD_CHK_SCANCODE:		cmpi.b	#IKBD_MAX_SCANCODE,d5
 						move.w	d5,-(sp)
 						jsr		_isKeyMod
 						addq.l	#2,sp
-						cmpi.b	#TRUE,d0
-						bne		IKBD_HANDLE_KEY
+						move.b	d0,d4
+						beq		IKBD_HANDLE_KEY
 
 						move.w	d5,-(sp)
 						jsr		_addToShiftBuffer
 						addq.l	#2,sp
-						bra		IKBD_RETURN
-
-						; Do not handle any break codes; otherwise, everything
-						; would be handled twice.
-IKBD_HANDLE_KEY:		cmpi.b	#TRUE,d6
-						bne		IKBD_RETURN
 
 						; Handle any special actions associated with the current
 						; key and modifiers.
-						move.w	d5,-(sp)
+IKBD_HANDLE_KEY:		move.w	d5,-(sp)
 						jsr		_hasSpecial
 						addq.l	#2,sp
 
 						cmpi.b	#TRUE,d0
 						bne		IKBD_KEY_BUFF
 
+						move.w	d6,-(sp)
 						move.w	d5,-(sp)
 						jsr		_handleSpecialAction
-						addq.l	#2,sp
+						addq.l	#4,sp
 						bra		IKBD_RETURN
 
-IKBD_KEY_BUFF:			move.w	d5,-(sp)
+						; Do not handle any break codes; otherwise, everything
+						; would be handled twice.
+IKBD_KEY_BUFF:			cmpi.b	#TRUE,d6
+						bne		IKBD_RETURN
+
+						; Do not handle any key modifiers.
+						cmpi.b	#TRUE,d4
+						beq		IKBD_RETURN
+
+						move.w	d5,-(sp)
 						jsr 	_addToKeyBuffer
 						addq.l	#2,sp
 
