@@ -947,25 +947,19 @@ IKBD_Scancode getBKey(void)
  * of scancode and key modifiers.
  * 
  * @param scancode The scancode to check for a special action.
- * @return TRUE if there is a special action associated with the given scancode;
- * FALSE otherwise.
  */
-UINT8 handleSpecialAction(UINT16 scancode)
+void handleSpecialAction(UINT16 scancode)
 {
-	UINT8 specialAction = FALSE;
-
 	if (kybdShiftBuffer == ALT_CODE)
 	{
 		switch(scancode)
 		{
 			case IKBD_INSERT_SCANCODE:
 				mouse.leftClick = TRUE;
-				specialAction   = TRUE;
 
 				break;
 			case IKBD_CLHM_SCANCODE:
 				mouse.rightClick = TRUE;
-				specialAction    = TRUE;
 
 				break;
 			case IKBD_UP_SCANCODE:
@@ -977,7 +971,6 @@ UINT8 handleSpecialAction(UINT16 scancode)
 				}
 
 				mouse.posChange = TRUE;
-				specialAction   = TRUE;
 
 				break;
 			case IKBD_DOWN_SCANCODE:
@@ -989,7 +982,6 @@ UINT8 handleSpecialAction(UINT16 scancode)
 				}
 
 				mouse.posChange = TRUE;
-				specialAction   = TRUE;
 
 				break;
 			case IKBD_LEFT_SCANCODE:
@@ -1001,7 +993,6 @@ UINT8 handleSpecialAction(UINT16 scancode)
 				}
 
 				mouse.posChange = TRUE;
-				specialAction   = TRUE;
 
 				break;
 			case IKBD_RIGHT_SCANCODE:
@@ -1013,10 +1004,32 @@ UINT8 handleSpecialAction(UINT16 scancode)
 				}
 
 				mouse.posChange = TRUE;
-				specialAction   = TRUE;
 
 				break;
 		}
+	}
+}
+
+/**
+ * @brief Indicates whether any special actions are associated with the current
+ * combination of scancode and key modifiers.
+ * 
+ * @param scancode The scancode to check for a special action.
+ * @return TRUE if a special action is associated with the given scancode and
+ * current key modifiers; FALSE otherwise.
+ */
+UINT8 hasSpecial(UINT16 scancode)
+{
+	UINT8 specialAction = FALSE;
+
+	if (kybdShiftBuffer == ALT_CODE)
+	{
+		specialAction = (scancode == IKBD_INSERT_SCANCODE ||
+						 scancode == IKBD_CLHM_SCANCODE   ||
+						 scancode == IKBD_UP_SCANCODE     ||
+						 scancode == IKBD_DOWN_SCANCODE   ||
+						 scancode == IKBD_LEFT_SCANCODE   ||
+						 scancode == IKBD_RIGHT_SCANCODE);
 	}
 
 	return specialAction;

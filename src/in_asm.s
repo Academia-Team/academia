@@ -12,6 +12,7 @@
 						xref	_addToShiftBuffer
 						xref	_addToKeyBuffer
 						xref	_handleSpecialAction
+						xref	_hasSpecial
 						xref	_isKeyMod
 
 IKBD_STATUS_REG:		equ		$FFFFFC00
@@ -115,13 +116,18 @@ IKBD_HANDLE_KEY:		cmpi.b	#TRUE,d6
 						; Handle any special actions associated with the current
 						; key and modifiers.
 						move.w	d5,-(sp)
-						jsr		_handleSpecialAction
+						jsr		_hasSpecial
 						addq.l	#2,sp
 
 						cmpi.b	#TRUE,d0
-						beq		IKBD_RETURN
+						bne		IKBD_KEY_BUFF
 
 						move.w	d5,-(sp)
+						jsr		_handleSpecialAction
+						addq.l	#2,sp
+						bra		IKBD_RETURN
+
+IKBD_KEY_BUFF:			move.w	d5,-(sp)
 						jsr 	_addToKeyBuffer
 						addq.l	#2,sp
 
