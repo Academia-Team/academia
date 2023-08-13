@@ -60,8 +60,8 @@ _IKBD_isr:				movem.l	d0-d7/a0-a6,-(sp)
 						btst.b	#IRQ_BIT,MIDI_STATUS_REG
 						bne		IKBD_READ_MIDI
 						; A spurious interupt is not good. Time to fail
-						; ungracefully.
-						illegal
+						; gracefully.
+						bra		IKBD_RETURN
 
 						; Don't need to store value. Just read it and get out
 						; of there.
