@@ -296,13 +296,11 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 				case IKBD_Q_SCANCODE:
 					*exitPgrm = TRUE;
 					break;
-
 				case IKBD_SPACE_SCANCODE:
 				case IKBD_RETURN_SCANCODE:
 				case IKBD_KP_ENTER_SCANCODE:
 					btnActivated = (selBtnNum != NONE_SEL);
 					break;
-
 				case IKBD_TAB_SCANCODE:
 					tabCycle = TRUE;
 					break;
@@ -318,6 +316,7 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 			btnSelected = TRUE;
 			tabCycle    = FALSE;
 			useMouse    = FALSE;
+			hide_cursor();
 		}
 
 		if(mouseMoved())
@@ -349,7 +348,9 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 				btnSelected   = FALSE;
 				mouseUnselect = TRUE;
 			}
+
 			useMouse = TRUE;
+			show_cursor();
 		}
 
 		if (mouseClick() && useMouse)
@@ -359,7 +360,11 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 
 		if (btnSelected || mouseUnselect)
 		{
-			hide_cursor();
+			if (useMouse)
+			{
+				hide_cursor();
+			}
+
 			switch(prevBtnNum)
 			{
 				case BUTTON_1P_SEL:
@@ -392,7 +397,11 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 					break;
 			}
 
-			show_cursor();
+			if (useMouse)
+			{
+				show_cursor();
+			}
+			
 			btnSelected   = FALSE;
 			mouseUnselect = FALSE;
 		}
