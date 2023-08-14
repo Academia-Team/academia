@@ -169,6 +169,9 @@
 #define MIN_VIS_X_FEATHERS MIN_CELL_X
 #define MIN_VIS_X_TRAIN -48
 
+#define MAX_NUM_INFOBAR     2
+#define MAX_NUM_MENU_BUTTON 6
+
 typedef enum
 {
 	GRASS_CELL = 0,
@@ -233,11 +236,31 @@ typedef struct
 
 typedef struct
 {
-	int y;
-	int spacingBetweenLabels;
-	int numLabels;
+	int   y;
+	int   spacingBetweenLabels;
+	int   numLabels;
+	BOOL  needsUpdate;
 	Label labels[MAX_INFO_LABELS];
 } InfoBar;
+
+typedef struct
+{
+	Button buttons[MAX_NUM_MENU_BUTTON];
+	int buttonFillLevel;
+
+	int oldButtonSel;
+	int buttonSel;
+
+	InfoBar infoBars[MAX_NUM_INFOBAR];
+	int infobarFillLevel;
+
+	int  borderWidth;
+	int  borderHeight;
+	BOOL borderRendered;
+
+	BOOL blackScreen;
+} Menu;
+
 
 typedef struct
 {
@@ -434,24 +457,31 @@ void getPlayerNextMove(const Player * const player, MoveFrame *nextMovement);
 	(playerObj).immune = !((playerObj).immune)
 
 /**
- * @brief Initializes a InfoBar object.
+ * @brief Add a InfoBar to the given Menu object.
  * @details The InfoBar will generate and manage labels corresponding to the
  * given text. All the labels will be given values such that they will be
  * horizontally centered on screen. Any invalid values entered will result in
  * the given object entering an undefined state.
  * 
- * @param infoBar A pointer to the InfoBar object to be initialized.
+ * If the maximum number of info bars in an object has been reached, nothing
+ * will be added.
+ * 
+ * @param menu A pointer to the Menu object where the InfoBar will be added.
  * @param y The starting y pixel coordinate for the InfoBar object. Any value
  * that results in coordinates that are out of bounds is invalid.
  * @param spacing The amount of vertical space (in pixels) between each label
  * in the infoBar. Any value that results in coordinates that are out of bounds
  * in invalid.
- * @param numLabels The number of labels to place into the object. It must be a
- * positive number that is less than the currently defined MAX_INFO_LABELS.
+ * @param numLabels The number of labels to place into the InfoBar object. It
+ * must be a positive number that is less than the currently defined
+ * MAX_INFO_LABELS.
  * @param ... The null-terminated strings that will be stored within the
  * infoBar. The number of strings must correspond to the value of numLabels.
+ * 
+ * @return A integral ID correspond to the button or -1 if a button couldn't be
+ * added.
  */
-void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels, ...);
+int addInfoBar(Menu* menu, int y, int spacing, int numLabels, ...);
 
 /**
  * @brief Adds the given text to the InfoBar object.
@@ -648,19 +678,39 @@ void lostCoreLife (CorePlayer* player);
 void coordToIndex(const World* const world, int* row, int* column, int x, int y);
 
 /**
- * @brief Initializes a Button with the given coordinates, size, and string.
+ * @brief Adds a Button with the given coordinates, size, and string to a Menu
+ * object.
  * @details The x, y coordinate is the top left corner of the button. Height 
  * grows downwards and width grows rightwards. Text will be centered on the 
  * button.
  * 
- * @param button A pointer to the Button object to initialize.
+ * If the maximum number of info bars in an object has been reached, nothing
+ * will be added.
+ * 
+ * @param menu A pointer to the Menu object to add a button to.
  * @param x The x coordinate of the Button (in pixels).
  * @param y The y coordinate of the Button (in pixels). 
  * @param height The height of the Button (in pixels).
  * @param width The width of the Button (in pixels).
  * @param text The text that should be a part of the Button.
+ * 
+ * @return A integral ID correspond to the button or -1 if a button couldn't be
+ * added.
  */
-void initButton(Button* button, int x, int y, int height, int width,
-				LabelStr text);
+int addButton(Menu* menu, int x, int y, int height, int width, LabelStr text);
+
+/**
+ * @brief Initializes a Menu with the given values.
+ * 
+ * @param menu The Menu object to initialize.
+ * @param blackScreen When TRUE, the border will be white and the rest of the
+ * screen where the menu will be rendered will be black. If FALSE, the inverse
+ * will be true.
+ * @param borderWidth The length of the border desired. Cannot be negative, but
+ * may be zero.
+ * @param borderHeight The height of the border desired. Cannot be negative, but
+ * may be zero.
+ */
+void initMenu(Menu* menu, BOOL blackScreen, int borderWidth, int borderHeight);
 
 #endif
