@@ -238,7 +238,6 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 	int          mouseY;
 
 	Menu         titleScrn;
-	int          index;
 
 	int          fleeBtnID;
 	int          oneBtnID;
@@ -302,7 +301,7 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 
 			if (btnSelected != NO_BTN_SEL)
 			{
-				selectButton(&titleScrn, index);
+				selectButton(&titleScrn, btnSelected);
 			}
 			else
 			{
@@ -718,7 +717,6 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 	int             mouseY;
 
 	Menu            goverScrn;
-	int             index;
 
 	int             paBtnID;
 
@@ -774,7 +772,7 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 
 			if (btnSelected != NO_BTN_SEL)
 			{
-				selectButton(&goverScrn, index);
+				selectButton(&goverScrn, btnSelected);
 			}
 			else
 			{
