@@ -230,7 +230,7 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 	const int Y_INFO_BAR_START   =   BORDER_HEIGHT;
 
 	IKBD_Scancode kybdKey;
-	BOOL          btnSelected;
+	int           btnSelected;
 	BOOL          btnActivated 	= FALSE;
 	BOOL		  useMouse      = TRUE;
 
@@ -301,15 +301,15 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 			for (index = 0; index < titleScrn.buttonFillLevel && !btnSelected;
 				 index++)
 			{
-				if (btnCollision(mouseX, mouseY, titleScrn.buttons[index]))
+				btnSelected = btnCollision(&titleScrn, mouseX, mouseY);
+
+				if (btnSelected != NO_BTN_SEL)
 				{
 					selectButton(&titleScrn, index);
-					btnSelected = TRUE;
 				}
 			}
 
-			useMouse    = TRUE;
-			btnSelected = FALSE;
+			useMouse = TRUE;
 			show_cursor();
 		}
 
@@ -318,14 +318,14 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 		
 		processButtonState(&titleScrn);
 
-		if (hasSelectedButton(&titleScrn) && useMouse)
+		if (btnSelected != NO_BTN_SEL && useMouse)
 		{
 			hide_cursor();
 		}
 
 		renderMenu(screenBuffer, &titleScrn);
 
-		if (hasSelectedButton(&titleScrn) && useMouse)
+		if (btnSelected != NO_BTN_SEL && useMouse)
 		{
 			show_cursor();
 		}
@@ -708,10 +708,8 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 	Label 			winner;
 	IKBD_Scancode 	kybdKey;
 	BOOL 			btnActivated    = FALSE;
-	BOOL 			tabCycle        = FALSE;
 	BOOL 			quitToTitleScrn = FALSE;
-	BOOL            btnSelected     = FALSE;
-	BOOL         	mouseUnselect 	= FALSE;
+	int             btnSelected;
 	BOOL		 	useMouse    	= TRUE;
 
 	int             mouseX;
@@ -754,26 +752,16 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 				case IKBD_SPACE_SCANCODE:
 				case IKBD_RETURN_SCANCODE:
 				case IKBD_KP_ENTER_SCANCODE:
-					btnActivated = (goverScrn.buttonSel != NO_BTN_SEL);
+					btnActivated = hasSelectedButton(&goverScrn);
 					break;
 				case IKBD_TAB_SCANCODE:
-					tabCycle = TRUE;
+					selectNextButton(&goverScrn);
+					useMouse = FALSE;
+					hide_cursor();
 					break;
 				default:
 					handleInvalidKeyPress();
 			}
-		}
-
-		if (tabCycle)
-		{
-			goverScrn.oldButtonSel = goverScrn.buttonSel;
-			goverScrn.buttonSel    = (goverScrn.buttonSel + 1) %
-									 goverScrn.buttonFillLevel;
-
-			btnSelected = TRUE;
-			tabCycle    = FALSE;
-			useMouse    = FALSE;
-			hide_cursor();
 		}
 
 		if(mouseMoved())
@@ -783,21 +771,12 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 			for (index = 0; index < goverScrn.buttonFillLevel && !btnSelected;
 				 index++)
 			{
-				if (btnCollision(mouseX, mouseY, goverScrn.buttons[index]))
+				btnSelected = btnCollision(&goverScrn, mouseX, mouseY);
+
+				if (btnSelected != NO_BTN_SEL)
 				{
-					goverScrn.oldButtonSel = goverScrn.buttonSel;
-					goverScrn.buttonSel    = index;
-					btnSelected            = TRUE;
-
-					goverScrn.buttons[goverScrn.oldButtonSel].selected = FALSE;
-					goverScrn.buttons[goverScrn.buttonSel].selected    = TRUE;
+					selectButton(&goverScrn, index);
 				}
-			}
-
-			if (!btnSelected && goverScrn.buttonSel != NO_BTN_SEL)
-			{
-				goverScrn.oldButtonSel = goverScrn.buttonSel;
-				goverScrn.buttonSel    = NO_BTN_SEL;
 			}
 
 			useMouse = TRUE;
@@ -805,33 +784,24 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 		}
 
 		btnActivated = (btnActivated || (mouseClick() && useMouse &&
-						goverScrn.buttonSel != NO_BTN_SEL));
+						hasSelectedButton(&goverScrn)));
 		
-		/* Make sure buttons aren't re-rendered if button selection has not
-		   changed. */
-		if (!btnSelected && !mouseUnselect)
-		{
-			goverScrn.oldButtonSel = goverScrn.buttonSel;
-		}
+		processButtonState(&goverScrn);
 
-		if ((btnSelected || mouseUnselect) && useMouse)
+		if (btnSelected != NO_BTN_SEL && useMouse)
 		{
 			hide_cursor();
 		}
 
 		renderMenu(screenBuffer, &goverScrn);
 
-		if ((btnSelected || mouseUnselect) && useMouse)
+		if (btnSelected != NO_BTN_SEL && useMouse)
 		{
 			show_cursor();
 		}
-
-		btnSelected   = FALSE;
-		mouseUnselect = FALSE;
 	}
 
-	*playAgain = (goverScrn.buttons[paBtnID].selected == TRUE &&
-				  !quitToTitleScrn);
+	*playAgain = (isButtonSelected(&goverScrn, paBtnID) && !quitToTitleScrn);
 	hide_cursor();
 }
 

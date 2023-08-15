@@ -24,20 +24,18 @@
 #define handleDeath() play_death()
 
 /**
- * @brief Checks if the given coordinates intersects with a button.
+ * @brief Checks if the given coordinates intersects with a button in the given
+ * Menu.
  * 
- * @param xCoord The x coordinate (in pixels starting at zero) to check for an
+ * @param menu The Menu to check for a button collision in.
+ * @param x The x coordinate (in pixels starting at zero) to check for an
  * intersection with a button.
- * @param yCoord The y coordinate (in pixels starting at zero) to check for an
+ * @param y The y coordinate (in pixels starting at zero) to check for an
  * intersection with a button.
- * @param button The button object to check for an intersection.
  * 
- * @return TRUE if the coordinates intersect with the given button; false
- * otherwise.
+ * @return An identifier for the colliding button or -1 if no such button exists.
 */
-#define btnCollision(xCoord, yCoord, button) \
-	(xCoord >= button.x && xCoord <= (button.x + button.width - 1) \
-	&& yCoord >= button.y && yCoord <= (button.y + button.height - 1))
+int btnCollision(Menu *menu, int x, int y);
 
 /**
  * @brief Checks if a hazard and a player have collided and handles it
