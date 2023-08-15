@@ -218,6 +218,7 @@ typedef struct
 	int y;
 	Label label;
 	int value;
+	BOOL labelRendered;
 } Lives;
 
 typedef struct

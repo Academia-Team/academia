@@ -370,6 +370,7 @@ void initLives (int x, int y, Lives* lifeBox)
 	lifeBox->y = y;
 
 	initLabel(&lifeBox->label, x, y + 1, "LIVES:");
+	lifeBox->labelRendered = FALSE;
 }
 
 void initLabel(Label* label, int x, int y, char *text)

@@ -48,7 +48,6 @@ void renderPlayArea(UINT32* base, const World* const world)
 	fill_scrn(base);
 	renderWorld(base, world);
 	renderUpdate(base, world);
-	renderLabel((UINT16 *)base, &world->mainPlayer.lives.label, TRUE);
 
 	if (world->numPlayers == 2)
 	{
@@ -56,7 +55,6 @@ void renderPlayArea(UINT32* base, const World* const world)
 		initLabel(&otherLabel, 16, 40,"OTHER:");
 		renderLabel((UINT16 *)base, &youLabel, TRUE);
 		renderLabel((UINT16 *)base, &otherLabel, TRUE);
-		renderLabel((UINT16 *)base, &world->otherPlayer.lives.label, TRUE);
 	}
 }
 
@@ -311,8 +309,13 @@ void renderScore(UINT16* base, Score* const score)
 	}
 }
 
-void renderLives(UINT16* base, const Lives* const lives)
+void renderLives(UINT16* base, Lives* const lives)
 {
+	if (!lives->labelRendered)
+	{
+		renderLabel((UINT16 *)base, &lives->label, TRUE);
+		lives->labelRendered = TRUE;
+	}
 	plot_rast16(base, lives->x, lives->y, LABEL_FONT_HEIGHT,
 				getFont16Digit(lives->value, NULL), TRUE, TRUE);
 }

@@ -166,7 +166,7 @@ void renderScore(UINT16* base, Score* const Score);
  * @param base The location in memory to plot at.
  * @param lives The lives of a player that is to be rendered to the screen.
  */
-void renderLives(UINT16* base, const Lives* const lives);
+void renderLives(UINT16* base, Lives* const lives);
 
 /**
  * @brief Renders a button to the screen.
