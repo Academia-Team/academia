@@ -115,8 +115,6 @@ void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow,
 void processAsync(BOOL *quitToTitleScrn, World *gameWorld);
 void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld);
 void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y);
-void prepGameOverScrn(UINT32 *screenBuffer, World *gameWorld,
-					  Label *winnerLabel);
 
 void game_end(void);
 void game_start(void);
@@ -707,7 +705,15 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 	const int       X_GAME_OVER              =  82;
 	const int       Y_GAME_OVER              =  53;
 
+	const int       Y_WINNER_LABEL           = 160;
+
+	const char      WINNER_YOU_STR[]         = "WINNER: YOU";
+	const char      WINNER_OTHER_STR[]       = "WINNER: OTHER";
+	const char      WINNER_TIED_STR[]        = "WINNER: TIE";
+
 	Label 			winner;
+	char            *usedWinnerStr;
+
 	IKBD_Scancode 	kybdKey;
 	BOOL 			btnActivated    = FALSE;
 	BOOL 			quitToTitleScrn = FALSE;
@@ -757,9 +763,25 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 		renderLabel((UINT16 *)screenBuffer, &score2P.label,
 					goverScrn.blackScreen);
 		renderScore((UINT16 *)screenBuffer, &score2P);
+
+		if (gameWorld->mainPlayer.score.value > gameWorld->otherPlayer.score.value) 
+		{
+			usedWinnerStr = WINNER_YOU_STR;
+		}
+		else if (gameWorld->mainPlayer.score.value < gameWorld->otherPlayer.score.value) 
+		{
+			usedWinnerStr = WINNER_OTHER_STR;
+		}
+		else
+		{
+			usedWinnerStr = WINNER_TIED_STR;
+		}
+
+		initLabel(&winner, horzCentreScrn(usedWinnerStr, LABEL_FONT_WIDTH),
+				  Y_WINNER_LABEL, usedWinnerStr);
+		renderLabel((UINT16 *)screenBuffer, &winner, TRUE);
 	}
 
-	prepGameOverScrn(screenBuffer, gameWorld, &winner);
 	show_cursor();
 
 	while (!btnActivated && !quitToTitleScrn)
@@ -872,42 +894,6 @@ void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y)
 			*x = X_MP_2P_SCORE;
 			*y = Y_MP_2P_SCORE;
 		}
-	}
-}
-
-/**
- * @brief Initializes and renders all the initial objects required by the Game
- * Over Screen.
- * 
- * @param screenBuffer The framebuffer to plot to.
- * @param gameWorld The world object which holds all game data.
- * @param winnerLabel The label that contains a declaration of a winner (for
- * 2-player only). Returned by reference.
- */
-void prepGameOverScrn(UINT32 *screenBuffer, World *gameWorld,
-					  Label *winnerLabel)
-{
-	const int       Y_WINNER_LABEL           = 160;
-	const int       X_TIED_LABEL             = 240;
-	const int       X_YOU_LABEL              = 240;
-	const int       X_OTHER_LABEL            = 224;
-
-	if (gameWorld->numPlayers == 2)
-	{
-		if (gameWorld->mainPlayer.score.value > gameWorld->otherPlayer.score.value) 
-		{
-			initLabel(winnerLabel, X_YOU_LABEL, Y_WINNER_LABEL, "WINNER: YOU");
-		}
-		else if (gameWorld->mainPlayer.score.value < gameWorld->otherPlayer.score.value) 
-		{
-			initLabel(winnerLabel, X_OTHER_LABEL, Y_WINNER_LABEL,
-					  "WINNER: OTHER");
-		}
-		else
-		{
-			initLabel(winnerLabel, X_TIED_LABEL, Y_WINNER_LABEL, "WINNER: TIE");
-		}
-		renderLabel((UINT16 *)screenBuffer, winnerLabel, TRUE);
 	}
 }
 
