@@ -432,6 +432,11 @@ void copyScore(Score* dest, const Score* const src)
 	dest->value = src->value;
 }
 
+UINT32 cmpScore(const Score* const s1, const Score* const s2)
+{
+	return s1->value - s2->value;
+}
+
 void initLives (int x, int y, Lives* lifeBox)
 {
 	lifeBox->value = START_LIVES;

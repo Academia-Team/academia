@@ -305,6 +305,7 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 
 	Score           score1P;
 	Score           score2P;
+	UINT32          scoreValDiff;
 
 	int             xScore1P;
 	int             yScore1P;
@@ -339,11 +340,14 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 		copyScore(&score2P, &gameWorld->otherPlayer.score);
 		renderScore((UINT16 *)screenBuffer, &score2P);
 
-		if (gameWorld->mainPlayer.score.value > gameWorld->otherPlayer.score.value) 
+		scoreValDiff = cmpScore(&gameWorld->mainPlayer.score,
+								&gameWorld->otherPlayer.score);
+
+		if (scoreValDiff > 0)
 		{
 			usedWinnerStr = WINNER_YOU_STR;
 		}
-		else if (gameWorld->mainPlayer.score.value < gameWorld->otherPlayer.score.value) 
+		else if (scoreValDiff < 0)
 		{
 			usedWinnerStr = WINNER_OTHER_STR;
 		}

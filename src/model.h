@@ -644,6 +644,20 @@ void updateScore (UINT32 value, Score* scoreBox);
 void copyScore(Score* dest, const Score* const src);
 
 /**
+ * @brief Compares the scores given to each other and returns the result.
+ * @details The magnitude of the returned value corresponds to the difference
+ * in value between the two Score objects.
+ * 
+ * @param s1 The first Score object to compare.
+ * @param s2 The second Score object to compare.
+ * @return An integral value corresponding to the value difference between the
+ * two objects. Zero will be returned if the two Score objects have the same
+ * value, positive if the first object is greater than the second, and negative
+ * if the first object is less than the second.
+ */
+UINT32 cmpScore(const Score* const s1, const Score* const s2);
+
+/**
  * @brief Returns true if a hazard can theoretically be placed based off of
  * probability.
  * 
