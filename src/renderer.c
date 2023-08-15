@@ -260,20 +260,17 @@ void renderMainPlayer(UINT32* base, const Player* const player)
 
 void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen)
 {
-	const int LABEL_HEIGHT = 16;
-	const int LABEL_WIDTH = 16;
-
 	const UINT16 *currFont16Char;
 
 	int index;
 	int x;
 
 	for (index = 0, x = 0; label->text[index] != '\0'; 
-		 index++, x += LABEL_WIDTH)
+		 index++, x += LABEL_FONT_WIDTH)
 	{
 		currFont16Char = getFont16Char(label->text[index], NULL);
-		plot_rast16(base, label->x + x, label->y, LABEL_HEIGHT, currFont16Char,
-					TRUE, blackScreen);
+		plot_rast16(base, label->x + x, label->y, LABEL_FONT_HEIGHT,
+					currFont16Char, TRUE, blackScreen);
 	}
 }
 
@@ -316,9 +313,7 @@ void renderScore(UINT16* base, Score* const score)
 
 void renderLives(UINT16* base, const Lives* const lives)
 {
-	const int LABEL_HEIGHT = 16;
-
-	plot_rast16(base, lives->x, lives->y, LABEL_HEIGHT,
+	plot_rast16(base, lives->x, lives->y, LABEL_FONT_HEIGHT,
 				getFont16Digit(lives->value, NULL), TRUE, TRUE);
 }
 
