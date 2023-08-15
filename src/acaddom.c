@@ -101,6 +101,7 @@ UINT8  gameStart       =  FALSE;
 void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers);
 void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld);
 void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y);
+void menuLoop(UINT32 *screenBuffer, Menu *menu);
 void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
 				  UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
 				  BOOL *quitToTitleScrn, int *numPlayers, BOOL *dead);
@@ -227,20 +228,14 @@ void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 	const int NUM_INFO_BAR_TEXT  =   3;
 	const int Y_INFO_BAR_START   =   BORDER_HEIGHT;
 
-	IKBD_Scancode kybdKey;
-	int           btnSelected;
-	BOOL          btnActivated 	 = FALSE;
-	BOOL		  useMouse       = TRUE;
-
-	int          mouseX;
-	int          mouseY;
-
 	Menu         titleScrn;
 
 	int          fleeBtnID;
 	int          oneBtnID;
 	int          twoBtnID;
 
+	*numPlayers = 0;
+	*exitPgrm   = FALSE;
 	update_video_base(screenBuffer);
 
 	initMenu(&titleScrn, FALSE, BORDER_WIDTH, BORDER_HEIGHT);
@@ -260,80 +255,13 @@ void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 	renderMenu(screenBuffer, &titleScrn);
 	renderTitle(screenBuffer, X_TITLE, Y_TITLE);
 
-	*exitPgrm = FALSE;
-	*numPlayers = 0;
-	show_cursor();
+	menuLoop(screenBuffer, &titleScrn);
 
-	while (!btnActivated && !(*exitPgrm))
-	{
-		kybdKey = getKey();
+	*exitPgrm = (isButtonSelected(&titleScrn, fleeBtnID) ||
+				!hasSelectedButton(&titleScrn));
 
-		if (kybdKey != NO_KEY)
-		{
-			switch(kybdKey)
-			{
-				case IKBD_ESC_SCANCODE:
-				case IKBD_Q_SCANCODE:
-					*exitPgrm = TRUE;
-					break;
-				case IKBD_SPACE_SCANCODE:
-				case IKBD_RETURN_SCANCODE:
-				case IKBD_KP_ENTER_SCANCODE:
-					btnActivated = hasSelectedButton(&titleScrn);
-					break;
-				case IKBD_TAB_SCANCODE:
-					selectNextButton(&titleScrn);
-					useMouse       = FALSE;
-					hide_cursor();
-					break;
-				default:
-					handleInvalidKeyPress();
-			}
-		}
-
-		if(mouseMoved())
-		{
-			getMousePos(&mouseX, &mouseY);
-
-			btnSelected = btnCollision(&titleScrn, mouseX, mouseY);
-
-			if (btnSelected != NO_BTN_SEL)
-			{
-				selectButton(&titleScrn, btnSelected);
-			}
-			else
-			{
-				unselectButton(&titleScrn);
-			}
-
-			useMouse = TRUE;
-			show_cursor();
-		}
-
-		btnActivated = (btnActivated || (mouseClick() && useMouse &&
-						hasSelectedButton(&titleScrn)));
-		
-		processButtonState(&titleScrn);
-
-		if (btnSelected != NO_BTN_SEL)
-		{
-			hide_cursor();
-		}
-
-		renderMenu(screenBuffer, &titleScrn);
-
-		if (btnSelected != NO_BTN_SEL)
-		{
-			show_cursor();
-		}
-
-		btnSelected = NO_BTN_SEL;
-	}
-
-	if (isButtonSelected(&titleScrn, fleeBtnID)) {*exitPgrm = TRUE;}
 	if (isButtonSelected(&titleScrn, oneBtnID))  {*numPlayers = 1;}
 	if (isButtonSelected(&titleScrn, twoBtnID))  {*numPlayers = 2;}
-	hide_cursor();
 }
 
 /**
@@ -372,15 +300,6 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 
 	Label 			winner;
 	char            *usedWinnerStr;
-
-	IKBD_Scancode 	kybdKey;
-	BOOL 			btnActivated    = FALSE;
-	BOOL 			quitToTitleScrn = FALSE;
-	int             btnSelected;
-	BOOL		 	useMouse    	= TRUE;
-
-	int             mouseX;
-	int             mouseY;
 
 	Menu            goverScrn;
 
@@ -438,76 +357,9 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 		renderLabel((UINT16 *)screenBuffer, &winner, TRUE);
 	}
 
-	show_cursor();
+	menuLoop(screenBuffer, &goverScrn);
 
-	while (!btnActivated && !quitToTitleScrn)
-	{
-		kybdKey = getKey();
-
-		if (kybdKey != NO_KEY)
-		{
-			switch(kybdKey)
-			{
-				case IKBD_ESC_SCANCODE:
-				case IKBD_Q_SCANCODE:
-					quitToTitleScrn = TRUE;
-					break;
-				case IKBD_SPACE_SCANCODE:
-				case IKBD_RETURN_SCANCODE:
-				case IKBD_KP_ENTER_SCANCODE:
-					btnActivated = hasSelectedButton(&goverScrn);
-					break;
-				case IKBD_TAB_SCANCODE:
-					selectNextButton(&goverScrn);
-					useMouse = FALSE;
-					hide_cursor();
-					break;
-				default:
-					handleInvalidKeyPress();
-			}
-		}
-
-		if(mouseMoved())
-		{
-			getMousePos(&mouseX, &mouseY);
-
-			btnSelected = btnCollision(&goverScrn, mouseX, mouseY);
-
-			if (btnSelected != NO_BTN_SEL)
-			{
-				selectButton(&goverScrn, btnSelected);
-			}
-			else
-			{
-				unselectButton(&goverScrn);
-			}
-
-			useMouse = TRUE;
-			show_cursor();
-		}
-
-		btnActivated = (btnActivated || (mouseClick() && useMouse &&
-						hasSelectedButton(&goverScrn)));
-		
-		processButtonState(&goverScrn);
-
-		if (btnSelected != NO_BTN_SEL)
-		{
-			hide_cursor();
-		}
-
-		renderMenu(screenBuffer, &goverScrn);
-
-		if (btnSelected != NO_BTN_SEL)
-		{
-			show_cursor();
-		}
-
-		btnSelected = NO_BTN_SEL;
-	}
-
-	*playAgain = (isButtonSelected(&goverScrn, paBtnID) && !quitToTitleScrn);
-	hide_cursor();
+	*playAgain = isButtonSelected(&goverScrn, paBtnID);
 }
 
 /**
@@ -551,6 +403,98 @@ void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y)
 			*y = Y_MP_2P_SCORE;
 		}
 	}
+}
+
+/**
+ * @brief Handles getting input and button selections for the given Menu.
+ * @details The function will not end until user input causes it to end (such
+ * as selecting a button or quitting the menu).
+ * 
+ * @param screenBuffer The framebuffer to plot to.
+ * @param menu The Menu to manage.
+ */
+void menuLoop(UINT32 *screenBuffer, Menu *menu)
+{
+	IKBD_Scancode kybdKey;
+	BOOL          exitLoop = FALSE;
+
+	int          mouseX;
+	int          mouseY;
+	int          btnSelected;
+	BOOL		 useMouse = TRUE;
+
+	show_cursor();
+
+	while (!exitLoop)
+	{
+		kybdKey = getKey();
+
+		if (kybdKey != NO_KEY)
+		{
+			switch(kybdKey)
+			{
+				case IKBD_ESC_SCANCODE:
+				case IKBD_Q_SCANCODE:
+					exitLoop = TRUE;
+					unselectButton(menu);
+					break;
+				case IKBD_SPACE_SCANCODE:
+				case IKBD_RETURN_SCANCODE:
+				case IKBD_KP_ENTER_SCANCODE:
+					exitLoop = hasSelectedButton(menu);
+					break;
+				case IKBD_TAB_SCANCODE:
+					selectNextButton(menu);
+					useMouse = FALSE;
+					hide_cursor();
+					break;
+				default:
+					handleInvalidKeyPress();
+			}
+		}
+
+		if(mouseMoved())
+		{
+			getMousePos(&mouseX, &mouseY);
+
+			btnSelected = btnCollision(menu, mouseX, mouseY);
+
+			if (btnSelected != NO_BTN_SEL)
+			{
+				selectButton(menu, btnSelected);
+			}
+			else
+			{
+				unselectButton(menu);
+			}
+
+			useMouse = TRUE;
+			show_cursor();
+		}
+
+		if (mouseClick() && useMouse && hasSelectedButton(menu))
+		{
+			exitLoop = TRUE;
+		}
+		
+		processButtonState(menu);
+
+		if (btnSelected != NO_BTN_SEL)
+		{
+			hide_cursor();
+		}
+
+		renderMenu(screenBuffer, menu);
+
+		if (btnSelected != NO_BTN_SEL)
+		{
+			show_cursor();
+		}
+
+		btnSelected = NO_BTN_SEL;
+	}
+
+	hide_cursor();
 }
 
 /**
