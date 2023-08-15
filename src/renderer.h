@@ -12,9 +12,15 @@
 #define RENDERER_H
 
 #include "bool.h"
+#include "font16.h"
 #include "model.h"
 #include "move.h"
 #include "types.h"
+
+/**
+ * @brief The width of the font used when rendering a label.
+ */
+#define LABEL_FONT_WIDTH FONT16_WIDTH
 
 /**
  * @brief Renders an updated version of the world cells.
