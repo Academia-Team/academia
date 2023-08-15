@@ -10,6 +10,18 @@
 #ifndef SCRN_H
 #define SCRN_H
 
+#include <string.h>
+
+/**
+ * @brief Returns a x coordinate corresponding to a position where the text
+ * provided will be horizontally centered on the screen.
+ * 
+ * @param text The text to centre on the screen.
+ * @param width The number of pixels between each character.
+ */
+#define horzCentreScrn(text, width) \
+	SCRN_MID_X - ((strlen(text) * width) >> 1)
+
 /**
  * @brief The horizontal length of the Atari ST's monochrome screen (in pixels).
  */

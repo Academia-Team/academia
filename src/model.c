@@ -120,8 +120,7 @@ void addInfoText(Menu* menu, int ID, char* string)
  */
 void infoTextAdder(InfoBar* infoBar, char* string)
 {
-	const int NEW_X = SCRN_MID_X - ((strlen(string) * INFO_BAR_FONT_WIDTH) >>
-					  1);
+	const int NEW_X = horzCentreScrn(string, INFO_BAR_FONT_WIDTH);
 	const int NEW_Y = (infoBar->numLabels == 0 ? infoBar->y :
 					   infoBar->labels[infoBar->numLabels - 1].y +
 					   INFO_BAR_FONT_HEIGHT + infoBar->spacingBetweenLabels);
