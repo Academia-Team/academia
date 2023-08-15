@@ -298,18 +298,13 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 		{
 			getMousePos(&mouseX, &mouseY);
 
-			for (index = 0; index < titleScrn.buttonFillLevel && !btnSelected;
-				 index++)
+			btnSelected = btnCollision(&titleScrn, mouseX, mouseY);
+
+			if (btnSelected != NO_BTN_SEL)
 			{
-				btnSelected = btnCollision(&titleScrn, mouseX, mouseY);
-
-				if (btnSelected != NO_BTN_SEL)
-				{
-					selectButton(&titleScrn, index);
-				}
+				selectButton(&titleScrn, index);
 			}
-
-			if (btnSelected == NO_BTN_SEL)
+			else
 			{
 				unselectButton(&titleScrn);
 			}
@@ -323,14 +318,14 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 		
 		processButtonState(&titleScrn);
 
-		if (btnSelected != NO_BTN_SEL && useMouse)
+		if (btnSelected != NO_BTN_SEL)
 		{
 			hide_cursor();
 		}
 
 		renderMenu(screenBuffer, &titleScrn);
 
-		if (btnSelected != NO_BTN_SEL && useMouse)
+		if (btnSelected != NO_BTN_SEL)
 		{
 			show_cursor();
 		}
@@ -775,18 +770,13 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 		{
 			getMousePos(&mouseX, &mouseY);
 
-			for (index = 0; index < goverScrn.buttonFillLevel && !btnSelected;
-				 index++)
+			btnSelected = btnCollision(&goverScrn, mouseX, mouseY);
+
+			if (btnSelected != NO_BTN_SEL)
 			{
-				btnSelected = btnCollision(&goverScrn, mouseX, mouseY);
-
-				if (btnSelected != NO_BTN_SEL)
-				{
-					selectButton(&goverScrn, index);
-				}
+				selectButton(&goverScrn, index);
 			}
-
-			if (btnSelected == NO_BTN_SEL)
+			else
 			{
 				unselectButton(&goverScrn);
 			}
@@ -800,14 +790,14 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 		
 		processButtonState(&goverScrn);
 
-		if (btnSelected != NO_BTN_SEL && useMouse)
+		if (btnSelected != NO_BTN_SEL)
 		{
 			hide_cursor();
 		}
 
 		renderMenu(screenBuffer, &goverScrn);
 
-		if (btnSelected != NO_BTN_SEL && useMouse)
+		if (btnSelected != NO_BTN_SEL)
 		{
 			show_cursor();
 		}
