@@ -90,8 +90,6 @@ UINT8  gameStart       =  FALSE;
 		vert_sync(); \
 	}
 
-void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers);
-
 /**
  * @brief Copies the contents of an entire screen buffer.
  * 
@@ -100,6 +98,9 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers);
  */
 #define dupScrnBuffer(dest, src) copyScrnBuffer(dest, src, 0, SCRN_MAX_Y)
 
+void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers);
+void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld);
+void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y);
 void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
 				  UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
 				  BOOL *quitToTitleScrn, int *numPlayers, BOOL *dead);
@@ -113,8 +114,6 @@ void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow,
 				 UINT32 *playerMoveTimer, int *loopCounter,
 				 int *deathCounter);
 void processAsync(BOOL *quitToTitleScrn, World *gameWorld);
-void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld);
-void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y);
 
 void game_end(void);
 void game_start(void);
@@ -159,7 +158,7 @@ int main(int argc, char **argv)
 	{
 		if (!playAgain)
 		{
-			displayTitleScreen(screenBuffer, &exitPgrm, &numPlayers);
+			titleScreen(screenBuffer, &exitPgrm, &numPlayers);
 		}
 		else
 		{
@@ -202,7 +201,7 @@ int main(int argc, char **argv)
  * @param numPlayers Returns by reference 1 for 1-player mode and 2 for 2-player
  * mode.
  */
-void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
+void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 {
 	const int X_TITLE           =  27;
 	const int Y_TITLE           =  77;
@@ -335,6 +334,223 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 	if (isButtonSelected(&titleScrn, oneBtnID))  {*numPlayers = 1;}
 	if (isButtonSelected(&titleScrn, twoBtnID))  {*numPlayers = 2;}
 	hide_cursor();
+}
+
+/**
+ * @brief Displays the game over screen for Academia Dreams of Madness.
+ * @details Displays a "GAME OVER" message, the players score and 2 buttons,
+ * "RETREAT" and "PLAY AGAIN". If the player quits the game over screen by using
+ * either 'esc', 'q' or the "retreat" button the playAgain flag is set to FALSE.
+ * If the playAgain flag is TRUE the player has selected the "PLAY AGAIN"
+ * button.
+ * 
+ * @param screenBuffer The framebuffer to plot to.
+ * @param playAgain Returns by reference FALSE if the game is to return to the 
+ * title screen state.
+ * @param gameWorld The world object which holds all game data.
+ */
+void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
+{
+	const int       X_PLAY_AGAIN_BUTTON      = 150;
+	const int       Y_PLAY_AGAIN_BUTTON      = 281;
+	const int       HEIGHT_PLAY_AGAIN_BUTTON =  40;
+	const int       WIDTH_PLAY_AGAIN_BUTTON  = 340;
+
+	const int       X_RETREAT_BUTTON         = 150;
+	const int       Y_RETREAT_BUTTON         = 329;
+	const int       HEIGHT_RETREAT_BUTTON    =  40;
+	const int       WIDTH_RETREAT_BUTTON     = 340;
+
+	const int       X_GAME_OVER              =  82;
+	const int       Y_GAME_OVER              =  53;
+
+	const int       Y_WINNER_LABEL           = 160;
+
+	const char      WINNER_YOU_STR[]         = "WINNER: YOU";
+	const char      WINNER_OTHER_STR[]       = "WINNER: OTHER";
+	const char      WINNER_TIED_STR[]        = "WINNER: TIE";
+
+	Label 			winner;
+	char            *usedWinnerStr;
+
+	IKBD_Scancode 	kybdKey;
+	BOOL 			btnActivated    = FALSE;
+	BOOL 			quitToTitleScrn = FALSE;
+	int             btnSelected;
+	BOOL		 	useMouse    	= TRUE;
+
+	int             mouseX;
+	int             mouseY;
+
+	Menu            goverScrn;
+
+	Score           score1P;
+	Score           score2P;
+
+	int             xScore1P;
+	int             yScore1P;
+	int             xScore2P;
+	int             yScore2P;
+
+	int             paBtnID;
+
+	update_video_base(screenBuffer);
+
+	initMenu(&goverScrn, TRUE, 0, 0);
+
+	paBtnID = addButton(&goverScrn, X_PLAY_AGAIN_BUTTON, Y_PLAY_AGAIN_BUTTON,
+						HEIGHT_PLAY_AGAIN_BUTTON, WIDTH_PLAY_AGAIN_BUTTON,
+						"PLAY AGAIN");
+
+	addButton(&goverScrn, X_RETREAT_BUTTON, Y_RETREAT_BUTTON,
+			  HEIGHT_RETREAT_BUTTON, WIDTH_RETREAT_BUTTON, "RETREAT");
+
+	renderMenu(screenBuffer, &goverScrn);
+	renderGameOver(screenBuffer, X_GAME_OVER, Y_GAME_OVER);
+
+	getGoverScoreCoord(gameWorld->numPlayers, 1, &xScore1P, &yScore1P);
+	initScore(xScore1P, yScore1P, &score1P);
+	copyScore(&score1P, &gameWorld->mainPlayer.score);
+	renderScore((UINT16 *)screenBuffer, &score1P);
+
+	if (gameWorld->numPlayers == 2)
+	{
+		getGoverScoreCoord(gameWorld->numPlayers, 2, &xScore2P, &yScore2P);
+		initScore(xScore2P, yScore2P, &score2P);
+		copyScore(&score2P, &gameWorld->otherPlayer.score);
+		renderScore((UINT16 *)screenBuffer, &score2P);
+
+		if (gameWorld->mainPlayer.score.value > gameWorld->otherPlayer.score.value) 
+		{
+			usedWinnerStr = WINNER_YOU_STR;
+		}
+		else if (gameWorld->mainPlayer.score.value < gameWorld->otherPlayer.score.value) 
+		{
+			usedWinnerStr = WINNER_OTHER_STR;
+		}
+		else
+		{
+			usedWinnerStr = WINNER_TIED_STR;
+		}
+
+		initLabel(&winner, horzCentreScrn(usedWinnerStr, LABEL_FONT_WIDTH),
+				  Y_WINNER_LABEL, usedWinnerStr);
+		renderLabel((UINT16 *)screenBuffer, &winner, TRUE);
+	}
+
+	show_cursor();
+
+	while (!btnActivated && !quitToTitleScrn)
+	{
+		kybdKey = getKey();
+
+		if (kybdKey != NO_KEY)
+		{
+			switch(kybdKey)
+			{
+				case IKBD_ESC_SCANCODE:
+				case IKBD_Q_SCANCODE:
+					quitToTitleScrn = TRUE;
+					break;
+				case IKBD_SPACE_SCANCODE:
+				case IKBD_RETURN_SCANCODE:
+				case IKBD_KP_ENTER_SCANCODE:
+					btnActivated = hasSelectedButton(&goverScrn);
+					break;
+				case IKBD_TAB_SCANCODE:
+					selectNextButton(&goverScrn);
+					useMouse = FALSE;
+					hide_cursor();
+					break;
+				default:
+					handleInvalidKeyPress();
+			}
+		}
+
+		if(mouseMoved())
+		{
+			getMousePos(&mouseX, &mouseY);
+
+			btnSelected = btnCollision(&goverScrn, mouseX, mouseY);
+
+			if (btnSelected != NO_BTN_SEL)
+			{
+				selectButton(&goverScrn, btnSelected);
+			}
+			else
+			{
+				unselectButton(&goverScrn);
+			}
+
+			useMouse = TRUE;
+			show_cursor();
+		}
+
+		btnActivated = (btnActivated || (mouseClick() && useMouse &&
+						hasSelectedButton(&goverScrn)));
+		
+		processButtonState(&goverScrn);
+
+		if (btnSelected != NO_BTN_SEL)
+		{
+			hide_cursor();
+		}
+
+		renderMenu(screenBuffer, &goverScrn);
+
+		if (btnSelected != NO_BTN_SEL)
+		{
+			show_cursor();
+		}
+
+		btnSelected = NO_BTN_SEL;
+	}
+
+	*playAgain = (isButtonSelected(&goverScrn, paBtnID) && !quitToTitleScrn);
+	hide_cursor();
+}
+
+/**
+ * @brief Gets the coordinates for scores on the Game Over screen.
+ * 
+ * @param numPlayers The total number of players.
+ * @param playerNum The number representing a player.
+ * @param x The x coordinate to return by reference. Will be -1 if invalid
+ * values are given.
+ * @param y The y coordinate to return by reference. Will be -1 if invalid
+ * values are given.
+ */
+void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y)
+{
+	const int X_1P_SCORE    = 150;
+	const int Y_1P_SCORE    = 166;
+
+	const int X_MP_1P_SCORE = 150;
+	const int Y_MP_1P_SCORE = 200;
+
+	const int X_MP_2P_SCORE = 150;
+	const int Y_MP_2P_SCORE = 232;
+
+	*x = *y = -1;
+
+	if (numPlayers == 1 && playerNum == 1)
+	{
+		*x = X_1P_SCORE;
+		*y = Y_1P_SCORE;
+	}
+	else if (numPlayers == 2)
+	{
+		if (playerNum == 1)
+		{
+			*x = X_MP_1P_SCORE;
+			*y = Y_MP_1P_SCORE;
+		}
+		else if (playerNum == 2)
+		{
+			*x = X_MP_2P_SCORE;
+			*y = Y_MP_2P_SCORE;
+		}
+	}
 }
 
 /**
@@ -675,226 +891,6 @@ void copyScrnBuffer(UINT8 *dest, const UINT8 * const src, int startRow,
 	const int BYTES_TO_COPY    = NUM_ROWS_TO_COPY * SCRN_LEN_BYTES;
 
 	memcpy(dest + COPY_OFFSET, src + COPY_OFFSET, BYTES_TO_COPY);
-}
-
-/**
- * @brief Displays the game over screen for Academia Dreams of Madness.
- * @details Displays a "GAME OVER" message, the players score and 2 buttons,
- * "RETREAT" and "PLAY AGAIN". If the player quits the game over screen by using
- * either 'esc', 'q' or the "retreat" button the playAgain flag is set to FALSE.
- * If the playAgain flag is TRUE the player has selected the "PLAY AGAIN"
- * button.
- * 
- * @param screenBuffer The framebuffer to plot to.
- * @param playAgain Returns by reference FALSE if the game is to return to the 
- * title screen state.
- * @param gameWorld The world object which holds all game data.
- */
-void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
-{
-	const int       X_PLAY_AGAIN_BUTTON      = 150;
-	const int       Y_PLAY_AGAIN_BUTTON      = 281;
-	const int       HEIGHT_PLAY_AGAIN_BUTTON =  40;
-	const int       WIDTH_PLAY_AGAIN_BUTTON  = 340;
-
-	const int       X_RETREAT_BUTTON         = 150;
-	const int       Y_RETREAT_BUTTON         = 329;
-	const int       HEIGHT_RETREAT_BUTTON    =  40;
-	const int       WIDTH_RETREAT_BUTTON     = 340;
-
-	const int       X_GAME_OVER              =  82;
-	const int       Y_GAME_OVER              =  53;
-
-	const int       Y_WINNER_LABEL           = 160;
-
-	const char      WINNER_YOU_STR[]         = "WINNER: YOU";
-	const char      WINNER_OTHER_STR[]       = "WINNER: OTHER";
-	const char      WINNER_TIED_STR[]        = "WINNER: TIE";
-
-	Label 			winner;
-	char            *usedWinnerStr;
-
-	IKBD_Scancode 	kybdKey;
-	BOOL 			btnActivated    = FALSE;
-	BOOL 			quitToTitleScrn = FALSE;
-	int             btnSelected;
-	BOOL		 	useMouse    	= TRUE;
-
-	int             mouseX;
-	int             mouseY;
-
-	Menu            goverScrn;
-
-	Score           score1P;
-	Score           score2P;
-
-	int             xScore1P;
-	int             yScore1P;
-	int             xScore2P;
-	int             yScore2P;
-
-	int             paBtnID;
-
-	update_video_base(screenBuffer);
-
-	initMenu(&goverScrn, TRUE, 0, 0);
-
-	paBtnID = addButton(&goverScrn, X_PLAY_AGAIN_BUTTON, Y_PLAY_AGAIN_BUTTON,
-						HEIGHT_PLAY_AGAIN_BUTTON, WIDTH_PLAY_AGAIN_BUTTON,
-						"PLAY AGAIN");
-
-	addButton(&goverScrn, X_RETREAT_BUTTON, Y_RETREAT_BUTTON,
-			  HEIGHT_RETREAT_BUTTON, WIDTH_RETREAT_BUTTON, "RETREAT");
-
-	renderMenu(screenBuffer, &goverScrn);
-	renderGameOver(screenBuffer, X_GAME_OVER, Y_GAME_OVER);
-
-	getGoverScoreCoord(gameWorld->numPlayers, 1, &xScore1P, &yScore1P);
-	initScore(xScore1P, yScore1P, &score1P);
-	copyScore(&score1P, &gameWorld->mainPlayer.score);
-	renderLabel((UINT16 *)screenBuffer, &score1P.label, goverScrn.blackScreen);
-	renderScore((UINT16 *)screenBuffer, &score1P);
-
-	if (gameWorld->numPlayers == 2)
-	{
-		getGoverScoreCoord(gameWorld->numPlayers, 2, &xScore2P, &yScore2P);
-		initScore(xScore2P, yScore2P, &score2P);
-		copyScore(&score2P, &gameWorld->otherPlayer.score);
-		renderLabel((UINT16 *)screenBuffer, &score2P.label,
-					goverScrn.blackScreen);
-		renderScore((UINT16 *)screenBuffer, &score2P);
-
-		if (gameWorld->mainPlayer.score.value > gameWorld->otherPlayer.score.value) 
-		{
-			usedWinnerStr = WINNER_YOU_STR;
-		}
-		else if (gameWorld->mainPlayer.score.value < gameWorld->otherPlayer.score.value) 
-		{
-			usedWinnerStr = WINNER_OTHER_STR;
-		}
-		else
-		{
-			usedWinnerStr = WINNER_TIED_STR;
-		}
-
-		initLabel(&winner, horzCentreScrn(usedWinnerStr, LABEL_FONT_WIDTH),
-				  Y_WINNER_LABEL, usedWinnerStr);
-		renderLabel((UINT16 *)screenBuffer, &winner, TRUE);
-	}
-
-	show_cursor();
-
-	while (!btnActivated && !quitToTitleScrn)
-	{
-		kybdKey = getKey();
-
-		if (kybdKey != NO_KEY)
-		{
-			switch(kybdKey)
-			{
-				case IKBD_ESC_SCANCODE:
-				case IKBD_Q_SCANCODE:
-					quitToTitleScrn = TRUE;
-					break;
-				case IKBD_SPACE_SCANCODE:
-				case IKBD_RETURN_SCANCODE:
-				case IKBD_KP_ENTER_SCANCODE:
-					btnActivated = hasSelectedButton(&goverScrn);
-					break;
-				case IKBD_TAB_SCANCODE:
-					selectNextButton(&goverScrn);
-					useMouse = FALSE;
-					hide_cursor();
-					break;
-				default:
-					handleInvalidKeyPress();
-			}
-		}
-
-		if(mouseMoved())
-		{
-			getMousePos(&mouseX, &mouseY);
-
-			btnSelected = btnCollision(&goverScrn, mouseX, mouseY);
-
-			if (btnSelected != NO_BTN_SEL)
-			{
-				selectButton(&goverScrn, btnSelected);
-			}
-			else
-			{
-				unselectButton(&goverScrn);
-			}
-
-			useMouse = TRUE;
-			show_cursor();
-		}
-
-		btnActivated = (btnActivated || (mouseClick() && useMouse &&
-						hasSelectedButton(&goverScrn)));
-		
-		processButtonState(&goverScrn);
-
-		if (btnSelected != NO_BTN_SEL)
-		{
-			hide_cursor();
-		}
-
-		renderMenu(screenBuffer, &goverScrn);
-
-		if (btnSelected != NO_BTN_SEL)
-		{
-			show_cursor();
-		}
-
-		btnSelected = NO_BTN_SEL;
-	}
-
-	*playAgain = (isButtonSelected(&goverScrn, paBtnID) && !quitToTitleScrn);
-	hide_cursor();
-}
-
-/**
- * @brief Gets the coordinates for scores on the Game Over screen.
- * 
- * @param numPlayers The total number of players.
- * @param playerNum The number representing a player.
- * @param x The x coordinate to return by reference. Will be -1 if invalid
- * values are given.
- * @param y The y coordinate to return by reference. Will be -1 if invalid
- * values are given.
- */
-void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y)
-{
-	const int X_1P_SCORE    = 150;
-	const int Y_1P_SCORE    = 166;
-
-	const int X_MP_1P_SCORE = 150;
-	const int Y_MP_1P_SCORE = 200;
-
-	const int X_MP_2P_SCORE = 150;
-	const int Y_MP_2P_SCORE = 232;
-
-	*x = *y = -1;
-
-	if (numPlayers == 1 && playerNum == 1)
-	{
-		*x = X_1P_SCORE;
-		*y = Y_1P_SCORE;
-	}
-	else if (numPlayers == 2)
-	{
-		if (playerNum == 1)
-		{
-			*x = X_MP_1P_SCORE;
-			*y = Y_MP_1P_SCORE;
-		}
-		else if (playerNum == 2)
-		{
-			*x = X_MP_2P_SCORE;
-			*y = Y_MP_2P_SCORE;
-		}
-	}
 }
 
 /**
