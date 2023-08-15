@@ -230,10 +230,8 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 	const int Y_INFO_BAR_START   =   BORDER_HEIGHT;
 
 	IKBD_Scancode kybdKey;
+	BOOL          btnSelected;
 	BOOL          btnActivated 	= FALSE;
-	BOOL          tabCycle     	= FALSE;
-	BOOL          btnSelected  	= FALSE;
-	BOOL          mouseUnselect = FALSE;
 	BOOL		  useMouse      = TRUE;
 
 	int          mouseX;
@@ -284,26 +282,16 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 				case IKBD_SPACE_SCANCODE:
 				case IKBD_RETURN_SCANCODE:
 				case IKBD_KP_ENTER_SCANCODE:
-					btnActivated = (titleScrn.buttonSel != NO_BTN_SEL);
+					btnActivated = hasSelectedButton(&titleScrn);
 					break;
 				case IKBD_TAB_SCANCODE:
-					tabCycle = TRUE;
+					selectNextButton(&titleScrn);
+					useMouse = FALSE;
+					hide_cursor();
 					break;
 				default:
 					handleInvalidKeyPress();
 			}
-		}
-
-		if (tabCycle)
-		{
-			titleScrn.oldButtonSel = titleScrn.buttonSel;
-			titleScrn.buttonSel    = (titleScrn.buttonSel + 1) %
-									 titleScrn.buttonFillLevel;
-
-			btnSelected = TRUE;
-			tabCycle    = FALSE;
-			useMouse    = FALSE;
-			hide_cursor();
 		}
 
 		if(mouseMoved())
@@ -315,54 +303,37 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 			{
 				if (btnCollision(mouseX, mouseY, titleScrn.buttons[index]))
 				{
-					titleScrn.oldButtonSel = titleScrn.buttonSel;
-					titleScrn.buttonSel    = index;
-					btnSelected            = TRUE;
-
-					titleScrn.buttons[titleScrn.oldButtonSel].selected = FALSE;
-					titleScrn.buttons[titleScrn.buttonSel].selected    = TRUE;
+					selectButton(&titleScrn, index);
+					btnSelected = TRUE;
 				}
 			}
 
-			if (!btnSelected && titleScrn.buttonSel != NO_BTN_SEL)
-			{
-				titleScrn.oldButtonSel = titleScrn.buttonSel;
-				titleScrn.buttonSel    = NO_BTN_SEL;
-			}
-
-			useMouse = TRUE;
+			useMouse    = TRUE;
+			btnSelected = FALSE;
 			show_cursor();
 		}
 
 		btnActivated = (btnActivated || (mouseClick() && useMouse &&
-						titleScrn.buttonSel != NO_BTN_SEL));
+						hasSelectedButton(&titleScrn)));
 		
-		/* Make sure buttons aren't re-rendered if button selection has not
-		   changed. */
-		if (!btnSelected && !mouseUnselect)
-		{
-			titleScrn.oldButtonSel = titleScrn.buttonSel;
-		}
+		processButtonState(&titleScrn);
 
-		if ((btnSelected || mouseUnselect) && useMouse)
+		if (hasSelectedButton(&titleScrn) && useMouse)
 		{
 			hide_cursor();
 		}
 
 		renderMenu(screenBuffer, &titleScrn);
 
-		if ((btnSelected || mouseUnselect) && useMouse)
+		if (hasSelectedButton(&titleScrn) && useMouse)
 		{
 			show_cursor();
 		}
-
-		btnSelected   = FALSE;
-		mouseUnselect = FALSE;
 	}
 
-	if (titleScrn.buttons[fleeBtnID].selected == TRUE) {*exitPgrm = TRUE;}
-	if (titleScrn.buttons[oneBtnID].selected == TRUE) {*numPlayers = 1;}
-	if (titleScrn.buttons[twoBtnID].selected == TRUE) {*numPlayers = 2;}
+	if (isButtonSelected(&titleScrn, fleeBtnID)) {*exitPgrm = TRUE;}
+	if (isButtonSelected(&titleScrn, oneBtnID))  {*numPlayers = 1;}
+	if (isButtonSelected(&titleScrn, twoBtnID))  {*numPlayers = 2;}
 	hide_cursor();
 }
 
