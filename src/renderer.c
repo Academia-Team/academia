@@ -48,7 +48,6 @@ void renderPlayArea(UINT32* base, const World* const world)
 	fill_scrn(base);
 	renderWorld(base, world);
 	renderUpdate(base, world);
-	renderLabel((UINT16 *)base, &world->mainPlayer.score.label, TRUE);
 	renderLabel((UINT16 *)base, &world->mainPlayer.lives.label, TRUE);
 
 	if (world->numPlayers == 2)
@@ -57,7 +56,6 @@ void renderPlayArea(UINT32* base, const World* const world)
 		initLabel(&otherLabel, 16, 40,"OTHER:");
 		renderLabel((UINT16 *)base, &youLabel, TRUE);
 		renderLabel((UINT16 *)base, &otherLabel, TRUE);
-		renderLabel((UINT16 *)base, &world->otherPlayer.score.label, TRUE);
 		renderLabel((UINT16 *)base, &world->otherPlayer.lives.label, TRUE);
 	}
 }
@@ -289,15 +287,18 @@ void renderInfoBar(UINT16* base, const InfoBar* const infoBar)
 	}
 }
 
-void renderScore(UINT16* base, const Score* const score)
+void renderScore(UINT16* base, Score* const score)
 {
-	const int LABEL_HEIGHT = 16;
-	const int LABEL_WIDTH = 16;
-
 	UINT32 value = score->value;
 	int index = MAX_NUM_DIGITS_IN_SCORE - 1;
 	int digits[MAX_NUM_DIGITS_IN_SCORE];
 	int x;
+
+	if (!score->labelRendered)
+	{
+		renderLabel((UINT16 *)base, &score->label, TRUE);
+		score->labelRendered = TRUE;
+	}
 
 	do
 	{
@@ -306,9 +307,9 @@ void renderScore(UINT16* base, const Score* const score)
 	} while (value != 0);
 
 	for(x = 0, index += 1; index < MAX_NUM_DIGITS_IN_SCORE;
-		index++, x += LABEL_WIDTH)
+		index++, x += LABEL_FONT_WIDTH)
 	{
-		plot_rast16(base, score->x + x, score->y, LABEL_HEIGHT,
+		plot_rast16(base, score->x + x, score->y, LABEL_FONT_HEIGHT,
 					getFont16Digit(digits[index], NULL), TRUE, TRUE);
 	}
 }

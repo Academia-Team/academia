@@ -156,7 +156,7 @@ void renderInfoBar(UINT16* base, const InfoBar* const infoBar);
  * @param base The location in memory to plot at.
  * @param Score The score of a player that is to be rendered to the screen.
  */
-void renderScore(UINT16* base, const Score* const Score);
+void renderScore(UINT16* base, Score* const Score);
 
 /**
  * @brief Renders lives to the screen.
