@@ -23,6 +23,11 @@
 #define LABEL_FONT_WIDTH FONT16_WIDTH
 
 /**
+ * @brief The height of the font used when rendering a label.
+ */
+#define LABEL_FONT_HEIGHT FONT16_HEIGHT
+
+/**
  * @brief Renders an updated version of the world cells.
  * @details When a world shift has occurred this is to be called to draw the 
  * updated cell positions and newly generated cells at the top row.
