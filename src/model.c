@@ -427,6 +427,11 @@ void updateScore (UINT32 value, Score* scoreBox)
 	}
 }
 
+void copyScore(Score* dest, const Score* const src)
+{
+	dest->value = src->value;
+}
+
 void initLives (int x, int y, Lives* lifeBox)
 {
 	lifeBox->value = START_LIVES;

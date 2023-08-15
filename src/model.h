@@ -636,6 +636,14 @@ void initLabel(Label* label, int x, int y, char *text);
 void updateScore (UINT32 value, Score* scoreBox);
 
 /**
+ * @brief Copy the score values from one object to another.
+ * 
+ * @param dest The Score object whose value will be changed.
+ * @param src The Score object which contains the desired value.
+ */
+void copyScore(Score* dest, const Score* const src);
+
+/**
  * @brief Returns true if a hazard can theoretically be placed based off of
  * probability.
  * 

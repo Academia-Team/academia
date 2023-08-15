@@ -751,7 +751,7 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 
 	getGoverScoreCoord(gameWorld->numPlayers, 1, &xScore1P, &yScore1P);
 	initScore(xScore1P, yScore1P, &score1P);
-	updateScore(gameWorld->mainPlayer.score.value, &score1P);
+	copyScore(&score1P, &gameWorld->mainPlayer.score);
 	renderLabel((UINT16 *)screenBuffer, &score1P.label, goverScrn.blackScreen);
 	renderScore((UINT16 *)screenBuffer, &score1P);
 
@@ -759,7 +759,7 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 	{
 		getGoverScoreCoord(gameWorld->numPlayers, 2, &xScore2P, &yScore2P);
 		initScore(xScore2P, yScore2P, &score2P);
-		updateScore(gameWorld->otherPlayer.score.value, &score2P);
+		copyScore(&score2P, &gameWorld->otherPlayer.score);
 		renderLabel((UINT16 *)screenBuffer, &score2P.label,
 					goverScrn.blackScreen);
 		renderScore((UINT16 *)screenBuffer, &score2P);
