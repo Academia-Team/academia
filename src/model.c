@@ -558,8 +558,8 @@ void initButton(Button* button, int x, int y, int height, int width,
 void initMenu(Menu* menu, BOOL blackScreen, int borderWidth, int borderHeight)
 {
 	menu->buttonFillLevel  =  0;
-	menu->oldButtonSel     = -1;
-	menu->buttonSel        = -1;
+	menu->oldButtonSel     = NO_BTN_SEL;
+	menu->buttonSel        = NO_BTN_SEL;
 	menu->infobarFillLevel =  0;
 
 	menu->blackScreen    = blackScreen;

@@ -461,13 +461,13 @@ void renderMenu(UINT32* base, Menu* menu)
 		selected, so no need to re-render. */
 		if (menu->buttonSel != menu->oldButtonSel)
 		{
-			if (menu->buttonSel != -1)
+			if (menu->buttonSel != NO_BTN_SEL)
 			{
 				renderButton(base, &menu->buttons[menu->buttonSel],
 						 	menu->blackScreen);
 			}
 
-			if (menu->oldButtonSel != -1)
+			if (menu->oldButtonSel != NO_BTN_SEL)
 			{
 				renderButton(base, &menu->buttons[menu->oldButtonSel],
 						 	menu->blackScreen);

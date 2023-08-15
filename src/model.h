@@ -169,8 +169,9 @@
 #define MIN_VIS_X_FEATHERS MIN_CELL_X
 #define MIN_VIS_X_TRAIN -48
 
-#define MAX_NUM_INFOBAR     2
-#define MAX_NUM_MENU_BUTTON 6
+#define MAX_NUM_INFOBAR      2
+#define MAX_NUM_MENU_BUTTON  6
+#define NO_BTN_SEL          -1
 
 typedef enum
 {

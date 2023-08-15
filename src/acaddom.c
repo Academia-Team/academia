@@ -284,7 +284,7 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 				case IKBD_SPACE_SCANCODE:
 				case IKBD_RETURN_SCANCODE:
 				case IKBD_KP_ENTER_SCANCODE:
-					btnActivated = (titleScrn.buttonSel != -1);
+					btnActivated = (titleScrn.buttonSel != NO_BTN_SEL);
 					break;
 				case IKBD_TAB_SCANCODE:
 					tabCycle = TRUE;
@@ -324,10 +324,10 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 				}
 			}
 
-			if (!btnSelected && titleScrn.buttonSel != -1)
+			if (!btnSelected && titleScrn.buttonSel != NO_BTN_SEL)
 			{
 				titleScrn.oldButtonSel = titleScrn.buttonSel;
-				titleScrn.buttonSel    = -1;
+				titleScrn.buttonSel    = NO_BTN_SEL;
 			}
 
 			useMouse = TRUE;
@@ -335,7 +335,7 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 		}
 
 		btnActivated = (btnActivated || (mouseClick() && useMouse &&
-						titleScrn.buttonSel != -1));
+						titleScrn.buttonSel != NO_BTN_SEL));
 		
 		/* Make sure buttons aren't re-rendered if button selection has not
 		   changed. */
@@ -783,7 +783,7 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 				case IKBD_SPACE_SCANCODE:
 				case IKBD_RETURN_SCANCODE:
 				case IKBD_KP_ENTER_SCANCODE:
-					btnActivated = (goverScrn.buttonSel != -1);
+					btnActivated = (goverScrn.buttonSel != NO_BTN_SEL);
 					break;
 				case IKBD_TAB_SCANCODE:
 					tabCycle = TRUE;
@@ -823,10 +823,10 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 				}
 			}
 
-			if (!btnSelected && goverScrn.buttonSel != -1)
+			if (!btnSelected && goverScrn.buttonSel != NO_BTN_SEL)
 			{
 				goverScrn.oldButtonSel = goverScrn.buttonSel;
-				goverScrn.buttonSel    = -1;
+				goverScrn.buttonSel    = NO_BTN_SEL;
 			}
 
 			useMouse = TRUE;
@@ -834,7 +834,7 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 		}
 
 		btnActivated = (btnActivated || (mouseClick() && useMouse &&
-						goverScrn.buttonSel != -1));
+						goverScrn.buttonSel != NO_BTN_SEL));
 		
 		/* Make sure buttons aren't re-rendered if button selection has not
 		   changed. */
