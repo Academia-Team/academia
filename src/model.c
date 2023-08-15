@@ -596,7 +596,7 @@ void unselectButton(Menu* menu)
 
 BOOL isButtonSelected(const Menu* const menu, int buttonID)
 {
-	return (menu->buttonSel == buttonID);
+	return (hasSelectedButton(menu) && menu->buttonSel == buttonID);
 }
 
 BOOL hasSelectedButton(const Menu* const menu)
