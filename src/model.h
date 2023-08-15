@@ -479,34 +479,35 @@ void getPlayerNextMove(const Player * const player, MoveFrame *nextMovement);
  * @param ... The null-terminated strings that will be stored within the
  * infoBar. The number of strings must correspond to the value of numLabels.
  * 
- * @return A integral ID correspond to the button or -1 if a button couldn't be
- * added.
+ * @return A integral ID correspond to the InfoBar or -1 if a InfoBar couldn't
+ * be added.
  */
 int addInfoBar(Menu* menu, int y, int spacing, int numLabels, ...);
 
 /**
- * @brief Adds the given text to the InfoBar object.
+ * @brief Adds the given text to the InfoBar object in a given menu.
  * @details The text must not cause the InfoBar object to exceed the confines of
  * the screen. The object will not be modified if there is no more room to add
  * the text.
  * 
- * @param infoBar A pointer to the InfoBar object to be given more text.
+ * @param menu The menu where the InfoBar object resides.
+ * @param ID The identifier for the InfoBar object.
  * @param string The text that should be added to the InfoBar object. Must be
  * null-terminated.
  */
-void addInfoText(InfoBar* infoBar, char* string);
+void addInfoText(Menu* menu, int ID, char* string);
 
 /**
  * @brief Removes the label at the given index from the InfoBar object.
  * @details The object will not be modified if the index is out of range.
  * 
- * @param infoBar A pointer to the InfoBar object that needs to have text
- * removed.
+ * @param menu The menu where the InfoBar object resides.
+ * @param ID The identifier for the InfoBar object.
  * @param index The zero-indexed value corresponding to text that was previously
  * added to the object. The largest index always corresponds to the most
  * recently added text. Any negative index is invalid.
  */
-void removeInfoText(InfoBar* infoBar, int index);
+void removeInfoText(Menu* menu, int ID, int index);
 
 /**
  * @brief Initializes a CorePlayer object.

@@ -34,6 +34,7 @@ BOOL probPlaceHazard(HazType hazard);
 
 void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels,
 				 va_list *strList);
+void infoTextAdder(InfoBar* infoBar, char* string);
 
 void initButton(Button* button, int x, int y, int height, int width,
 				LabelStr text);
@@ -94,12 +95,30 @@ void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels,
 
 		for (index = 0; index < numLabels; index++)
 		{
-			addInfoText(infoBar, va_arg(*strList, char *));
+			infoTextAdder(infoBar, va_arg(*strList, char *));
 		}
 	}
 }
 
-void addInfoText(InfoBar* infoBar, char* string)
+void addInfoText(Menu* menu, int ID, char* string)
+{
+	if (ID >= 0 && ID < menu->infobarFillLevel)
+	{
+		infoTextAdder(&menu->infoBars[ID], string);
+	}
+}
+
+/**
+ * @brief Adds the given text to the InfoBar object.
+ * @details The text must not cause the InfoBar object to exceed the confines of
+ * the screen. The object will not be modified if there is no more room to add
+ * the text.
+ * 
+ * @param infoBar A pointer to the target InfoBar object.
+ * @param string The text that should be added to the InfoBar object. Must be
+ * null-terminated.
+ */
+void infoTextAdder(InfoBar* infoBar, char* string)
 {
 	const int NEW_X = SCRN_MID_X - ((strlen(string) * INFO_BAR_FONT_WIDTH) >>
 					  1);
@@ -117,8 +136,10 @@ void addInfoText(InfoBar* infoBar, char* string)
 	}
 }
 
-void removeInfoText(InfoBar* infoBar, int index)
+void removeInfoText(Menu* menu, int ID, int index)
 {
+	InfoBar* const infoBar = &menu->infoBars[ID];
+
 	int replaceIndex;
 
 	if (index >= 0 && index < infoBar->numLabels)
