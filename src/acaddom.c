@@ -114,6 +114,7 @@ void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow,
 				 int *deathCounter);
 void processAsync(BOOL *quitToTitleScrn, World *gameWorld);
 void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld);
+void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y);
 void prepGameOverScrn(UINT32 *screenBuffer, World *gameWorld,
 					  Label *winnerLabel);
 
@@ -718,6 +719,14 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 
 	Menu            goverScrn;
 
+	Score           score1P;
+	Score           score2P;
+
+	int             xScore1P;
+	int             yScore1P;
+	int             xScore2P;
+	int             yScore2P;
+
 	int             paBtnID;
 
 	update_video_base(screenBuffer);
@@ -733,6 +742,22 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 
 	renderMenu(screenBuffer, &goverScrn);
 	renderGameOver(screenBuffer, X_GAME_OVER, Y_GAME_OVER);
+
+	getGoverScoreCoord(gameWorld->numPlayers, 1, &xScore1P, &yScore1P);
+	initScore(xScore1P, yScore1P, &score1P);
+	updateScore(gameWorld->mainPlayer.score.value, &score1P);
+	renderLabel((UINT16 *)screenBuffer, &score1P.label, goverScrn.blackScreen);
+	renderScore((UINT16 *)screenBuffer, &score1P);
+
+	if (gameWorld->numPlayers == 2)
+	{
+		getGoverScoreCoord(gameWorld->numPlayers, 2, &xScore2P, &yScore2P);
+		initScore(xScore2P, yScore2P, &score2P);
+		updateScore(gameWorld->otherPlayer.score.value, &score2P);
+		renderLabel((UINT16 *)screenBuffer, &score2P.label,
+					goverScrn.blackScreen);
+		renderScore((UINT16 *)screenBuffer, &score2P);
+	}
 
 	prepGameOverScrn(screenBuffer, gameWorld, &winner);
 	show_cursor();
@@ -808,6 +833,49 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 }
 
 /**
+ * @brief Gets the coordinates for scores on the Game Over screen.
+ * 
+ * @param numPlayers The total number of players.
+ * @param playerNum The number representing a player.
+ * @param x The x coordinate to return by reference. Will be -1 if invalid
+ * values are given.
+ * @param y The y coordinate to return by reference. Will be -1 if invalid
+ * values are given.
+ */
+void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y)
+{
+	const int X_1P_SCORE    = 150;
+	const int Y_1P_SCORE    = 166;
+
+	const int X_MP_1P_SCORE = 150;
+	const int Y_MP_1P_SCORE = 200;
+
+	const int X_MP_2P_SCORE = 150;
+	const int Y_MP_2P_SCORE = 232;
+
+	*x = *y = -1;
+
+	if (numPlayers == 1 && playerNum == 1)
+	{
+		*x = X_1P_SCORE;
+		*y = Y_1P_SCORE;
+	}
+	else if (numPlayers == 2)
+	{
+		if (playerNum == 1)
+		{
+			*x = X_MP_1P_SCORE;
+			*y = Y_MP_1P_SCORE;
+		}
+		else if (playerNum == 2)
+		{
+			*x = X_MP_2P_SCORE;
+			*y = Y_MP_2P_SCORE;
+		}
+	}
+}
+
+/**
  * @brief Initializes and renders all the initial objects required by the Game
  * Over Screen.
  * 
@@ -824,52 +892,8 @@ void prepGameOverScrn(UINT32 *screenBuffer, World *gameWorld,
 	const int       X_YOU_LABEL              = 240;
 	const int       X_OTHER_LABEL            = 224;
 
-	const int       X_1P_SCORE_POS           = 262;
-	const int       Y_1P_SCORE_POS           = 166;
-	const int       X_1P_SCORE_LABEL         = 150;
-	const int       Y_1P_SCORE_LABEL         = 166;
-
-	const int       X_MP_1P_SCORE_POS        = 262;
-	const int       Y_MP_1P_SCORE_POS        = 200;
-	const int       X_MP_1P_SCORE_LABEL      = 150;
-	const int       Y_MP_1P_SCORE_LABEL      = 200;
-
-	const int       X_MP_2P_SCORE_POS        = 262;
-	const int       Y_MP_2P_SCORE_POS        = 232;
-	const int       X_MP_2P_SCORE_LABEL      = 150;
-	const int       Y_MP_2P_SCORE_LABEL      = 232;
-
-	if (gameWorld->numPlayers == 1)
+	if (gameWorld->numPlayers == 2)
 	{
-		gameWorld->mainPlayer.score.x = X_1P_SCORE_POS;
-		gameWorld->mainPlayer.score.y = Y_1P_SCORE_POS;
-		gameWorld->mainPlayer.score.label.x = X_1P_SCORE_LABEL;
-		gameWorld->mainPlayer.score.label.y = Y_1P_SCORE_LABEL;
-
-		renderLabel((UINT16 *)screenBuffer, &gameWorld->mainPlayer.score.label,
-					TRUE);
-		renderScore((UINT16 *)screenBuffer, &gameWorld->mainPlayer.score);
-	}
-	else
-	{
-		gameWorld->mainPlayer.score.x = X_MP_1P_SCORE_POS;
-		gameWorld->mainPlayer.score.y = Y_MP_1P_SCORE_POS;
-		gameWorld->mainPlayer.score.label.x = X_MP_1P_SCORE_LABEL;
-		gameWorld->mainPlayer.score.label.y = Y_MP_1P_SCORE_LABEL;
-
-		renderLabel((UINT16 *)screenBuffer, &gameWorld->mainPlayer.score.label,
-					TRUE);
-		renderScore((UINT16 *)screenBuffer, &gameWorld->mainPlayer.score);
-
-		gameWorld->otherPlayer.score.x = X_MP_2P_SCORE_POS;
-		gameWorld->otherPlayer.score.y = Y_MP_2P_SCORE_POS;
-		gameWorld->otherPlayer.score.label.x = X_MP_2P_SCORE_LABEL;
-		gameWorld->otherPlayer.score.label.y = Y_MP_2P_SCORE_LABEL;
-
-		renderLabel((UINT16 *)screenBuffer, &gameWorld->otherPlayer.score.label,
-					TRUE);
-		renderScore((UINT16 *)screenBuffer, &gameWorld->otherPlayer.score);
-
 		if (gameWorld->mainPlayer.score.value > gameWorld->otherPlayer.score.value) 
 		{
 			initLabel(winnerLabel, X_YOU_LABEL, Y_WINNER_LABEL, "WINNER: YOU");
