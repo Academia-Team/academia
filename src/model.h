@@ -251,6 +251,7 @@ typedef struct
 
 	int oldButtonSel;
 	int buttonSel;
+	int futureButtonSel;
 
 	InfoBar infoBars[MAX_NUM_INFOBAR];
 	int infobarFillLevel;
@@ -700,6 +701,50 @@ void coordToIndex(const World* const world, int* row, int* column, int x, int y)
  * added.
  */
 int addButton(Menu* menu, int x, int y, int height, int width, LabelStr text);
+
+/**
+ * @brief Selects the button in a Menu with the specified ID.
+ * @details If the ID is invalid, nothing will be selected. As well, nothing
+ * will take effect before the state of the buttons are processed.
+ * 
+ * @param menu The Menu to the select the buttons for.
+ * @param buttonID The identifier for a button.
+ */
+void selectButton(Menu* menu, int buttonID);
+
+/**
+ * @brief Selects the button in a Menu with an ID sequential to the currently
+ * selected button.
+ * @details Nothing will take effect before the state of the buttons are
+ * processed.
+ * 
+ * @param menu The Menu to select the buttons for.
+ */
+void selectNextButton(Menu* menu);
+
+/**
+ * @brief Returns if the button with the given button identifier is selected.
+ * 
+ * @param menu The menu to check for the button in.
+ * @param buttonID The ID of the button to check.
+ * @return TRUE if the button is selected; FALSE otherwise.
+ */
+BOOL isButtonSelected(Menu* menu, int buttonID);
+
+/**
+ * @brief Returns if a button in the given menu is selected.
+ * 
+ * @param menu The menu to check for selected buttons.
+ * @return TRUE if the button is selected; FALSE otherwise.
+ */
+BOOL hasSelectedButton(Menu* menu);
+
+/**
+ * @brief Process changes to the state of the buttons in the given Menu.
+ * 
+ * @param menu The Menu to process.
+ */
+void processButtonState(Menu* menu);
 
 /**
  * @brief Initializes a Menu with the given values.

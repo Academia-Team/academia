@@ -576,12 +576,44 @@ void initButton(Button* button, int x, int y, int height, int width,
 	button->selected = FALSE;
 }
 
+void selectButton(Menu* menu, int buttonID)
+{
+	if (buttonID >= 0 && buttonID < menu->buttonFillLevel)
+	{
+		menu->futureButtonSel = buttonID;
+	}
+}
+
+void selectNextButton(Menu* menu)
+{
+	menu->futureButtonSel = (menu->buttonSel + 1) % menu->buttonFillLevel;
+}
+
+BOOL isButtonSelected(Menu* menu, int buttonID)
+{
+	return (menu->buttonSel == buttonID);
+}
+
+BOOL hasSelectedButton(Menu* menu)
+{
+	return (menu->buttonSel != NO_BTN_SEL);
+}
+
+void processButtonState(Menu* menu)
+{
+	menu->oldButtonSel    = menu->buttonSel;
+	menu->buttonSel       = menu->futureButtonSel;
+	menu->futureButtonSel = NO_BTN_SEL;
+
+	menu->buttons[menu->oldButtonSel].selected = FALSE;
+	menu->buttons[menu->buttonSel].selected    = TRUE;
+}
+
 void initMenu(Menu* menu, BOOL blackScreen, int borderWidth, int borderHeight)
 {
-	menu->buttonFillLevel  =  0;
-	menu->oldButtonSel     = NO_BTN_SEL;
-	menu->buttonSel        = NO_BTN_SEL;
-	menu->infobarFillLevel =  0;
+	menu->buttonFillLevel = 0;
+	menu->oldButtonSel = menu->buttonSel = menu->futureButtonSel = NO_BTN_SEL;
+	menu->infobarFillLevel = 0;
 
 	menu->blackScreen    = blackScreen;
 	menu->borderWidth    = (borderWidth < 0 ? 0 : borderWidth);
