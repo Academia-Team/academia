@@ -101,6 +101,15 @@ UINT8  gameStart       =  FALSE;
 	}
 
 void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers);
+
+/**
+ * @brief Copies the contents of an entire screen buffer.
+ * 
+ * @param dest The destination of the copied screen buffer contents.
+ * @param src The source of the copied screen buffer contents.
+ */
+#define dupScrnBuffer(dest, src) copyScrnBuffer(dest, src, 0, SCRN_MAX_Y)
+
 void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
 				  UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
 				  BOOL *quitToTitleScrn, int *numPlayers, BOOL *dead);
@@ -425,7 +434,7 @@ void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
 
 	initWorld(gameWorld, *numPlayers);
 	renderPlayArea(screenBuffer, gameWorld);
-	renderPlayArea(otherScreenBuffer, gameWorld);
+	dupScrnBuffer((UINT8 *)otherScreenBuffer, (UINT8 *)screenBuffer);
 	renderWorld(worldScreenBuffer, gameWorld);
 
 	game_start();
