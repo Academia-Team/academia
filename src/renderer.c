@@ -434,7 +434,7 @@ void renderMenu(UINT32* base, Menu* menu)
 {
 	int index;
 
-	if (!menu->borderRendered)
+	if (!menu->initialRender)
 	{
 		if (menu->blackScreen)
 		{
@@ -448,38 +448,38 @@ void renderMenu(UINT32* base, Menu* menu)
 					menu->borderHeight, SCRN_HEIGHT - menu->borderHeight * 2);
 		}
 
-		menu->borderRendered = TRUE;
-	}
-
-	if (menu->buttonSel == -1 && menu->oldButtonSel == -1)
-	{
 		for (index = 0; index < menu->buttonFillLevel; index++)
 		{
 			renderButton(base, &menu->buttons[index], menu->blackScreen);
 		}
-	}
-	else if (menu->buttonSel != menu->oldButtonSel)
-	{
-		if (menu->buttonSel != -1)
-		{
-			renderButton(base, &menu->buttons[menu->buttonSel],
-						 menu->blackScreen);
-		}
 
-		if (menu->oldButtonSel != -1)
+		menu->initialRender = TRUE;
+	}
+	else
+	{
+		/* If both variables hold the same value, then the same button is still
+		selected, so no need to re-render. */
+		if (menu->buttonSel != menu->oldButtonSel)
 		{
-			renderButton(base, &menu->buttons[menu->oldButtonSel],
-						 menu->blackScreen);
+			if (menu->buttonSel != -1)
+			{
+				renderButton(base, &menu->buttons[menu->buttonSel],
+						 	menu->blackScreen);
+			}
+
+			if (menu->oldButtonSel != -1)
+			{
+				renderButton(base, &menu->buttons[menu->oldButtonSel],
+						 	menu->blackScreen);
+			}
 		}
 	}
 
 	for (index = 0; index < menu->infobarFillLevel; index++)
 	{
-		/*
-		InfoBar should be distinct from rest of menu. Hence, why InfoBar will be
-		rendered with a black background when the rest of the menu is white and
-		vice-versa.
-		*/
+		/* InfoBar should be distinct from rest of menu. Hence, why InfoBar will
+		   be rendered with a black background when the rest of the menu is white
+		   and vice-versa. */
 		renderInfoBar((UINT16 *)base, &menu->infoBars[index],
 					  !menu->blackScreen);
 	}

@@ -565,5 +565,5 @@ void initMenu(Menu* menu, BOOL blackScreen, int borderWidth, int borderHeight)
 	menu->blackScreen    = blackScreen;
 	menu->borderWidth    = (borderWidth < 0 ? 0 : borderWidth);
 	menu->borderHeight   = (borderHeight < 0 ? 0 : borderHeight);
-	menu->borderRendered = FALSE;
+	menu->initialRender = FALSE;
 }

@@ -256,7 +256,7 @@ typedef struct
 
 	int  borderWidth;
 	int  borderHeight;
-	BOOL borderRendered;
+	BOOL initialRender;
 
 	BOOL blackScreen;
 } Menu;
