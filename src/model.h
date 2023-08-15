@@ -736,7 +736,7 @@ void unselectButton(Menu* menu);
  * @param buttonID The ID of the button to check.
  * @return TRUE if the button is selected; FALSE otherwise.
  */
-BOOL isButtonSelected(Menu* menu, int buttonID);
+BOOL isButtonSelected(const Menu* const menu, int buttonID);
 
 /**
  * @brief Returns if a button in the given menu is selected.
@@ -744,7 +744,7 @@ BOOL isButtonSelected(Menu* menu, int buttonID);
  * @param menu The menu to check for selected buttons.
  * @return TRUE if the button is selected; FALSE otherwise.
  */
-BOOL hasSelectedButton(Menu* menu);
+BOOL hasSelectedButton(const Menu* const menu);
 
 /**
  * @brief Process changes to the state of the buttons in the given Menu.

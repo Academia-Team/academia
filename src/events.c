@@ -30,7 +30,7 @@
 	(xCoord >= button.x && xCoord <= (button.x + button.width - 1) \
 	&& yCoord >= button.y && yCoord <= (button.y + button.height - 1))
 
-int btnCollision(Menu *menu, int x, int y)
+int btnCollision(const Menu* const menu, int x, int y)
 {
 	int index;
 	int ID;

@@ -594,12 +594,12 @@ void unselectButton(Menu* menu)
 	menu->futureButtonSel = NO_BTN_SEL;
 }
 
-BOOL isButtonSelected(Menu* menu, int buttonID)
+BOOL isButtonSelected(const Menu* const menu, int buttonID)
 {
 	return (menu->buttonSel == buttonID);
 }
 
-BOOL hasSelectedButton(Menu* menu)
+BOOL hasSelectedButton(const Menu* const menu)
 {
 	return (menu->buttonSel != NO_BTN_SEL);
 }

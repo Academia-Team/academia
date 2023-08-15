@@ -35,7 +35,7 @@
  * 
  * @return An identifier for the colliding button or -1 if no such button exists.
 */
-int btnCollision(Menu *menu, int x, int y);
+int btnCollision(const Menu* const menu, int x, int y);
 
 /**
  * @brief Checks if a hazard and a player have collided and handles it
