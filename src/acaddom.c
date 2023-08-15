@@ -231,8 +231,8 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 
 	IKBD_Scancode kybdKey;
 	int           btnSelected;
-	BOOL          btnActivated 	= FALSE;
-	BOOL		  useMouse      = TRUE;
+	BOOL          btnActivated 	 = FALSE;
+	BOOL		  useMouse       = TRUE;
 
 	int          mouseX;
 	int          mouseY;
@@ -286,7 +286,7 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 					break;
 				case IKBD_TAB_SCANCODE:
 					selectNextButton(&titleScrn);
-					useMouse = FALSE;
+					useMouse       = FALSE;
 					hide_cursor();
 					break;
 				default:
@@ -309,6 +309,11 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 				}
 			}
 
+			if (btnSelected == NO_BTN_SEL)
+			{
+				unselectButton(&titleScrn);
+			}
+
 			useMouse = TRUE;
 			show_cursor();
 		}
@@ -329,6 +334,8 @@ void displayTitleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 		{
 			show_cursor();
 		}
+
+		btnSelected = NO_BTN_SEL;
 	}
 
 	if (isButtonSelected(&titleScrn, fleeBtnID)) {*exitPgrm = TRUE;}
@@ -779,6 +786,11 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 				}
 			}
 
+			if (btnSelected == NO_BTN_SEL)
+			{
+				unselectButton(&goverScrn);
+			}
+
 			useMouse = TRUE;
 			show_cursor();
 		}
@@ -799,6 +811,8 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 		{
 			show_cursor();
 		}
+
+		btnSelected = NO_BTN_SEL;
 	}
 
 	*playAgain = (isButtonSelected(&goverScrn, paBtnID) && !quitToTitleScrn);

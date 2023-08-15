@@ -589,6 +589,11 @@ void selectNextButton(Menu* menu)
 	menu->futureButtonSel = (menu->buttonSel + 1) % menu->buttonFillLevel;
 }
 
+void unselectButton(Menu* menu)
+{
+	menu->futureButtonSel = NO_BTN_SEL;
+}
+
 BOOL isButtonSelected(Menu* menu, int buttonID)
 {
 	return (menu->buttonSel == buttonID);
@@ -603,7 +608,6 @@ void processButtonState(Menu* menu)
 {
 	menu->oldButtonSel    = menu->buttonSel;
 	menu->buttonSel       = menu->futureButtonSel;
-	menu->futureButtonSel = NO_BTN_SEL;
 
 	menu->buttons[menu->oldButtonSel].selected = FALSE;
 	menu->buttons[menu->buttonSel].selected    = TRUE;

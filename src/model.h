@@ -723,6 +723,13 @@ void selectButton(Menu* menu, int buttonID);
 void selectNextButton(Menu* menu);
 
 /**
+ * @brief Unselects the currently selected button.
+ * 
+ * @param menu The Menu to deselect the button in.
+ */
+void unselectButton(Menu* menu);
+
+/**
  * @brief Returns if the button with the given button identifier is selected.
  * 
  * @param menu The menu to check for the button in.
@@ -741,6 +748,8 @@ BOOL hasSelectedButton(Menu* menu);
 
 /**
  * @brief Process changes to the state of the buttons in the given Menu.
+ * @details If no button changes have occurred since the last call to the
+ * function, the currently selected button will be preserved.
  * 
  * @param menu The Menu to process.
  */
