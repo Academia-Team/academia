@@ -12,6 +12,8 @@
 #include "input.h"
 #include "ints.h"
 #include "ikbdcode.h"
+#include "move.h"
+#include "scrn.h"
 #include "super.h"
 #include "types.h"
 #include "vector.h"
@@ -32,10 +34,24 @@
 #define RSHIFT_CODE            0x01
 
 /**
+ * @brief The number of pixels to move the mouse cursor when a mouse-changing
+ * keyboard key is pressed.
+ */
+#define KEYBOARD_M_MOVE_DIST      8
+
+/**
  * @brief The amount that the scancode is supposed to be shifted by before
  * adding to the keyboard buffer.
  */
 #define SCANCODE_BUFFER_SHIFT_VAL 24
+
+enum
+{
+	CAPS_IDLE     = 0,
+	CAPS_PRESSED  = 1,
+	CAPS_RELEASED = 2,
+	CAPS_RESET    = 3
+} capsState = CAPS_IDLE;
 
 const UINT8 UNSHIFT_SCANCODE_TO_ASCII[SCANCODE_TO_ASCII_LEN] =
 {
@@ -638,18 +654,18 @@ const UINT8 ALT_SCANCODE_TO_ASCII[SCANCODE_TO_ASCII_LEN] =
 	0			/* 0x44 */,
 	0			/* Unutilized */,
 	0			/* Unutilized */,
-	0			/* 0x47 - Used to activate right mouse button (not implemented) */,
-	0			/* 0x48 - Used to move the mouse cursor up (not implemented) */,
+	0			/* 0x47 - Used to activate right mouse button */,
+	0			/* 0x48 - Used to move the mouse cursor up */,
 	0			/* Unutilized */,
 	'-'			/* 0x4A */,
-	0			/* 0x4B - Used to move the mouse cursor left (not implemented) */,
+	0			/* 0x4B - Used to move the mouse cursor left */,
 	0			/* Unutilized */,
-	0			/* 0x4D - Used to move the mouse cursor right (not implemented) */,
+	0			/* 0x4D - Used to move the mouse cursor right */,
 	'+'			/* 0x4E */,
 	0			/* Unutilized */,
-	0			/* 0x50 - Used to move the mouse cursor down (not implemented) */,
+	0			/* 0x50 - Used to move the mouse cursor down */,
 	0			/* Unutilized */,
-	0			/* 0x52 - Used to activate left mouse button (not implemented) */,
+	0			/* 0x52 - Used to activate left mouse button */,
 	DEL_CHAR	/* 0x53 */,
 	0			/* Unutilized */,
 	0			/* Unutilized */,
@@ -713,6 +729,8 @@ const KybdTransTables *currTransTables = &DEFAULT_KYBD_TRANS_TABLES;
 
 Mouse mouse = {INITIAL_MOUSE_X, INITIAL_MOUSE_Y, FALSE, FALSE, FALSE};
 
+Direction kybdMouseMov = M_NONE;
+
 void IKBD_isr(void);
 
 Vector initKybd(void)
@@ -766,6 +784,52 @@ void restoreKybd(Vector sysKybdVec)
 }
 
 /**
+ * @brief Adds a value to the shift buffer based on the given scancode.
+ * @details If the scancode does not correspond to a key modifier, nothing will
+ * happen.
+ * 
+ * @param scancode The scancode corresponding to a key modifier.
+ */
+void addToShiftBuffer(UINT16 scancode)
+{
+	switch(scancode)
+	{
+		case IKBD_CTRL_SCANCODE:
+			kybdShiftBuffer ^= CTRL_CODE;
+			break;
+		case IKBD_ALT_SCANCODE:
+			kybdShiftBuffer ^= ALT_CODE;
+			break;
+		case IKBD_LSHIFT_SCANCODE:
+			kybdShiftBuffer ^= ALT_CODE;
+			break;
+		case IKBD_RSHIFT_SCANCODE:
+			kybdShiftBuffer ^= RSHIFT_CODE;
+			break;
+		case IKBD_CAPS_SCANCODE:
+			switch(capsState)
+			{
+				case CAPS_IDLE:
+					capsState = CAPS_PRESSED;
+					kybdShiftBuffer |= CAPS_CODE;
+					break;
+				case CAPS_PRESSED:
+					capsState = CAPS_RELEASED;
+					break;
+				case CAPS_RELEASED:
+					capsState = CAPS_RESET;
+					kybdShiftBuffer ^= CAPS_CODE;
+					break;
+				case CAPS_RESET:
+					capsState = CAPS_IDLE;
+					break;
+			}
+
+			break;
+	}
+}
+
+/**
  * @brief Adds the given scancode (with the corresponding ascii value) to the
  * key buffer.
  * @details If it is detected that placing a key will overwrite a key still
@@ -774,7 +838,7 @@ void restoreKybd(Vector sysKybdVec)
  * 
  * @param scancode The code representing a key on a keyboard.
  */
-void addToKeyBuffer(UINT8 scancode)
+void addToKeyBuffer(UINT16 scancode)
 {
 	if (kybdKeyBuffer[keyPlacePos] != 0)
 	{
@@ -879,6 +943,142 @@ IKBD_Scancode getKey(void)
 IKBD_Scancode getBKey(void)
 {
 	return (int)(getKybdBRaw() >> SCANCODE_BUFFER_SHIFT_VAL);
+}
+
+/**
+ * @brief Handles any special actions associated with the current combination
+ * of scancode and key modifiers.
+ * 
+ * @param scancode The scancode to check for a special action.
+ * @param isMakeCode Indicates whether the scancode corresponds to a make code
+ * (TRUE) or break code (FALSE).
+ */
+void handleSpecialAction(UINT16 scancode, UINT16 isMakeCode)
+{
+	if (isMakeCode)
+	{
+		if (kybdShiftBuffer == ALT_CODE)
+		{
+			switch(scancode)
+			{
+				case IKBD_INSERT_SCANCODE:
+					mouse.leftClick = TRUE;
+					break;
+				case IKBD_CLHM_SCANCODE:
+					mouse.rightClick = TRUE;
+					break;
+				case IKBD_UP_SCANCODE:
+					kybdMouseMov = M_UP;
+					kybdMouseUp();
+					break;
+				case IKBD_DOWN_SCANCODE:
+					kybdMouseMov = M_DOWN;
+					kybdMouseDown();
+					break;
+				case IKBD_LEFT_SCANCODE:
+					kybdMouseMov = M_LEFT;
+					kybdMouseLeft();
+					break;
+				case IKBD_RIGHT_SCANCODE:
+					kybdMouseMov = M_RIGHT;
+					kybdMouseRight();
+					break;
+			}
+		}
+	}
+	else
+	{
+		kybdMouseMov = M_NONE;
+	}
+}
+
+/**
+ * @brief Indicates whether any special actions are associated with the current
+ * combination of scancode and key modifiers.
+ * 
+ * @param scancode The scancode to check for a special action.
+ * @return TRUE if a special action is associated with the given scancode and
+ * current key modifiers; FALSE otherwise.
+ */
+UINT8 hasSpecial(UINT16 scancode)
+{
+	UINT8 specialAction = FALSE;
+
+	if (kybdShiftBuffer == ALT_CODE)
+	{
+		specialAction = (scancode == IKBD_INSERT_SCANCODE ||
+						 scancode == IKBD_CLHM_SCANCODE   ||
+						 scancode == IKBD_UP_SCANCODE     ||
+						 scancode == IKBD_DOWN_SCANCODE   ||
+						 scancode == IKBD_LEFT_SCANCODE   ||
+						 scancode == IKBD_RIGHT_SCANCODE  ||
+						 kybdMouseMov != M_NONE);
+	}
+
+	return specialAction;
+}
+
+/**
+ * @brief Returns whether the given scancode corresponds to a key modifier.
+ * 
+ * @param scancode The scancode to check.
+ * @return TRUE if it is a key modifier; FALSE otherwise.
+ */
+UINT8 isKeyMod(UINT16 scancode)
+{
+	return (scancode == IKBD_LSHIFT_SCANCODE ||
+			scancode == IKBD_RSHIFT_SCANCODE ||
+			scancode == IKBD_ALT_SCANCODE    ||
+			scancode == IKBD_CAPS_SCANCODE   ||
+			scancode == IKBD_CTRL_SCANCODE);
+}
+
+void kybdMouseDown(void)
+{
+	mouse.y += KEYBOARD_M_MOVE_DIST;
+
+	if (mouse.y > SCRN_MAX_Y)
+	{
+		mouse.y = SCRN_MAX_Y;
+	}
+
+	mouse.posChange = TRUE;
+}
+
+void kybdMouseLeft(void)
+{
+	mouse.x -= KEYBOARD_M_MOVE_DIST;
+
+	if (mouse.x < 0)
+	{
+		mouse.x = 0;
+	}
+
+	mouse.posChange = TRUE;
+}
+
+void kybdMouseRight(void)
+{
+	mouse.x += KEYBOARD_M_MOVE_DIST;
+
+	if (mouse.x > SCRN_MAX_X)
+	{
+		mouse.x = SCRN_MAX_X;
+	}
+
+	mouse.posChange = TRUE;
+}
+
+void kybdMouseUp(void)
+{
+	mouse.y -= KEYBOARD_M_MOVE_DIST;
+
+	if (mouse.y < 0)
+	{
+		mouse.y = 0;
+	}
+
+	mouse.posChange = TRUE;
 }
 
 BOOL mouseLclick(void)
