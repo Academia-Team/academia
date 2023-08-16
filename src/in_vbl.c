@@ -38,38 +38,36 @@ void input_vbl(void)
 {
 	UINT16 *currVideoBase;
 
-	if (kybdMouseMov != M_NONE)
+	if (kybdMouseMov != M_NONE && cursorMovTime == UINT32_MAX)
 	{
-		if (cursorMovTime == UINT32_MAX)
-		{
-			cursorMovTime = get_time() + TICKS_BETWEEN_CURSOR_MOV;
-		}
-		else if (cursorMovTime >= get_time())
-		{
-			switch(kybdMouseMov)
-			{
-				case M_LEFT:
-					kybdMouseLeft();
-					break;
-				case M_RIGHT:
-					kybdMouseRight();
-					break;
-				case M_UP:
-					kybdMouseUp();
-					break;
-				case M_DOWN:
-					kybdMouseDown();
-					break;
-				default:
-					break;
-			}
+		cursorMovTime = get_time() + TICKS_BETWEEN_CURSOR_MOV;
+	}
 
+	if (cursorMovTime >= get_time())
+	{
+		switch(kybdMouseMov)
+		{
+			case M_LEFT:
+				kybdMouseLeft();
+				break;
+			case M_RIGHT:
+				kybdMouseRight();
+				break;
+			case M_UP:
+				kybdMouseUp();
+				break;
+			case M_DOWN:
+				kybdMouseDown();
+				break;
+			default:
+				cursorMovTime = UINT32_MAX;
+				break;
+		}
+
+		if (cursorMovTime != UINT32_MAX)
+		{
 			cursorMovTime += TICKS_BETWEEN_CURSOR_MOV;
 		}
-	}
-	else if (cursorMovTime != UINT32_MAX)
-	{
-		cursorMovTime = UINT32_MAX;
 	}
 
 	if (!(mouse.x == oldCursX && mouse.y == oldCursY))
