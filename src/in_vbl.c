@@ -16,10 +16,10 @@
 #include "vbl.h"
 
 /**
- * @brief The cursor will move approximately every 0.25 seconds when controlled
- * via the keyboard.
+ * @brief The cursor will move every 0.5 seconds when controlled via the
+ * keyboard.
  */
-#define TICKS_BETWEEN_CURSOR_MOV 18
+#define TICKS_BETWEEN_CURSOR_MOV 35
 
 BOOL   plotMouse = FALSE;
 UINT16 oldCursX;

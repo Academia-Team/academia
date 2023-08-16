@@ -803,20 +803,20 @@ game (the train).
 | Renders the world to the screen.
 
 | Automove Cursor Up.
-| ~0.25 seconds (18 ticks)
-| Moves the cursor upward at 8/18 pixels/tick.
+| 0.5 seconds (35 ticks)
+| Moves the cursor upward at 8/35 pixels/tick.
 
 | Automove Cursor Down.
-| ~0.25 seconds (18 ticks)
-| Moves the cursor downward at 8/18 pixels/tick.
+| 0.5 seconds (35 ticks)
+| Moves the cursor downward at 8/35 pixels/tick.
 
 | Automove Cursor Left.
-| ~0.25 seconds (18 ticks)
-| Moves the cursor leftward at 8/18 pixels/tick.
+| 0.5 seconds (35 ticks)
+| Moves the cursor leftward at 8/35 pixels/tick.
 
 | Automove Cursor Right.
-| ~0.25 seconds (18 ticks)
-| Moves the cursor rightward at 8/18 pixels/tick.
+| 0.5 seconds (35 ticks)
+| Moves the cursor rightward at 8/35 pixels/tick.
 
 |===
 
