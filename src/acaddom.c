@@ -525,7 +525,7 @@ void processAsync(BOOL *quitToTitleScrn, World *gameWorld)
 }
 
 /**
- * @brief Handles all synchronous events.
+ * @brief Handles all synchronous events related to the game.
  * 
  * @param gameWorld The world object which holds all game data.
  * @param dead A boolean value indicating whether the player is dead (TRUE) or
