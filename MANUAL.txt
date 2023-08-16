@@ -705,14 +705,39 @@ bottom-right.
 | If one of the two mouse buttons is pressed and a button is currently selected,
 activate the functionality of that button.
 
+| Keyboard Left-Click Emulation
+| _Alt_ *+* _Insert_ key is pressed.
+| Emulates a mouse left-click.
+
+| Keyboard Right-Click Emulation
+| _Alt_ *+* _CLHM_ is pressed.
+| Emulates a mouse right-click.
+
 | Keyboard Button Activation.
 | _Enter_, _Return_, or _Space_ key is pressed.
 | Activates the functionality of any currently selected button.
 
-| Cursor movement.
+| Mouse-Controlled Cursor Movement.
 | Mouse movement.
 | Moves the position of the mouse cursor on the title / game over screen at a
 variable rate of speed (depending on how fast the mouse is moving).
+
+| Request Move Cursor Up.
+| _Alt_ *+* _Up Arrow_ key is pressed.
+| Attempts to move cursor upward by 8 pixels. Triggers 'Automove Cursor Up'.
+
+| Request Move Cursor Down.
+| _Alt_ *+* _Down Arrow_ key is pressed.
+| Attempts to move cursor downward by 8 pixels. Triggers 'Automove Cursor Down'.
+
+| Request Move Cursor Left.
+| _Alt_ *+* _Left Arrow_ key is pressed.
+| Attempts to move cursor leftward by 8 pixels. Triggers 'Automove Cursor Left'.
+
+| Request Move Cursor Right.
+| _Alt_ *+* _Right Arrow_ key is pressed.
+| Attempts to move cursor rightward by 8 pixels. Triggers 'Automove Cursor
+Right'.
 
 | Pause/ Unpause Game.
 | _Esc_ key is pressed (in 1-player mode).
@@ -740,42 +765,58 @@ player will go back to the Title screen.
 | Trigger Timing
 | Description
 
-| Move player
+| Move player.
 | 0.5 second (35 ticks)
 | Player moves in the set direction at 32/35 pixels/tick. (1 cell/0.5 seconds)
 
-| Spawn car
+| Spawn car.
 | 1 second (70 ticks)
 | Will have a 1/5 chance of spawning a car at the border of a row. (start/end of
 row).
 
-| Move car
+| Move car.
 | 0.8 second (56 ticks)
 | Car moves forward (horizontally) at 32/56 pixels/tick. (1 cell/0.8 seconds)
 
-| Spawn train
+| Spawn train.
 | 1 second (70 ticks)
 | Will have a 1/10 chance of spawning a train at the border of a row. (start/end
 of row).
 
-| Move train
+| Move train.
 | 0.2 seconds (14 ticks)
 | Train moves forward (horizontally) at 32/14 pixels/tick. (1 cells/0.2 seconds)
 
-| Spawn Mr. Feathers
+| Spawn Mr. Feathers.
 | 1 second (70 ticks)
 | Will have a 1/10 chance of spawning Mr. Feathers at the border of a row.
 (start/end of row).
 
-| Move Mr. Feathers
+| Move Mr. Feathers.
 | 0.6 seconds (42 ticks)
 | Mr. Feathers' moves forward (horizontally) at 32/42 pixels/tick.
 (1 cells/0.6 seconds)
 
-| Render Screen
+| Render Screen.
 | 0.2 seconds (14 ticks) - timing based around the fastest moving object in the
 game (the train).
 | Renders the world to the screen.
+
+| Automove Cursor Up.
+| ~0.25 seconds (18 ticks)
+| Moves the cursor upward at 8/18 pixels/tick.
+
+| Automove Cursor Down.
+| ~0.25 seconds (18 ticks)
+| Moves the cursor downward at 8/18 pixels/tick.
+
+| Automove Cursor Left.
+| ~0.25 seconds (18 ticks)
+| Moves the cursor leftward at 8/18 pixels/tick.
+
+| Automove Cursor Right.
+| ~0.25 seconds (18 ticks)
+| Moves the cursor rightward at 8/18 pixels/tick.
 
 |===
 
