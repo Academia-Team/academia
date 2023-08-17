@@ -202,9 +202,9 @@ typedef char LabelStr[MAX_LABEL_LEN + 1];
 
 typedef struct
 {
-	int x;
-	int y;
 	LabelStr text;
+	int      x;
+	int      y;
 } Label;
 
 typedef struct
