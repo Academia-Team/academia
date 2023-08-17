@@ -209,11 +209,11 @@ typedef struct
 
 typedef struct
 {
-	int    x;
-	int    y;
 	Label  label;
 	UINT32 value;
 	BOOL   labelRendered;
+	int    x;
+	int    y;
 } Score;
 
 typedef struct
