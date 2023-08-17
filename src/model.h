@@ -227,12 +227,12 @@ typedef struct
 
 typedef struct
 {
-	int x;
-	int y;
-	int height;
-	int width;
 	Label label;
-	BOOL selected;
+	int   x;
+	int   y;
+	int   height;
+	int   width;
+	BOOL  selected;
 } Button;
 
 typedef struct
