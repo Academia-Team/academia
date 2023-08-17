@@ -237,11 +237,11 @@ typedef struct
 
 typedef struct
 {
+	Label labels[MAX_INFO_LABELS];
+	BOOL  needsUpdate;
 	int   y;
 	int   spacingBetweenLabels;
 	int   numLabels;
-	BOOL  needsUpdate;
-	Label labels[MAX_INFO_LABELS];
 } InfoBar;
 
 typedef struct
