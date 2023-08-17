@@ -53,19 +53,19 @@ void hline(UINT32 *base, int x1, int x2, int y)
 
 		if (minXLong == maxXLong)
 		{	
-			*line |= swap32OnLE(((0xFFFFFFFF >> (minPX & 31)) & 
-					 (0xFFFFFFFF << (31 - (maxPX & 31)))));
+			*line |= swap32OnLE(((0xFFFFFFFFu >> (minPX & 31)) & 
+					 (0xFFFFFFFFu << (31 - (maxPX & 31)))));
 		}
 		else
 		{
-			*line |= swap32OnLE(0xFFFFFFFF >> (minPX & 31));
+			*line |= swap32OnLE(0xFFFFFFFFu >> (minPX & 31));
 
 			for(index = 1; index < maxXLong - minXLong; index++)
 			{
-				*(line + index) = swap32OnLE(0xFFFFFFFF);
+				*(line + index) = swap32OnLE(0xFFFFFFFFu);
 			}
 
-			*(line + index) |= swap32OnLE(0xFFFFFFFF << (31 - (maxPX & 31)));
+			*(line + index) |= swap32OnLE(0xFFFFFFFFu << (31 - (maxPX & 31)));
 		}
 	}
 }
@@ -103,7 +103,7 @@ void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap,
 		}
 		if (y < 0)
 		{
-			bitmap += y * -1; 
+			bitmap += y * -1;
 			y = 0;
 		}
 
@@ -111,8 +111,8 @@ void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap,
 		{
 			if (blackScreen && destructive)
 			{
-				clrMaskVal = 0xFFFFFFFF >> (32 + x);
-				xorMaskVal = 0xFFFFFFFF << modX;
+				clrMaskVal = 0xFFFFFFFFu >> (32 + x);
+				xorMaskVal = 0xFFFFFFFFu << modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
@@ -125,7 +125,7 @@ void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap,
 			}
 			else if (destructive)
 			{
-				clrMaskVal = 0xFFFFFFFF >> modX;
+				clrMaskVal = 0xFFFFFFFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
@@ -157,8 +157,8 @@ void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap,
 		{
 			if (blackScreen && destructive)
 			{
-				clrMaskVal = 0xFFFFFFFF << (32 - modX);
-				xorMaskVal = 0xFFFFFFFF >> modX;
+				clrMaskVal = 0xFFFFFFFFu << (32 - modX);
+				xorMaskVal = 0xFFFFFFFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
@@ -171,7 +171,7 @@ void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap,
 			}
 			else if (destructive)
 			{
-				clrMaskVal = 0xFFFFFFFF << (32 - modX);
+				clrMaskVal = 0xFFFFFFFFu << (32 - modX);
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
@@ -206,7 +206,7 @@ void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
 				{
-					*scrnPlotPos = swap32OnLE(*bitmap ^ 0xFFFFFFFF);
+					*scrnPlotPos = swap32OnLE(*bitmap ^ 0xFFFFFFFFu);
 				}
 			}
 			else if (destructive)
@@ -240,8 +240,8 @@ void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap,
 
 			if (blackScreen && destructive)
 			{
-				leftClrMaskVal  = 0xFFFFFFFF << numPxFromRight;
-				rightClrMaskVal = 0xFFFFFFFF >> modX;
+				leftClrMaskVal  = 0xFFFFFFFFu << numPxFromRight;
+				rightClrMaskVal = 0xFFFFFFFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
@@ -260,8 +260,8 @@ void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap,
 			}
 			else if (destructive)
 			{
-				leftClrMaskVal  = 0xFFFFFFFF << numPxFromRight;
-				rightClrMaskVal = 0xFFFFFFFF >> modX;
+				leftClrMaskVal  = 0xFFFFFFFFu << numPxFromRight;
+				rightClrMaskVal = 0xFFFFFFFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
@@ -331,13 +331,13 @@ void plot_alpha(UINT32 *base, int x, int y, int height, const UINT32 *bitmap)
 		}
 		if (y < 0)
 		{
-			bitmap += y * -1; 
+			bitmap += y * -1;
 			y = 0;
 		}
 
 		if (x < 0)
 		{
-			clrMaskVal = 0xFFFFFFFF >> modX;
+			clrMaskVal = 0xFFFFFFFFu >> modX;
 
 			for (currentRow = y; currentRow <= bitmapEndY;
 				 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
@@ -350,7 +350,7 @@ void plot_alpha(UINT32 *base, int x, int y, int height, const UINT32 *bitmap)
 		}
 		else if (x > RAST32_MAX_VIS_X)
 		{
-			clrMaskVal = 0xFFFFFFFF << (32 - modX);
+			clrMaskVal = 0xFFFFFFFFu << (32 - modX);
 
 			for (currentRow = y; currentRow <= bitmapEndY;
 				 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
@@ -372,8 +372,8 @@ void plot_alpha(UINT32 *base, int x, int y, int height, const UINT32 *bitmap)
 		else
 		{
 			numPxFromRight  = 32 - modX;
-			leftClrMaskVal  = 0xFFFFFFFF << numPxFromRight;
-			rightClrMaskVal = 0xFFFFFFFF >> modX;
+			leftClrMaskVal  = 0xFFFFFFFFu << numPxFromRight;
+			rightClrMaskVal = 0xFFFFFFFFu >> modX;
 
 			for (currentRow = y; currentRow <= bitmapEndY;
 				 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_LONG)
@@ -433,8 +433,8 @@ void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
 		{
 			if (blackScreen && destructive)
 			{
-				clrMaskVal = 0xFFFF >> (16 + x);
-				xorMaskVal = 0xFFFF << modX;
+				clrMaskVal = 0xFFFFu >> (16 + x);
+				xorMaskVal = 0xFFFFu << modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
@@ -447,7 +447,7 @@ void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
 			}
 			else if (destructive)
 			{
-				clrMaskVal = 0xFFFF >> modX;
+				clrMaskVal = 0xFFFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
@@ -479,8 +479,8 @@ void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
 		{
 			if (blackScreen && destructive)
 			{
-				clrMaskVal = 0xFFFF << (16 - modX);
-				xorMaskVal = 0xFFFF >> modX;
+				clrMaskVal = 0xFFFFu << (16 - modX);
+				xorMaskVal = 0xFFFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
@@ -493,7 +493,7 @@ void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
 			}
 			else if (destructive)
 			{
-				clrMaskVal = 0xFFFF << (16 - modX);
+				clrMaskVal = 0xFFFFu << (16 - modX);
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
@@ -528,7 +528,7 @@ void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
 				{
-					*scrnPlotPos = swap16OnLE(*bitmap ^ 0xFFFF);
+					*scrnPlotPos = swap16OnLE(*bitmap ^ 0xFFFFu);
 				}
 			}
 			else if (destructive)
@@ -562,8 +562,8 @@ void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
 
 			if (blackScreen && destructive)
 			{
-				leftClrMaskVal  = 0xFFFF << numPxFromRight;
-				rightClrMaskVal = 0xFFFF >> modX;
+				leftClrMaskVal  = 0xFFFFu << numPxFromRight;
+				rightClrMaskVal = 0xFFFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
@@ -582,8 +582,8 @@ void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
 			}
 			else if (destructive)
 			{
-				leftClrMaskVal  = 0xFFFF << numPxFromRight;
-				rightClrMaskVal = 0xFFFF >> modX;
+				leftClrMaskVal  = 0xFFFFu << numPxFromRight;
+				rightClrMaskVal = 0xFFFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_WORDS)
@@ -642,7 +642,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 	}
 
 	if (x >= RAST8_MIN_X && x < (SCRN_LEN)
-	&& bitmapEndY >= 0 && y <= SCRN_MAX_Y 
+	&& bitmapEndY >= 0 && y <= SCRN_MAX_Y
 	&& height > 0)
 	{
 		modX = (abs(x) & 7);
@@ -662,8 +662,8 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 		{
 			if (blackScreen && destructive)
 			{
-				clrMaskVal = 0xFF >> (8 + x);
-				xorMaskVal = 0xFF << modX;
+				clrMaskVal = 0xFFu >> (8 + x);
+				xorMaskVal = 0xFFu << modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
@@ -674,7 +674,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 			}
 			else if (destructive)
 			{
-				clrMaskVal = 0xFF >> modX;
+				clrMaskVal = 0xFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
@@ -704,8 +704,8 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 		{
 			if (blackScreen && destructive)
 			{
-				clrMaskVal = 0xFF << (8 - modX);
-				xorMaskVal = 0xFF >> modX;
+				clrMaskVal = 0xFFu << (8 - modX);
+				xorMaskVal = 0xFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
@@ -716,7 +716,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 			}
 			else if (destructive)
 			{
-				clrMaskVal = 0xFF << (8 - modX);
+				clrMaskVal = 0xFFu << (8 - modX);
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
@@ -749,7 +749,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
 				{
-					*scrnPlotPos = (*bitmap ^ 0xFF);
+					*scrnPlotPos = (*bitmap ^ 0xFFu);
 				}
 			}
 			else if (destructive)
@@ -783,8 +783,8 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 
 			if (blackScreen && destructive)
 			{
-				leftClrMaskVal  = 0xFF << numPxFromRight;
-				rightClrMaskVal = 0xFF >> modX;
+				leftClrMaskVal  = 0xFFu << numPxFromRight;
+				rightClrMaskVal = 0xFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
@@ -799,8 +799,8 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
 			}
 			else if (destructive)
 			{
-				leftClrMaskVal  = 0xFF << numPxFromRight;
-				rightClrMaskVal = 0xFF >> modX;
+				leftClrMaskVal  = 0xFFu << numPxFromRight;
+				rightClrMaskVal = 0xFFu >> modX;
 
 				for (currentRow = y; currentRow <= bitmapEndY;
 					 currentRow++, bitmap++, scrnPlotPos += SCRN_LEN_BYTES)
@@ -865,8 +865,8 @@ void rect_area(UINT32 *base, int x, int length, int y, int height)
 
 		scrnPlotPos = base + (y * SCRN_LEN_LONG) + xLong;
 
-		leftSegBitpattern = 0xFFFFFFFF >> (x & 31);
-		rightSegBitpattern = 0xFFFFFFFF << (31 - (xMaxVal & 31));
+		leftSegBitpattern = 0xFFFFFFFFu >> (x & 31);
+		rightSegBitpattern = 0xFFFFFFFFu << (31 - (xMaxVal & 31));
 
 		if (xLong == xMaxLong)
 		{
@@ -885,7 +885,7 @@ void rect_area(UINT32 *base, int x, int length, int y, int height)
 
 				for (xIndex = 1; xIndex < xDiffLong; xIndex++)
 				{
-					*(scrnPlotPos + xIndex) = 0xFFFFFFFF;
+					*(scrnPlotPos + xIndex) = 0xFFFFFFFFu;
 				}
 
 				*(scrnPlotPos + xIndex) |= swap32OnLE(rightSegBitpattern);
@@ -924,8 +924,8 @@ void clr_area(UINT32 *base, int x, int length, int y, int height)
 
 		scrnPlotPos = base + (y * SCRN_LEN_LONG) + xLong;
 
-		leftSegBitpattern = 0xFFFFFFFF << (32 - (x & 31));
-		rightSegBitpattern = 0xFFFFFFFF >> (1 + (xMaxVal & 31));
+		leftSegBitpattern = 0xFFFFFFFFu << (32 - (x & 31));
+		rightSegBitpattern = 0xFFFFFFFFu >> (1 + (xMaxVal & 31));
 
 		if (xLong == xMaxLong)
 		{
@@ -960,7 +960,7 @@ void fill_scrn(UINT32 *base)
 
 	for (index = 0; index < SCRN_LONGS; index++)
 	{
-		base[index] = 0xFFFFFFFF;
+		base[index] = 0xFFFFFFFFu;
 	}
 }
 
@@ -970,7 +970,7 @@ void clr_scrn(UINT32 *base)
 
 	for (index = 0; index < SCRN_LONGS; index++)
 	{
-		base[index] = 0x00000000;
+		base[index] = 0x00000000u;
 	}
 }
 #endif
