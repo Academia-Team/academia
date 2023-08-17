@@ -218,11 +218,11 @@ typedef struct
 
 typedef struct
 {
-	int x;
-	int y;
 	Label label;
-	int value;
-	BOOL labelRendered;
+	BOOL  labelRendered;
+	int   value;
+	int   x;
+	int   y;
 } Lives;
 
 typedef struct
