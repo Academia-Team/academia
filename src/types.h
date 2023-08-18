@@ -43,6 +43,21 @@
 typedef unsigned char UINT8;
 
 
+#ifndef SINT8_MAX
+#define SINT8_MAX 127
+#endif
+
+#define SINT8_MAX_DIGITS 3
+
+#ifndef SINT8_WIDTH
+#define SINT8_WIDTH 8
+#endif
+
+#define SINT8_BYTES 1
+
+typedef signed char SINT8;
+
+
 #ifndef UINT16_MAX
 #define UINT16_MAX 65535U
 #endif
@@ -58,6 +73,21 @@ typedef unsigned char UINT8;
 typedef unsigned short UINT16;
 
 
+#ifndef SINT16_MAX
+#define SINT16_MAX 32767
+#endif
+
+#define SINT16_MAX_DIGITS 5
+
+#ifndef SINT16_WIDTH
+#define SINT16_WIDTH 16
+#endif
+
+#define SINT16_BYTES 2
+
+typedef signed short SINT16;
+
+
 #ifndef UINT32_MAX
 #define UINT32_MAX 4294967295UL
 #endif
@@ -71,5 +101,20 @@ typedef unsigned short UINT16;
 #define UINT32_BYTES 4
 
 typedef unsigned long UINT32;
+
+
+#ifndef SINT32_MAX
+#define SINT32_MAX 2147483647L
+#endif
+
+#define SINT32_MAX_DIGITS 10
+
+#ifndef SINT32_WIDTH
+#define SINT32_WIDTH 32
+#endif
+
+#define SINT32_BYTES 4
+
+typedef signed long SINT32;
 
 #endif
