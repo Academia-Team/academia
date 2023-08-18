@@ -70,8 +70,8 @@ UINT32 timeNow         =  0;
 synchronous events. */
 UINT32 timeDesired     =  0;
 
-UINT32 immunityTimer   = -1;
-UINT32 playerMoveTimer = -1;
+UINT32 immunityTimer   = UINT32_MAX;
+UINT32 playerMoveTimer = UINT32_MAX;
 int    loopCounter     =  1;
 int    deathCounter    =  1;
 UINT8  gameStart       =  FALSE;
