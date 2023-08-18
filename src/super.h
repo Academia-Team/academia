@@ -22,7 +22,7 @@
  * @param ssp The address to use for the stack or 0 or 1.
  * @return The old stack address or 0 or 1.
  */
-UINT32 Su(UINT32 ssp);
+SINT32 Su(UINT32 ssp);
 
 /**
  * @brief Checks if code is in Super mode or not.
