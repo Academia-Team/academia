@@ -365,10 +365,6 @@ void setPlayerDir(Player* player, Direction dir)
 
 	MoveFrame futureMovement;
 
-	BOOL dirValid = TRUE;
-	int  desiredX = player->x;
-	int  desiredY = player->y;
-
 	UINT32 oldSsp;
 	int    oldIpl;
 
