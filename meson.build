@@ -36,7 +36,7 @@ endif
 if meson.is_cross_build()
 	compiler = find_program('vc', required: true)
 	compilerArgs = ['+tos16', '-c89', '-warn=-1', '-dontwarn=166',
-					'-dontwarn=168']
+					'-dontwarn=167','-dontwarn=168']
 	run_command(compiler, compilerArgs, check: true)
 
 	custom_target('acaddom', build_by_default: true,
