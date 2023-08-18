@@ -13,9 +13,6 @@
 #include "toggle.h"
 #include "types.h"
 
-#define MIN_PSG_REG_NUM  0
-#define MAX_PSG_REG_NUM 15
-
 #define MIN_CHANNEL_VAL A_CHANNEL
 #define MAX_CHANNEL_VAL C_CHANNEL
 
@@ -59,14 +56,14 @@ typedef enum
 } PsgReg;
 
 /**
- * @brief Writes the given byte value (0-255) to the given PSG register (0-15)
+ * @brief Writes the given byte value (0-255) to the given PSG register (0-15).
  * @details If any invalid parameter is provided, nothing will be written to a
  * PSG register.
  * 
  * @param reg The register to write to. (0-15)
  * @param val The byte to write to the register (0-255)
  */
-void write_psg(PsgReg reg, UINT8 val);
+void write_psg(PsgReg reg, UINT16 val);
 
 /**
  * @brief Reads the current value stored in the PSG register.

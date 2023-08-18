@@ -1,12 +1,12 @@
-acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\in_vbl.o src\ints_asm.o src\model.o src\move.o src\music.o src\mus_vbl.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vbl_asm.o src\vector.o
-	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\in_vbl.o src\ints_asm.o src\model.o src\move.o src\music.o src\mus_vbl.o src\num_util.o src\psg.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vbl_asm.o src\vector.o -o bin\acaddom.tos
+acaddom: src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\in_vbl.o src\ints_asm.o src\model.o src\move.o src\music.o src\mus_vbl.o src\num_util.o src\psg.o src\psg_asm.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vbl_asm.o src\vector.o
+	cc68x -g src\acaddom.o src\bitmaps.o src\effects.o src\events.o src\font16.o src\input.o src\in_asm.o src\in_vbl.o src\ints_asm.o src\model.o src\move.o src\music.o src\mus_vbl.o src\num_util.o src\psg.o src\psg_asm.o src\raster.o src\rast_asm.o src\renderer.o src\super.o src\su_asm.o src\vbl.o src\vbl_asm.o src\vector.o -o bin\acaddom.tos
 
 tests: tst_bmp tst_mdl tst_mse tst_mus tst_psg tst_shp tst_sfx
 
 all: acaddom tests
 
-tst_mdl: src\model.o src\arg_list.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\tst_hndl.o src\tst_mdl.o src\move.o src\test.o src\vector.o
-	cc68x -g src\model.o src\arg_list.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\tst_hndl.o src\tst_mdl.o src\test.o src\vector.o -o bin\tst_mdl.tos
+tst_mdl: src\model.o src\arg_list.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\psg.o src\psg_asm.o src\rast_asm.o src\super.o src\su_asm.o src\tst_hndl.o src\tst_mdl.o src\move.o src\test.o src\vector.o
+	cc68x -g src\model.o src\arg_list.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\psg.o src\psg_asm.o src\rast_asm.o src\super.o src\su_asm.o src\tst_hndl.o src\tst_mdl.o src\test.o src\vector.o -o bin\tst_mdl.tos
 
 src\tst_mdl.o: src\tst_mdl.c src\arg_list.h src\effects.h src\input.h src\model.h src\move.h src\num_util.h src\super.h src\test.h src\tst_hndl.h src\vector.h
 	cc68x -g -c src\tst_mdl.c
@@ -17,14 +17,14 @@ tst_mse: src\tst_mse.o src\arg_list.o src\in_asm.o src\input.o src\ints_asm.o sr
 src\tst_mse.o: src\tst_mse.c src\arg_list.h src\input.h src\test.h src\tst_hndl.h src\types.h src\vector.h
 	cc68x -g -c src\tst_mse.c
 
-tst_mus: src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\music.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o src\vbl.o src\vbl_asm.o
-	cc68x -g src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\music.o src\num_util.o src\psg.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o src\vbl.o src\vbl_asm.o -o bin\tst_mus.tos
+tst_mus: src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\music.o src\num_util.o src\psg.o src\psg_asm.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o src\vbl.o src\vbl_asm.o
+	cc68x -g src\tst_mus.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\music.o src\num_util.o src\psg.o src\psg_asm.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o src\vbl.o src\vbl_asm.o -o bin\tst_mus.tos
 
 src\tst_mus.o: src\tst_mus.c src\arg_list.h src\input.h src\music.h src\psg.h src\super.h src\test.h src\tst_hndl.h src\types.h src\vbl.h src\vector.h
 	cc68x -g -c src\tst_mus.c
 
-tst_psg: src\psg.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\tst_psg.o src\vector.o
-	cc68x -g src\psg.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\tst_psg.o src\vector.o -o bin\tst_psg.tos
+tst_psg: src\psg.o src\psg_asm.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\tst_psg.o src\vector.o
+	cc68x -g src\psg.o src\psg_asm.o src\arg_list.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\raster.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\tst_psg.o src\vector.o -o bin\tst_psg.tos
 
 src\tst_psg.o: src\tst_psg.c src\psg.h src\arg_list.h src\input.h src\raster.h src\super.h src\test.h src\tst_hndl.h src\types.h src\vector.h
 	cc68x -g -c src\tst_psg.c
@@ -44,8 +44,8 @@ src\tst_shp.o: src\tst_shp.c src\arg_list.h src\bool.h src\raster.h src\scrn.h s
 src\tst_rast.o: src\tst_rast.c src\tst_rast.h src\arg_list.h src\bool.h src\input.h src\raster.h src\scrn.h src\types.h
 	cc68x -g -c src\tst_rast.c
 
-tst_sfx: src\tst_sfx.o src\psg.o src\arg_list.o src\effects.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o
-	cc68x -g src\tst_sfx.o src\psg.o src\arg_list.o src\effects.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o -o bin\tst_sfx.tos
+tst_sfx: src\tst_sfx.o src\psg.o src\psg_asm.o src\arg_list.o src\effects.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o
+	cc68x -g src\tst_sfx.o src\psg.o src\psg_asm.o src\arg_list.o src\effects.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\rast_asm.o src\super.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o -o bin\tst_sfx.tos
 
 src\tst_sfx.o: src\tst_sfx.c src\psg.h src\arg_list.h src\effects.h src\input.h src\test.h src\tst_hndl.h src\vector.h
 	cc68x -g -c src\tst_sfx.c
@@ -79,6 +79,9 @@ src\music.o: src\music.c src\music.h src\ints.h src\psg.h src\super.h src\types.
 
 src\mus_vbl.o: src\mus_vbl.c src\mus_vbl.h src\bool.h src\music.h src\vbl.h
 	cc68x -g -c src\mus_vbl.c
+
+src\psg_asm.o: src\psg_asm.s
+	gen -D -L2 src\psg_asm.s
 
 src\psg.o: src\psg.h src\bool.h src\num_util.h src\super.h src\toggle.h src\types.h
 	cc68x -g -c src\psg.c
