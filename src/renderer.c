@@ -301,7 +301,7 @@ void renderScore(UINT16* base, const Score* const score)
 
 	do
 	{
-		digits[index--] = value % 10UL;
+		digits[index--] = value % 10ul;
 		value /= 10;
 	} while (value != 0);
 
