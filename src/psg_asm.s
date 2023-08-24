@@ -16,7 +16,7 @@ PSG_REG_WRITE:		equ				$FFFF8802
 MAX_PSG_REG_NUM:	equ				15
 MAX_PSG_VAL:		equ				$FF
 
-; void write_psg(PsgReg reg, UINT16 val)
+; void write_psg(UINT16 reg, UINT16 val)
 ;
 ; Brief: Writes the given byte value (0-255) to the given PSG register (0-15).
 ;
@@ -71,7 +71,7 @@ W_PSG_RETURN:		movem.l				(sp)+,d0-d2/d4
 					unlk				a6
 					rts
 
-; UINT8 read_psg(PsgReg reg)
+; UINT8 read_psg(UINT16 reg)
 ;
 ; Brief: Reads a byte value from the given PSG register (0-15).
 ;

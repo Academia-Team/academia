@@ -63,7 +63,7 @@ typedef enum
  * @param reg The register to write to. (0-15)
  * @param val The byte to write to the register (0-255)
  */
-void write_psg(PsgReg reg, UINT16 val);
+void write_psg(UINT16 reg, UINT16 val);
 
 /**
  * @brief Reads the current value stored in the PSG register.
@@ -73,7 +73,7 @@ void write_psg(PsgReg reg, UINT16 val);
  * @return The byte value stored in the given register. If the given register is
  * invalid, zero will be returned.
  */
-UINT8 read_psg(PsgReg reg);
+UINT8 read_psg(UINT16 reg);
 
 /**
  * @brief Loads the tone registers (rough and fine) for the given channel
