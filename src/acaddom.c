@@ -45,6 +45,11 @@
 #define NUM_TICKS_IN_TWO_SEC       140
 #define SCRN_ALIGN                 256
 
+#define MAX_WIN_MSG_LEN             13
+#define YOU_WIN_MSG_IDX              0
+#define OTHER_WIN_MSG_IDX            1
+#define TIED_WIN_MSG_IDX             2
+
 typedef enum
 {
 	PRIMARY_SCREEN_BUFFER = 0,
@@ -289,12 +294,15 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *goToTitleScrn, World *gameWorld)
 
 	const int       Y_WINNER_LABEL           = 160;
 
-	const char      WINNER_YOU_STR[]         = "WINNER: YOU";
-	const char      WINNER_OTHER_STR[]       = "WINNER: OTHER";
-	const char      WINNER_TIED_STR[]        = "WINNER: TIE";
+	const char      WINNER_MESSAGES[][MAX_WIN_MSG_LEN + 1] =
+	{
+		"WINNER: YOU",
+		"WINNER: OTHER",
+		"WINNER: TIE"
+	};
 
-	Label 			winner;
-	char            *usedWinnerStr;
+	Label           winner;
+	int             winMsgIdx;
 
 	Score           score1P;
 	Score           score2P;
@@ -339,19 +347,20 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *goToTitleScrn, World *gameWorld)
 
 		if (scoreValDiff > 0)
 		{
-			usedWinnerStr = WINNER_YOU_STR;
+			winMsgIdx = YOU_WIN_MSG_IDX;
 		}
 		else if (scoreValDiff < 0)
 		{
-			usedWinnerStr = WINNER_OTHER_STR;
+			winMsgIdx = OTHER_WIN_MSG_IDX;
 		}
 		else
 		{
-			usedWinnerStr = WINNER_TIED_STR;
+			winMsgIdx = TIED_WIN_MSG_IDX;
 		}
 
-		initLabel(&winner, horzCentreScrn(usedWinnerStr, LABEL_FONT_WIDTH),
-				  Y_WINNER_LABEL, usedWinnerStr);
+		initLabel(&winner, horzCentreScrn(WINNER_MESSAGES[winMsgIdx],
+				  LABEL_FONT_WIDTH), Y_WINNER_LABEL,
+				  WINNER_MESSAGES[winMsgIdx]);
 		renderLabel((UINT16 *)screenBuffer, &winner, TRUE);
 	}
 
