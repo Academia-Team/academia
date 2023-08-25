@@ -1,6 +1,6 @@
 = Academia Manual
 Academia Team <techpowerawaits@outlook.com>
-2023-05-11
+2023-08-25
 :sectnums:
 :toc:
 :imagesdir: ./img
@@ -41,7 +41,7 @@ of your lives, it will be the end of the road for you.
 .An example of what the player might see--complete with all of enemies and cells.
 image::scrnshot/1P_GAME.PNG[]
 
-== Game Play Details for Core 1-Player Version
+== Game Play Details
 
 === Objective
 
@@ -119,17 +119,37 @@ gameplay area.
 .. Collectable Grade 'C' - Grants the player a score of 100. Limit 3 per
 gameplay area.
 
-=== Start/Title Screen
+=== Menus
 
-The game's start screen consists of the game's logo and the following three
-buttons: _1-Player_, _2-Player_, and a _Flee_ (quit) button. The buttons can be
-clicked on using a mouse. Keyboard input is also accepted on that screen.
-Pressing the tab key will cycle between selecting the _1-Player_, _2-Player_,
-and _Flee_ buttons. Also, moving the mouse cursor to a button will select that
-button. Hitting the enter, space, or return key, as well as clicking the mouse
-while over a button, will activate the currently selected button. By default, no
-button is selected. When all buttons have been cycled through, no button will be
-selected. Hitting tab once more will select the first button.
+The game contains two different menus: the _Title Screen_ and the
+_Game Over Screen_. Each particular menu contains its own buttons and
+information on screen.
+
+Buttons can be selected using a _mouse_, _keyboard_, and
+_keyboard-driven mouse emulation_. Moving a _mouse_ (or pressing
+_alt_ + _any arrow key_) will cause the on-screen cursor to move. When the
+cursor is over a button, the button will change appearance to indicate that it
+is currently selected. The selected and unselected appearance of buttons depend
+on the particular Menu.
+
+On all menus, buttons can also be selected by pressing the _tab_ key, which will
+cycle between all the buttons in sequential order from the top-leftmost button
+to the bottom-rightmost button. While cycling using the keyboard, the cursor
+will disappear until an attempt is made to move it again. When it reappears, it
+can be found in its last location before the keyboard was used.
+
+A selected button can be activated by left or right clicking through the mouse.
+(The keyboard equivalent to left and right click is _Alt_ + _Insert_ and
+_Alt_ + _CLHM_ respectively.) Pressing the _enter_, _space_, or _return_ keys on
+a keyboard can also activate a selected button. None of these actions will have
+any effect if no button is selected.
+
+==== Title Screen
+
+The game's _Title Screen_ consists of the game's logo and the following three
+buttons: _1-Player_, _2-Player_, and _Flee_ (quit) button. The former two
+buttons start a one and two player game respectively, while the latter quits the
+game.
 
 .The Title Screen with no buttons selected.
 image::scrnshot/TITLESCR.PNG[]
@@ -143,7 +163,44 @@ image::scrnshot/TITLE_2P.PNG[]
 .Title Screen with Flee button selected.
 image::scrnshot/TITLE_FL.PNG[]
 
-=== 1-Player Level Start State
+==== Game Over Screen
+
+==== 1-Player
+
+After a single player game, this screen will display a game over message along
+with the player's achieved score and two buttons. The _RETREAT_ button will send
+the player back to the Title Screen, while the _PLAY AGAIN_ button will allow
+the player to start a new single player game.
+
+.Game Over Screen in 1-player mode with no buttons selected.
+image::scrnshot/1P_GOVER.PNG[]
+
+.Game Over Screen in 1-player mode with Play Again button selected.
+image::scrnshot/GOVER_PA.PNG[]
+
+.Game Over Screen in 1-player mode with Retreat selected.
+image::scrnshot/GOVER_RE.PNG[]
+
+==== 2-Player
+
+When a two player game has been played, the Game Over screen will contain the
+same message, player score, and buttons from the single player Game Over screen.
+However, it will also contain the winner of the game, and the other player's
+score. In the case of a tie in score, the same statistics will be displayed, but
+no winner will be declared. Instead, on each other's screen, they will see
+“TIE”. As well, if one player dies while another is still playing, they will
+have a game over screen displayed for just them. On this screen, the statistics
+involving the other player will get updated until a winner or tie is declared.
+Also, both players will have to activate the _PLAY AGAIN_ button in order for a
+new two player game to start. Unless one of the players activates the _RETREAT_
+button, no matter how much time has passed since one player activated the
+_PLAY AGAIN_ button, a new game will be started as soon as the other player also
+activates the button.
+
+.Game Over Screen in 2-player mode with no buttons selected.
+image::scrnshot/2P_GOVER.PNG[]
+
+=== Level Start State
 
 The player will spawn on the third row (from the bottom of the gameplay area)
 and the tenth column. The play area is 11 rows by 19 columns. Spawn is not the
@@ -214,44 +271,6 @@ immunity from any further loss of lives for only two seconds. Any further
 collisions during this time will not reset the immunity timer. Collisions with
 players will not affect hazards in any way; non-static hazards will keep on
 moving as if nothing has happened.
-
-=== Game Over Screen
-
-After a single player game, this screen will display a game over message along
-with the player's achieved score and two buttons. The _RETREAT_ button will send
-the player back to the title screen, while the _PLAY AGAIN_ button will allow
-the player to start a new single player game. The buttons can be clicked on
-using a mouse. Keyboard input is also accepted on that screen. Pressing the tab
-key will cycle between the _PLAY AGAIN_ and _RETREAT_ buttons. Hitting the
-enter, space, or return key, as well as clicking the mouse while over a button,
-will activate the currently selected button. By default, no button is selected.
-When all buttons have been cycled through, no button will be selected. Hitting
-tab once more will select the first button.
-
-.Game Over Screen in 1-player mode with no buttons selected.
-image::scrnshot/1P_GOVER.PNG[]
-
-.Game Over Screen in 1-player mode with Play Again button selected.
-image::scrnshot/GOVER_PA.PNG[]
-
-.Game Over Screen in 1-player mode with Retreat selected.
-image::scrnshot/GOVER_RE.PNG[]
-
-When a two player game has been played, the Game Over screen will contain the
-same message, player score, and buttons from the single player Game Over screen.
-However, it will also contain the winner of the game, and the other player's
-score. In the case of a tie in score, the same statistics will be displayed, but
-no winner will be declared. Instead, on each other's screen, they will see
-“TIE”. As well, if one player dies while another is still playing, they will
-have a game over screen displayed for just them. On this screen, the statistics
-involving the other player will get updated until a winner or tie is declared.
-Also, both players will have to click _PLAY AGAIN_ in order for a new two player
-game to start. Unless one of the players hits _RETREAT_, no matter how much time
-has passed since one player has clicked the _PLAY AGAIN_ button, a new game will
-be started as soon as the other player also clicks the button.
-
-.Game Over Screen in 2-player mode with no buttons selected.
-image::scrnshot/2P_GOVER.PNG[]
 
 === Objects
 
@@ -1067,7 +1086,6 @@ they've learned from their initial attempts at the game and wanting another
 shot, they move their mouse over the _Play Again_ button and their player is
 spawned anew in a different game world.
 
-
 Wanting to compare this game session from the previous session, the player
 notices that his character spawned in the same position on the screen as last
 time he started. As well, the row the character was on (and the two preceding
@@ -1110,7 +1128,7 @@ enlightening experience it was. And you can enjoy it too! It is one of the
 greatest games out there for the Atari ST. There is nothing the team behind this
 wonderful experience can't do. Order the game today!
 
-== Game Play Details for Core 2-Player Version
+== Game Play Specifics for 2-Player Version
 
 NOTE: This part of the manual has not yet been implemented in the current stable
 version of the game. It is preserved to provide guidance for future updates to
