@@ -139,13 +139,14 @@ IKBD_KEY_BUFF:			cmpi.b	#TRUE,d6
 
 						; Ensure the MIDI or keyboard aren't still interrupting.
 						; Otherwise, the ISR won't run anymore.
-IKBD_RETURN:			movem.l	(sp)+,d0-d7/a0-a6
-						btst.b	#IRQ_BIT,IKBD_STATUS_REG
-						bne		_IKBD_isr
+IKBD_RETURN:			btst.b	#IRQ_BIT,IKBD_STATUS_REG
+						bne		IKBD_GET_VAL
 						btst.b	#IRQ_BIT,MIDI_STATUS_REG
-						bne		_IKBD_isr
+						bne		IKBD_READ_MIDI
 
+						movem.l	(sp)+,d0-d7/a0-a6
 						bclr.b	#IKBD_MFP_SERVICE_BIT,MFP_IN_SERVICE_B_REG
+						
 						rte
 
 ; void handle_mouse(UINT8 packet)
