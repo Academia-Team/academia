@@ -36,7 +36,7 @@
  * @brief The minimum number of ticks after which some of the async events can
  * begin.
 */
-#define MIN_NUM_TICKS 14
+#define MIN_NUM_TICKS               14
 
 #define MIN_NUM_TICKS_IN_SEC         5
 #define MIN_NUM_TICKS_IN_0_8_SEC     4
@@ -99,7 +99,7 @@ UINT8  gameStart       =  FALSE;
 #define dupScrnBuffer(dest, src) copyScrnBuffer(dest, src, 0, SCRN_MAX_Y)
 
 void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers);
-void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld);
+void gameOverScreen(UINT32 *screenBuffer, BOOL *goToTitleScrn, World *gameWorld);
 void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y);
 void menuLoop(UINT32 *screenBuffer, Menu *menu);
 void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
@@ -133,10 +133,9 @@ UINT8	worldFrameBufferMEM[SCRN_BYTES + SCRN_ALIGN];
  */
 int main(int argc, char **argv)
 {
-	BOOL         quitToTitleScrn = FALSE;
-	BOOL		 playAgain = FALSE;
-	BOOL		 exitPgrm = FALSE;
-	int 		 numPlayers;
+	BOOL goToTitleScrn = TRUE;
+	BOOL exitPgrm      = FALSE;
+	int  numPlayers;
 
 	UINT32 const * screenBuffer = (UINT32 *)get_video_base();
 
@@ -157,24 +156,20 @@ int main(int argc, char **argv)
 
 	while (!exitPgrm)
 	{
-		if (!playAgain)
+		if (goToTitleScrn)
 		{
 			titleScreen(screenBuffer, &exitPgrm, &numPlayers);
-		}
-		else
-		{
-			playAgain = FALSE;
 		}
 
 		if (!exitPgrm)
 		{
 			mainGameLoop(&gameWorld, screenBuffer, otherScreenBuffer,
-						 worldScreenBuffer, &quitToTitleScrn, &numPlayers,
+						 worldScreenBuffer, &goToTitleScrn, &numPlayers,
 						 &dead);
 
-			if (!quitToTitleScrn && !isPlayerAlive(gameWorld.mainPlayer))
+			if (!goToTitleScrn && !isPlayerAlive(gameWorld.mainPlayer))
 			{
-				gameOverScreen(screenBuffer, &playAgain, &gameWorld);
+				gameOverScreen(screenBuffer, &goToTitleScrn, &gameWorld);
 			}
 		}
 	}
@@ -257,8 +252,8 @@ void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 
 	menuLoop(screenBuffer, &titleScrn);
 
-	*exitPgrm = (isButtonSelected(&titleScrn, fleeBtnID) ||
-				!hasSelectedButton(&titleScrn));
+	*exitPgrm = (!hasSelectedButton(&titleScrn) ||
+				 isButtonSelected(&titleScrn, fleeBtnID));
 
 	if (isButtonSelected(&titleScrn, oneBtnID))  {*numPlayers = 1;}
 	if (isButtonSelected(&titleScrn, twoBtnID))  {*numPlayers = 2;}
@@ -273,11 +268,11 @@ void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
  * button.
  * 
  * @param screenBuffer The framebuffer to plot to.
- * @param playAgain Returns by reference FALSE if the game is to return to the 
- * title screen state.
+ * @param goToTitleScrn Returns by reference TRUE if the game is to return to
+ * the title screen state.
  * @param gameWorld The world object which holds all game data.
  */
-void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
+void gameOverScreen(UINT32 *screenBuffer, BOOL *goToTitleScrn, World *gameWorld)
 {
 	const int       X_PLAY_AGAIN_BUTTON      = 150;
 	const int       Y_PLAY_AGAIN_BUTTON      = 281;
@@ -310,7 +305,7 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 	int             xScore2P;
 	int             yScore2P;
 
-	int             paBtnID;
+	int             reBtnID;
 
 	Menu            goverScrn;
 
@@ -318,12 +313,11 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 
 	initMenu(&goverScrn, TRUE, 0, 0);
 
-	paBtnID = addButton(&goverScrn, X_PLAY_AGAIN_BUTTON, Y_PLAY_AGAIN_BUTTON,
-						HEIGHT_PLAY_AGAIN_BUTTON, WIDTH_PLAY_AGAIN_BUTTON,
-						"PLAY AGAIN");
+	addButton(&goverScrn, X_PLAY_AGAIN_BUTTON, Y_PLAY_AGAIN_BUTTON,
+			  HEIGHT_PLAY_AGAIN_BUTTON, WIDTH_PLAY_AGAIN_BUTTON, "PLAY AGAIN");
 
-	addButton(&goverScrn, X_RETREAT_BUTTON, Y_RETREAT_BUTTON,
-			  HEIGHT_RETREAT_BUTTON, WIDTH_RETREAT_BUTTON, "RETREAT");
+	reBtnID = addButton(&goverScrn, X_RETREAT_BUTTON, Y_RETREAT_BUTTON,
+			  			HEIGHT_RETREAT_BUTTON, WIDTH_RETREAT_BUTTON, "RETREAT");
 
 	renderMenu(screenBuffer, &goverScrn);
 	renderGameOver(screenBuffer, X_GAME_OVER, Y_GAME_OVER);
@@ -363,7 +357,8 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 
 	menuLoop(screenBuffer, &goverScrn);
 
-	*playAgain = isButtonSelected(&goverScrn, paBtnID);
+	*goToTitleScrn = (!hasSelectedButton(&goverScrn) ||
+					  isButtonSelected(&goverScrn, reBtnID));
 }
 
 /**
