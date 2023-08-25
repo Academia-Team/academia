@@ -585,38 +585,10 @@ void initButton(Button* button, int x, int y, int height, int width,
 	button->selected = FALSE;
 }
 
-void selectButton(Menu* menu, int buttonID)
-{
-	if (buttonID >= 0 && buttonID < menu->buttonFillLevel)
-	{
-		menu->futureButtonSel = buttonID;
-	}
-}
-
-void selectNextButton(Menu* menu)
-{
-	menu->futureButtonSel = (menu->buttonSel + 1) % menu->buttonFillLevel;
-}
-
-void unselectButton(Menu* menu)
-{
-	menu->futureButtonSel = NO_BTN_SEL;
-}
-
-BOOL isButtonSelected(const Menu* const menu, int buttonID)
-{
-	return (hasSelectedButton(menu) && menu->buttonSel == buttonID);
-}
-
-BOOL hasSelectedButton(const Menu* const menu)
-{
-	return (menu->buttonSel != NO_BTN_SEL);
-}
-
 void processButtonState(Menu* menu)
 {
-	menu->oldButtonSel    = menu->buttonSel;
-	menu->buttonSel       = menu->futureButtonSel;
+	menu->oldButtonSel = menu->buttonSel;
+	menu->buttonSel    = menu->futureButtonSel;
 
 	menu->buttons[menu->oldButtonSel].selected = FALSE;
 	menu->buttons[menu->buttonSel].selected    = TRUE;

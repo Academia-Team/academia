@@ -729,10 +729,14 @@ int addButton(Menu* menu, int x, int y, int height, int width, LabelStr text);
  * @details If the ID is invalid, nothing will be selected. As well, nothing
  * will take effect before the state of the buttons are processed.
  * 
- * @param menu The Menu to the select the buttons for.
+ * @param menu A pointer to the Menu object to select the buttons for.
  * @param buttonID The identifier for a button.
  */
-void selectButton(Menu* menu, int buttonID);
+#define selectButton(menu, buttonID) \
+	if (buttonID >= 0 && buttonID < menu->buttonFillLevel) \
+	{ \
+		(menu)->futureButtonSel = buttonID; \
+	}
 
 /**
  * @brief Selects the button in a Menu with an ID sequential to the currently
@@ -740,40 +744,44 @@ void selectButton(Menu* menu, int buttonID);
  * @details Nothing will take effect before the state of the buttons are
  * processed.
  * 
- * @param menu The Menu to select the buttons for.
+ * @param menu A pointer to the Menu object to select the buttons for.
  */
-void selectNextButton(Menu* menu);
+#define selectNextButton(menu) \
+	(menu)->futureButtonSel = ((menu)->buttonSel + 1) % (menu)->buttonFillLevel
 
 /**
  * @brief Unselects the currently selected button.
+ * @details Nothing will take effect before the state of the buttons are
+ * processed.
  * 
- * @param menu The Menu to deselect the button in.
+ * @param menu A pointer to the Menu object to deselect the button in.
  */
-void unselectButton(Menu* menu);
+#define unselectButton(menu) (menu)->futureButtonSel = NO_BTN_SEL
 
 /**
  * @brief Returns if the button with the given button identifier is selected.
  * 
- * @param menu The menu to check for the button in.
+ * @param menu A pointer to the Menu object to check for the button in.
  * @param buttonID The ID of the button to check.
  * @return TRUE if the button is selected; FALSE otherwise.
  */
-BOOL isButtonSelected(const Menu* const menu, int buttonID);
+#define isButtonSelected(menu, buttonID) \
+	(hasSelectedButton(menu) && (menu)->buttonSel == buttonID)
 
 /**
  * @brief Returns if a button in the given menu is selected.
  * 
- * @param menu The menu to check for selected buttons.
+ * @param menu A pointer to the Menu object to check for selected buttons in.
  * @return TRUE if the button is selected; FALSE otherwise.
  */
-BOOL hasSelectedButton(const Menu* const menu);
+#define hasSelectedButton(menu) ((menu)->buttonSel != NO_BTN_SEL)
 
 /**
  * @brief Process changes to the state of the buttons in the given Menu.
  * @details If no button changes have occurred since the last call to the
  * function, the currently selected button will be preserved.
  * 
- * @param menu The Menu to process.
+ * @param menu The Menu object to process.
  */
 void processButtonState(Menu* menu);
 
