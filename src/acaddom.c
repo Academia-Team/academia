@@ -228,11 +228,11 @@ void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 	const int NUM_INFO_BAR_TEXT  =   3;
 	const int Y_INFO_BAR_START   =   BORDER_HEIGHT;
 
-	Menu         titleScrn;
+	int       oneBtnID;
+	int       twoBtnID;
+	int       fleeBtnID;
 
-	int          fleeBtnID;
-	int          oneBtnID;
-	int          twoBtnID;
+	Menu      titleScrn;
 
 	*numPlayers = 0;
 	*exitPgrm   = FALSE;
@@ -301,8 +301,6 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 	Label 			winner;
 	char            *usedWinnerStr;
 
-	Menu            goverScrn;
-
 	Score           score1P;
 	Score           score2P;
 	UINT32          scoreValDiff;
@@ -313,6 +311,8 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *playAgain, World *gameWorld)
 	int             yScore2P;
 
 	int             paBtnID;
+
+	Menu            goverScrn;
 
 	update_video_base(screenBuffer);
 
