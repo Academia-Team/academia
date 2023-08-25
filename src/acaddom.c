@@ -204,6 +204,8 @@ int main(int argc, char **argv)
  */
 void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 {
+	Menu      titleScrn;
+
 	const int X_TITLE           =  27;
 	const int Y_TITLE           =  77;
 
@@ -231,8 +233,6 @@ void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
 	int       oneBtnID;
 	int       twoBtnID;
 	int       fleeBtnID;
-
-	Menu      titleScrn;
 
 	*numPlayers = 0;
 	*exitPgrm   = FALSE;
@@ -279,6 +279,8 @@ void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
  */
 void gameOverScreen(UINT32 *screenBuffer, BOOL *goToTitleScrn, World *gameWorld)
 {
+	Menu            goverScrn;
+	
 	const int       X_PLAY_AGAIN_BUTTON      = 150;
 	const int       Y_PLAY_AGAIN_BUTTON      = 281;
 	const int       HEIGHT_PLAY_AGAIN_BUTTON =  40;
@@ -314,8 +316,6 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *goToTitleScrn, World *gameWorld)
 	int             yScore2P;
 
 	int             reBtnID;
-
-	Menu            goverScrn;
 
 	update_video_base(screenBuffer);
 
