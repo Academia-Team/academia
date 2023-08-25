@@ -1,9 +1,7 @@
 /**
  * @file renderer.c
  * @author Academia Team
- * @brief Contains functions to render the entire play area of the game. 
- * @details The play area includes the border, score box, lives box, and the
- * game world with all its inhabitants and cells.
+ * @brief Contains functions to render everything in the model.
  * 
  * @copyright Copyright Academia Team 2023
  */

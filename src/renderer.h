@@ -1,9 +1,7 @@
 /**
  * @file renderer.h
  * @author Academia Team
- * @brief Contains functions to render the entire play area of the game. 
- * @details The play area includes the border, score box, lives box, and the
- * game world with all its inhabitants and cells.
+ * @brief Contains functions to render everything in the model.
  * 
  * @copyright Copyright Academia Team 2023
  */
@@ -54,8 +52,8 @@ void renderUpdate(UINT32* base, const World* const world);
  * @brief Renders the initial frame of the entire game play area. 
  * @details This includes the world border. Both player scores and lives if in 
  * two player mode otherwise just main player score and lives will be rendered 
- * to the screen. Game tiles and sprites. Also renders the "YOU:", "OTHER:", 
- * "SCORE:", and "LIVES:" labels to the screen when game is in two player mode. 
+ * to the screen. Game tiles and sprites. Also renders the "YOU:" and "OTHER:"
+ * labels to the screen when game is in two player mode. 
  * 
  * @param base The location in memory to plot at.
  * @param world The game world that is to be rendered to the screen.
