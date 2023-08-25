@@ -1,9 +1,7 @@
 /**
  * @file renderer.c
  * @author Academia Team
- * @brief Contains functions to render the entire play area of the game. 
- * @details The play area includes the border, score box, lives box, and the
- * game world with all its inhabitants and cells.
+ * @brief Contains functions to render everything in the model.
  * 
  * @copyright Copyright Academia Team 2023
  */
@@ -48,8 +46,6 @@ void renderPlayArea(UINT32* base, const World* const world)
 	fill_scrn(base);
 	renderWorld(base, world);
 	renderUpdate(base, world);
-	renderLabel((UINT16 *)base, &world->mainPlayer.score.label, TRUE);
-	renderLabel((UINT16 *)base, &world->mainPlayer.lives.label, TRUE);
 
 	if (world->numPlayers == 2)
 	{
@@ -57,8 +53,6 @@ void renderPlayArea(UINT32* base, const World* const world)
 		initLabel(&otherLabel, 16, 40,"OTHER:");
 		renderLabel((UINT16 *)base, &youLabel, TRUE);
 		renderLabel((UINT16 *)base, &otherLabel, TRUE);
-		renderLabel((UINT16 *)base, &world->otherPlayer.score.label, TRUE);
-		renderLabel((UINT16 *)base, &world->otherPlayer.lives.label, TRUE);
 	}
 }
 
@@ -262,20 +256,17 @@ void renderMainPlayer(UINT32* base, const Player* const player)
 
 void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen)
 {
-	const int LABEL_HEIGHT = 16;
-	const int LABEL_WIDTH = 16;
-
 	const UINT16 *currFont16Char;
 
 	int index;
 	int x;
 
 	for (index = 0, x = 0; label->text[index] != '\0'; 
-		 index++, x += LABEL_WIDTH)
+		 index++, x += LABEL_FONT_WIDTH)
 	{
 		currFont16Char = getFont16Char(label->text[index], NULL);
-		plot_rast16(base, label->x + x, label->y, LABEL_HEIGHT, currFont16Char,
-					TRUE, blackScreen);
+		plot_rast16(base, label->x + x, label->y, LABEL_FONT_HEIGHT,
+					currFont16Char, TRUE, blackScreen);
 	}
 }
 
@@ -289,15 +280,18 @@ void renderInfoBar(UINT16* base, const InfoBar* const infoBar)
 	}
 }
 
-void renderScore(UINT16* base, const Score* const score)
+void renderScore(UINT16* base, Score* const score)
 {
-	const int LABEL_HEIGHT = 16;
-	const int LABEL_WIDTH = 16;
-
 	UINT32 value = score->value;
 	int index = MAX_NUM_DIGITS_IN_SCORE - 1;
 	int digits[MAX_NUM_DIGITS_IN_SCORE];
 	int x;
+
+	if (!score->labelRendered)
+	{
+		renderLabel((UINT16 *)base, &score->label, TRUE);
+		score->labelRendered = TRUE;
+	}
 
 	do
 	{
@@ -306,18 +300,21 @@ void renderScore(UINT16* base, const Score* const score)
 	} while (value != 0);
 
 	for(x = 0, index += 1; index < MAX_NUM_DIGITS_IN_SCORE;
-		index++, x += LABEL_WIDTH)
+		index++, x += LABEL_FONT_WIDTH)
 	{
-		plot_rast16(base, score->x + x, score->y, LABEL_HEIGHT,
+		plot_rast16(base, score->x + x, score->y, LABEL_FONT_HEIGHT,
 					getFont16Digit(digits[index], NULL), TRUE, TRUE);
 	}
 }
 
-void renderLives(UINT16* base, const Lives* const lives)
+void renderLives(UINT16* base, Lives* const lives)
 {
-	const int LABEL_HEIGHT = 16;
-
-	plot_rast16(base, lives->x, lives->y, LABEL_HEIGHT,
+	if (!lives->labelRendered)
+	{
+		renderLabel((UINT16 *)base, &lives->label, TRUE);
+		lives->labelRendered = TRUE;
+	}
+	plot_rast16(base, lives->x, lives->y, LABEL_FONT_HEIGHT,
 				getFont16Digit(lives->value, NULL), TRUE, TRUE);
 }
 

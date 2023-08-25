@@ -209,6 +209,7 @@ typedef struct
 	int    y;
 	Label  label;
 	UINT32 value;
+	BOOL   labelRendered;
 } Score;
 
 typedef struct
@@ -217,6 +218,7 @@ typedef struct
 	int y;
 	Label label;
 	int value;
+	BOOL labelRendered;
 } Lives;
 
 typedef struct

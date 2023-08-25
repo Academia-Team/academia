@@ -344,6 +344,7 @@ void initScore (int x, int y, Score* scoreBox)
 	scoreBox->y = y;
 
 	initLabel(&scoreBox->label, x, y + 1, "SCORE:");
+	scoreBox->labelRendered = FALSE;
 }
 
 void updateScore (UINT32 value, Score* scoreBox)
@@ -369,6 +370,7 @@ void initLives (int x, int y, Lives* lifeBox)
 	lifeBox->y = y;
 
 	initLabel(&lifeBox->label, x, y + 1, "LIVES:");
+	lifeBox->labelRendered = FALSE;
 }
 
 void initLabel(Label* label, int x, int y, char *text)

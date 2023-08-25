@@ -1,9 +1,7 @@
 /**
  * @file renderer.h
  * @author Academia Team
- * @brief Contains functions to render the entire play area of the game. 
- * @details The play area includes the border, score box, lives box, and the
- * game world with all its inhabitants and cells.
+ * @brief Contains functions to render everything in the model.
  * 
  * @copyright Copyright Academia Team 2023
  */
@@ -12,9 +10,20 @@
 #define RENDERER_H
 
 #include "bool.h"
+#include "font16.h"
 #include "model.h"
 #include "move.h"
 #include "types.h"
+
+/**
+ * @brief The width of the font used when rendering a label.
+ */
+#define LABEL_FONT_WIDTH FONT16_WIDTH
+
+/**
+ * @brief The height of the font used when rendering a label.
+ */
+#define LABEL_FONT_HEIGHT FONT16_HEIGHT
 
 /**
  * @brief Renders an updated version of the world cells.
@@ -43,8 +52,8 @@ void renderUpdate(UINT32* base, const World* const world);
  * @brief Renders the initial frame of the entire game play area. 
  * @details This includes the world border. Both player scores and lives if in 
  * two player mode otherwise just main player score and lives will be rendered 
- * to the screen. Game tiles and sprites. Also renders the "YOU:", "OTHER:", 
- * "SCORE:", and "LIVES:" labels to the screen when game is in two player mode. 
+ * to the screen. Game tiles and sprites. Also renders the "YOU:" and "OTHER:"
+ * labels to the screen when game is in two player mode. 
  * 
  * @param base The location in memory to plot at.
  * @param world The game world that is to be rendered to the screen.
@@ -145,7 +154,7 @@ void renderInfoBar(UINT16* base, const InfoBar* const infoBar);
  * @param base The location in memory to plot at.
  * @param Score The score of a player that is to be rendered to the screen.
  */
-void renderScore(UINT16* base, const Score* const Score);
+void renderScore(UINT16* base, Score* const Score);
 
 /**
  * @brief Renders lives to the screen.
@@ -155,7 +164,7 @@ void renderScore(UINT16* base, const Score* const Score);
  * @param base The location in memory to plot at.
  * @param lives The lives of a player that is to be rendered to the screen.
  */
-void renderLives(UINT16* base, const Lives* const lives);
+void renderLives(UINT16* base, Lives* const lives);
 
 /**
  * @brief Renders a button to the screen.
