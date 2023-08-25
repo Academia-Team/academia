@@ -585,15 +585,6 @@ void initButton(Button* button, int x, int y, int height, int width,
 	button->selected = FALSE;
 }
 
-void processButtonState(Menu* menu)
-{
-	menu->oldButtonSel = menu->buttonSel;
-	menu->buttonSel    = menu->futureButtonSel;
-
-	menu->buttons[menu->oldButtonSel].selected = FALSE;
-	menu->buttons[menu->buttonSel].selected    = TRUE;
-}
-
 void initMenu(Menu* menu, BOOL blackScreen, int borderWidth, int borderHeight)
 {
 	menu->buttonFillLevel = 0;

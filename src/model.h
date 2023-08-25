@@ -781,9 +781,14 @@ int addButton(Menu* menu, int x, int y, int height, int width, LabelStr text);
  * @details If no button changes have occurred since the last call to the
  * function, the currently selected button will be preserved.
  * 
- * @param menu The Menu object to process.
+ * @param menu A pointer to the Menu object to process.
  */
-void processButtonState(Menu* menu);
+#define processButtonState(menu) \
+	menu->oldButtonSel = menu->buttonSel; \
+	menu->buttonSel    = menu->futureButtonSel; \
+	\
+	menu->buttons[menu->oldButtonSel].selected = FALSE; \
+	menu->buttons[menu->buttonSel].selected    = TRUE
 
 /**
  * @brief Initializes a Menu with the given values.
