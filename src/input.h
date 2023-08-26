@@ -59,6 +59,12 @@
 #define INITIAL_MOUSE_X SCRN_MID_X
 #define INITIAL_MOUSE_Y SCRN_MID_Y
 
+/**
+ * @brief The number of pixels to move the mouse cursor when a mouse-moving
+ * keyboard key is pressed.
+ */
+#define KEYBOARD_M_MOVE_DIST 8
+
 typedef struct
 {
 	const UINT8 *unshift;
@@ -172,26 +178,6 @@ IKBD_Scancode getKey(void);
 IKBD_Scancode getBKey(void);
 
 /**
- * @brief Moves the mouse cursor to the left by a certain amount.
- */
-void kybdMouseLeft(void);
-
-/**
- * @brief Moves the mouse cursor to the right by a certain amount.
- */
-void kybdMouseRight(void);
-
-/**
- * @brief Moves the mouse cursor downward by a certain amount.
- */
-void kybdMouseDown(void);
-
-/**
- * @brief Moves the mouse cursor upward by a certain amount.
- */
-void kybdMouseUp(void);
-
-/**
  * @brief Checks if a left mouse click has happened.
  * @details The mouse's left click status will be reset after being checked.
  * 
@@ -225,5 +211,24 @@ BOOL mouseMoved(void);
  * @param y Returns the current y position of the mouse.
  */
 void getMousePos(int *x, int *y);
+
+/**
+ * @brief Sets the mouse position to the provided coordinates.
+ * 
+ * @param x The desired x position of the mouse.
+ * @param y The desired y position of the mouse.
+ * @return TRUE if the coordinates are valid; FALSE otherwise.
+ */
+BOOL setMousePos(int x, int y);
+
+/**
+ * @brief Adjusts the mouse position by the provided x and y deltas.
+ * @details If the resultant coordinates are out of range, they will be modified
+ * to their closest valid values.
+ * 
+ * @param deltaX The desired adjustment of the x position of the mouse.
+ * @param deltaY The desired adjustment of the y position of the mouse.
+ */
+void setRelMousePos(int deltaX, int deltaY);
 
 #endif

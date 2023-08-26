@@ -14,6 +14,7 @@
 						xref	_handleSpecialAction
 						xref	_hasSpecial
 						xref	_isKeyMod
+						xref	_setRelMousePos
 
 IKBD_STATUS_REG:		equ		$FFFFFC00
 IKBD_RDR_REG:			equ		$FFFFFC02
@@ -165,7 +166,7 @@ IKBD_RETURN:			btst.b	#IRQ_BIT,IKBD_STATUS_REG
 MOUSE_PACKET_PARAM:		equ		8
 
 handle_mouse:			link	a6,#0
-						movem.l	d0/a3,-(sp)
+						movem.l	d0-d7/a0-a6,-(sp)
 						move.b	MOUSE_PACKET_PARAM(a6),d0
 
 						addq.b	#1,mouse_packets_received
@@ -194,80 +195,24 @@ MOUSE_N_LCLICK:			btst.l	#MOUSE_RCLICK_BIT,d0
 
 
 ; Handle the second mouse packet (which specifies the
-; signed change in x). It returns early if delta x is
-; zero or if the current x position is already at its
-; maximum or minimum.
-MOUSE_SECOND_PKT:		lea		_mouse,a3
-						tst.b	d0
-						beq		MOUSE_RETURN
-						bmi		MOUSE_X_DELTA_NEG
-
-						cmpi.w	#SCRN_MAX_X,MOUSE_X(a3)
-						bhs		MOUSE_RETURN
-						bra		MOUSE_X_DELTA_ADD
-
-MOUSE_X_DELTA_NEG:		tst.w	MOUSE_X(a3)
-						beq		MOUSE_RETURN
-						bra		MOUSE_X_DELTA_ADD
-
-; Confirm that the new x coordinate is in range.
-MOUSE_X_DELTA_ADD:		ext.w	d0
-						add.w	MOUSE_X(a3),d0
-						bmi		MOUSE_X_TOO_SMALL
-						cmpi.w	#SCRN_MAX_X,d0
-						bhi		MOUSE_X_TOO_LARGE
-
-						move.w	d0,MOUSE_X(a3)
-						move.w	#TRUE,MOUSE_POS_CHANGE(a3)
-						bra		MOUSE_RETURN
-
-MOUSE_X_TOO_SMALL:		clr.w	MOUSE_X(a3)
-						move.w	#TRUE,MOUSE_POS_CHANGE(a3)
-						bra		MOUSE_RETURN
-
-MOUSE_X_TOO_LARGE:		move.w	#SCRN_MAX_X,MOUSE_X(a3)
-						move.w	#TRUE,MOUSE_POS_CHANGE(a3)
+; signed change in x).
+MOUSE_SECOND_PKT:		ext.w	d0
+						move.w	d0,delta_mouse_x
 						bra		MOUSE_RETURN
 
 
 ; Handle the third mouse packet (which specifies the
-; signed change in y). It returns early if delta y is
-; zero or if the current y position is already at its
-; maximum or minimum.
-MOUSE_THIRD_PKT:		clr.b	mouse_packets_received
-						lea		_mouse,a3
-						tst.b	d0
-						beq		MOUSE_RETURN
-						bmi		MOUSE_Y_DELTA_NEG
+; signed change in y).
+MOUSE_THIRD_PKT:		ext.w	d0
+						move.w	d0,-(sp)
+						move.w	delta_mouse_x,-(sp)
+						jsr		_setRelMousePos
+						addq.l	#4,sp
+						clr.b	mouse_packets_received
 
-						cmpi.w	#SCRN_MAX_Y,MOUSE_Y(a3)
-						bhs		MOUSE_RETURN
-						bra		MOUSE_Y_DELTA_ADD
-
-MOUSE_Y_DELTA_NEG:		tst.w	MOUSE_Y(a3)
-						beq		MOUSE_RETURN
-						bra		MOUSE_Y_DELTA_ADD
-
-; Confirm that the new y coordinate is in range.
-MOUSE_Y_DELTA_ADD:		ext.w	d0
-						add.w	MOUSE_Y(a3),d0
-						bmi		MOUSE_Y_TOO_SMALL
-						cmpi.w	#SCRN_MAX_Y,d0
-						bhi		MOUSE_Y_TOO_LARGE
-
-						move.w	d0,MOUSE_Y(a3)
-						move.w	#TRUE,MOUSE_POS_CHANGE(a3)
-						bra		MOUSE_RETURN
-
-MOUSE_Y_TOO_SMALL:		clr.w	MOUSE_Y(a3)
-						move.w	#TRUE,MOUSE_POS_CHANGE(a3)
-						bra		MOUSE_RETURN
-
-MOUSE_Y_TOO_LARGE:		move.w	#SCRN_MAX_Y,MOUSE_Y(a3)
-						move.w	#TRUE,MOUSE_POS_CHANGE(a3)
-
-MOUSE_RETURN:			movem.l	(sp)+,d0/a3
+MOUSE_RETURN:			movem.l	(sp)+,d0-d7/a0-a6
 						unlk	a6
 						rts
 
+delta_mouse_x:			dc.w	0
 mouse_packets_received:	dc.b	0
