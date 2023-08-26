@@ -48,16 +48,16 @@ void input_vbl(void)
 		switch(kybdMouseMov)
 		{
 			case M_LEFT:
-				kybdMouseLeft();
+				setRelMousePos(-KEYBOARD_M_MOVE_DIST, 0);
 				break;
 			case M_RIGHT:
-				kybdMouseRight();
+				setRelMousePos(+KEYBOARD_M_MOVE_DIST, 0);
 				break;
 			case M_UP:
-				kybdMouseUp();
+				setRelMousePos(0, -KEYBOARD_M_MOVE_DIST);
 				break;
 			case M_DOWN:
-				kybdMouseDown();
+				setRelMousePos(0, +KEYBOARD_M_MOVE_DIST);
 				break;
 			default:
 				cursorMovTime = UINT32_MAX;

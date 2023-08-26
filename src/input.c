@@ -34,12 +34,6 @@
 #define RSHIFT_CODE            0x01
 
 /**
- * @brief The number of pixels to move the mouse cursor when a mouse-changing
- * keyboard key is pressed.
- */
-#define KEYBOARD_M_MOVE_DIST      8
-
-/**
  * @brief The amount that the scancode is supposed to be shifted by before
  * adding to the keyboard buffer.
  */
@@ -969,19 +963,19 @@ void handleSpecialAction(UINT16 scancode, UINT16 isMakeCode)
 					break;
 				case IKBD_UP_SCANCODE:
 					kybdMouseMov = M_UP;
-					kybdMouseUp();
+					setRelMousePos(0, -KEYBOARD_M_MOVE_DIST);
 					break;
 				case IKBD_DOWN_SCANCODE:
 					kybdMouseMov = M_DOWN;
-					kybdMouseDown();
+					setRelMousePos(0, +KEYBOARD_M_MOVE_DIST);
 					break;
 				case IKBD_LEFT_SCANCODE:
 					kybdMouseMov = M_LEFT;
-					kybdMouseLeft();
+					setRelMousePos(-KEYBOARD_M_MOVE_DIST, 0);
 					break;
 				case IKBD_RIGHT_SCANCODE:
 					kybdMouseMov = M_RIGHT;
-					kybdMouseRight();
+					setRelMousePos(+KEYBOARD_M_MOVE_DIST, 0);
 					break;
 			}
 		}
@@ -1031,54 +1025,6 @@ UINT8 isKeyMod(UINT16 scancode)
 			scancode == IKBD_ALT_SCANCODE    ||
 			scancode == IKBD_CAPS_SCANCODE   ||
 			scancode == IKBD_CTRL_SCANCODE);
-}
-
-void kybdMouseDown(void)
-{
-	mouse.y += KEYBOARD_M_MOVE_DIST;
-
-	if (mouse.y > SCRN_MAX_Y)
-	{
-		mouse.y = SCRN_MAX_Y;
-	}
-
-	mouse.posChange = TRUE;
-}
-
-void kybdMouseLeft(void)
-{
-	mouse.x -= KEYBOARD_M_MOVE_DIST;
-
-	if (mouse.x < 0)
-	{
-		mouse.x = 0;
-	}
-
-	mouse.posChange = TRUE;
-}
-
-void kybdMouseRight(void)
-{
-	mouse.x += KEYBOARD_M_MOVE_DIST;
-
-	if (mouse.x > SCRN_MAX_X)
-	{
-		mouse.x = SCRN_MAX_X;
-	}
-
-	mouse.posChange = TRUE;
-}
-
-void kybdMouseUp(void)
-{
-	mouse.y -= KEYBOARD_M_MOVE_DIST;
-
-	if (mouse.y < 0)
-	{
-		mouse.y = 0;
-	}
-
-	mouse.posChange = TRUE;
 }
 
 BOOL mouseLclick(void)

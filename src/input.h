@@ -59,6 +59,12 @@
 #define INITIAL_MOUSE_X SCRN_MID_X
 #define INITIAL_MOUSE_Y SCRN_MID_Y
 
+/**
+ * @brief The number of pixels to move the mouse cursor when a mouse-moving
+ * keyboard key is pressed.
+ */
+#define KEYBOARD_M_MOVE_DIST 8
+
 typedef struct
 {
 	const UINT8 *unshift;
@@ -170,26 +176,6 @@ IKBD_Scancode getKey(void);
  * will be returned (NO_KEY).
  */
 IKBD_Scancode getBKey(void);
-
-/**
- * @brief Moves the mouse cursor to the left by a certain amount.
- */
-void kybdMouseLeft(void);
-
-/**
- * @brief Moves the mouse cursor to the right by a certain amount.
- */
-void kybdMouseRight(void);
-
-/**
- * @brief Moves the mouse cursor downward by a certain amount.
- */
-void kybdMouseDown(void);
-
-/**
- * @brief Moves the mouse cursor upward by a certain amount.
- */
-void kybdMouseUp(void);
 
 /**
  * @brief Checks if a left mouse click has happened.
