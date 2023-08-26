@@ -1145,12 +1145,7 @@ BOOL mouseMoved(void)
 
 void getMousePos(int *x, int *y)
 {
-	const BOOL IS_SUPER = isSu();
-	UINT32 oldSsp;
-
-	if (!IS_SUPER) oldSsp  = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	if (!IS_SUPER) Su(oldSsp);
 
 	if (x != NULL)
 	{
@@ -1164,7 +1159,56 @@ void getMousePos(int *x, int *y)
 
 	mouse.posChange = FALSE;
 
-	if (!IS_SUPER) oldSsp = Su(0);
 	mask_level_toggle(KYBD_CHANNEL_LEV);
-	if (!IS_SUPER) Su(oldSsp);
+}
+
+BOOL setMousePos(int x, int y)
+{
+	int  oldIpl   = set_ipl(MASK_ALL_INTERRUPTS);
+	BOOL mouseSet = FALSE;
+
+	if (x >= 0 && x <= SCRN_MAX_X && y >= 0 && y <= SCRN_MAX_Y)
+	{
+		mouse.x         = x;
+		mouse.y         = y;
+
+		mouse.posChange = TRUE;
+		mouseSet        = TRUE;
+	}
+
+	set_ipl(oldIpl);
+
+	return mouseSet;
+}
+
+void setRelMousePos(int deltaX, int deltaY)
+{
+	int oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
+
+	mouse.x += deltaX;
+	mouse.y += deltaY;
+
+	if (mouse.x > SCRN_MAX_X)
+	{
+		mouse.x = SCRN_MAX_X;
+	}
+
+	if (mouse.x < 0)
+	{
+		mouse.x = 0;
+	}
+
+	if (mouse.y > SCRN_MAX_Y)
+	{
+		mouse.y = SCRN_MAX_Y;
+	}
+
+	if (mouse.y < 0)
+	{
+		mouse.y = 0;
+	}
+
+	mouse.posChange = TRUE;
+
+	set_ipl(oldIpl);
 }

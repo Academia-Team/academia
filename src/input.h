@@ -226,4 +226,23 @@ BOOL mouseMoved(void);
  */
 void getMousePos(int *x, int *y);
 
+/**
+ * @brief Sets the mouse position to the provided coordinates.
+ * 
+ * @param x The desired x position of the mouse.
+ * @param y The desired y position of the mouse.
+ * @return TRUE if the coordinates are valid; FALSE otherwise.
+ */
+BOOL setMousePos(int x, int y);
+
+/**
+ * @brief Adjusts the mouse position by the provided x and y deltas.
+ * @details If the resultant coordinates are out of range, they will be modified
+ * to their closest valid values.
+ * 
+ * @param deltaX The desired adjustment of the x position of the mouse.
+ * @param deltaY The desired adjustment of the y position of the mouse.
+ */
+void setRelMousePos(int deltaX, int deltaY);
+
 #endif
