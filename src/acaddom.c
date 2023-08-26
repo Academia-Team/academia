@@ -487,6 +487,9 @@ void menuLoop(UINT32 *screenBuffer, Menu *menu)
 		
 		processButtonState(menu);
 
+		/* It is necessary to temporarily disable the cursor if it is above any
+		   buttons. Otherwise, a image of the cursor could become embedded
+		   into a button. */
 		if (btnSelected != NO_BTN_SEL)
 		{
 			hide_cursor();
