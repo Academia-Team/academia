@@ -183,7 +183,6 @@ handle_mouse:			link	a6,#0
 						; A mouse header packet contains data on what buttons
 						; (if any) have been pressed.
 MOUSE_FIRST_PKT:		lea		_mouse,a3
-
 						btst.l	#MOUSE_LCLICK_BIT,d0
 						beq		MOUSE_N_LCLICK
 						move.w	#TRUE,MOUSE_LEFT_CLICK(a3)
@@ -194,15 +193,15 @@ MOUSE_N_LCLICK:			btst.l	#MOUSE_RCLICK_BIT,d0
 						bra		MOUSE_RETURN
 
 
-; Handle the second mouse packet (which specifies the
-; signed change in x).
+						; Handle the second mouse packet (which specifies the
+						; signed change in x).
 MOUSE_SECOND_PKT:		ext.w	d0
 						move.w	d0,delta_mouse_x
 						bra		MOUSE_RETURN
 
 
-; Handle the third mouse packet (which specifies the
-; signed change in y).
+						; Handle the third mouse packet (which specifies the
+						; signed change in y).
 MOUSE_THIRD_PKT:		ext.w	d0
 						move.w	d0,-(sp)
 						move.w	delta_mouse_x,-(sp)
