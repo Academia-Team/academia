@@ -725,6 +725,8 @@ Mouse mouse = {INITIAL_MOUSE_X, INITIAL_MOUSE_Y, FALSE, FALSE, FALSE};
 
 Direction kybdMouseMov = M_NONE;
 
+Joy joy = {0, FALSE};
+
 void IKBD_isr(void);
 
 Vector initKybd(void)
@@ -1127,4 +1129,31 @@ void setRelMousePos(int deltaX, int deltaY)
 
 		set_ipl(oldIpl);
 	}
+}
+
+UINT8 getJoyPos(void)
+{
+	UINT8 joyPos;
+
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+
+	joyPos = joy.pos;
+
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+
+	return joyPos;
+}
+
+BOOL joyButtonPressed(void)
+{
+	BOOL buttonPressed;
+
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+
+	buttonPressed = joy.trigger;
+	joy.trigger   = FALSE;
+
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+
+	return buttonPressed;
 }

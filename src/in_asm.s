@@ -3,6 +3,7 @@
 ; Copyright Academia Team 2023
 
 						include	bool_asm.i
+						include joy.i
 						include mouse.i
 						include scde_asm.i
 						include scrn_asm.i
@@ -28,6 +29,7 @@ IKBD_MAX_SCANCODE:		equ		$72
 IKBD_MIN_SCANCODE:		equ		$01
 IKBD_PRIORITY_LEV:		equ		6
 
+IKBD_MIN_JOY_REC_VAL:	equ		$FE
 IKBD_MIN_MOUSE_PKT_VAL:	equ		$F8
 MOUSE_RCLICK_BIT:		equ		0
 MOUSE_LCLICK_BIT:		equ		1
@@ -76,10 +78,25 @@ IKBD_READ_MIDI:			tst.b	MIDI_RDR_REG
 IKBD_GET_VAL:			clr.l	d5
 						move.b	IKBD_RDR_REG,d5
 
+						; Check if a joystick header has previously been
+						; received and handle accordingly.
+						cmpi.b	#TRUE,joy_record
+						beq		IKBD_MANAGE_JOY
+						cmpi.b	#IKBD_MIN_JOY_REC_VAL,d5
+						blo		IKBD_CHK_MOUSE
+						move.b	#TRUE,joy_record
+						bra		IKBD_RETURN
+
+IKBD_MANAGE_JOY:		move.b	d5,-(sp)
+						jsr		handle_joy
+						addq.l	#2,sp
+						move.b	#FALSE,joy_record
+						bra		IKBD_RETURN
+
 						; Check if a mouse packet has previously been received.
 						; If no mouse packets have been processed before, check
 						; for a mouse header packet.
-						tst.b	mouse_packets_received
+IKBD_CHK_MOUSE:			tst.b	mouse_packets_received
 						bhi		IKBD_MANAGE_MOUSE
 						cmpi.b	#IKBD_MIN_MOUSE_PKT_VAL,d5
 						blo		IKBD_HANDLE_KEYS
@@ -248,6 +265,33 @@ KEYP_RETURN:			move.w	#IKBD_PRIORITY_LEV,-(sp)
 
 						rts
 
+; void handle_joy(UINT8 record)
+;
+; Brief: Handles joystick record.
+;
+; Register Table:
+; ---------------
+; a3	-	Holds the address of the joy struct.
+; a6	-	Holds the address to the start of the stack frame.
+
+JOY_RECORD_PARAM:		equ		8
+JOY_TRIGGER_BIT:		equ		7
+
+handle_joy:				link	a6,#0
+						movem.l	d0/a3,-(sp)
+						lea		_joy,a3
+
+						bclr.b	#JOY_TRIGGER_BIT,JOY_RECORD_PARAM(a6)
+						beq		JOY_GET_POS
+						move.b	#TRUE,JOY_TRIGGER(a3)
+
+JOY_GET_POS:			move.b	JOY_RECORD_PARAM(a6),JOY_POS(a3)
+
+						movem.l	(sp)+,d0/a3
+						unlk	a6
+						rts
+
 delta_mouse_x:			dc.w	0
 keys_pressed:			dc.b	0
 mouse_packets_received:	dc.b	0
+joy_record:				dc.b	FALSE
