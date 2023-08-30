@@ -20,11 +20,14 @@
 
 #define MAX_NUM_DIGITS_IN_SCORE UINT32_MAX_DIGITS
 
-void renderCar(UINT32 *base, int x, int y, Direction orientation);
-void renderFeathers(UINT32 *base, int x, int y, Direction orientation);
-void renderTrain(UINT32 *base, int x, int y);
+void renderCar(UINT32* const base, int x, int y, Direction orientation);
+void renderFeathers(UINT32* const base, int x, int y, Direction orientation);
+void renderTrain(UINT32* const base, int x, int y);
 
-void renderUpdate(UINT32* base, const World* const world)
+void renderButton(UINT32* const base, Button* button, BOOL blackScreen);
+void renderInfoBar(UINT16* const base, InfoBar* const infoBar, BOOL blackScrn);
+
+void renderUpdate(UINT32* const base, const World* const world)
 {
 	int index;
 	for(index = world->bottom; index != world->top;
@@ -36,7 +39,7 @@ void renderUpdate(UINT32* base, const World* const world)
 	renderPlayers(base, world);
 }
 
-void renderPlayArea(UINT32* base, const World* const world)
+void renderPlayArea(UINT32* const base, const World* const world)
 {
 	Label youLabel;
 	Label otherLabel;
@@ -54,7 +57,7 @@ void renderPlayArea(UINT32* base, const World* const world)
 	}
 }
 
-void renderWorld(UINT32* base, const World* const world)
+void renderWorld(UINT32* const base, const World* const world)
 {
 	int index;
 
@@ -69,7 +72,7 @@ void renderWorld(UINT32* base, const World* const world)
 	renderRow(base, &world->rows[world->top]);
 }
 
-void renderRow(UINT32* base, const Row* const row)
+void renderRow(UINT32* const base, const Row* const row)
 {
 	int index;
 
@@ -79,7 +82,7 @@ void renderRow(UINT32* base, const Row* const row)
 	}
 }
 
-void renderCell(UINT32* base, const Cell* const cell, int y)
+void renderCell(UINT32* const base, const Cell* const cell, int y)
 {
 	UINT32 cellBitmap[CELL_HEIGHT];
 	UINT32 collectableBitmap[COLLECTABLE_HEIGHT];
@@ -126,9 +129,9 @@ void renderCell(UINT32* base, const Cell* const cell, int y)
 				FALSE, FALSE);
 }
 
-void renderHazards(UINT32* base, const Row* const row)
+void renderHazards(UINT32* const base, const Row* const row)
 {
-	const Hazard *hazard;
+	const Hazard* hazard;
 
 	int index;
 
@@ -162,7 +165,7 @@ void renderHazards(UINT32* base, const Row* const row)
  * @param y The y pixel location (starting at zero) to start rendering the car.
  * @param orientation The horizontal orientation of the car.
  */
-void renderCar(UINT32 *base, int x, int y, Direction orientation)
+void renderCar(UINT32* const base, int x, int y, Direction orientation)
 {
 	UINT32 carBitmap[CAR_HEIGHT];
 
@@ -185,7 +188,7 @@ void renderCar(UINT32 *base, int x, int y, Direction orientation)
  * Mr. Feathers.
  * @param orientation The horizontal orientation of Mr. Feathers.
  */
-void renderFeathers(UINT32 *base, int x, int y, Direction orientation)
+void renderFeathers(UINT32* const base, int x, int y, Direction orientation)
 {
 	UINT32 feathersBitmap[FEATHERS_HEIGHT];
 
@@ -205,7 +208,7 @@ void renderFeathers(UINT32 *base, int x, int y, Direction orientation)
  * @param y The y pixel location (starting at zero) to start rendering the
  * train.
  */
-void renderTrain(UINT32 *base, int x, int y)
+void renderTrain(UINT32* const base, int x, int y)
 {
 	const int CLR_Y_POS = y + TRAIN_Y_OFFSET;
 
@@ -238,7 +241,7 @@ void renderTrain(UINT32 *base, int x, int y)
 	}
 }
 
-void renderPlayers(UINT32* base, const World* const world)
+void renderPlayers(UINT32* const base, const World* const world)
 {
 	renderMainPlayer(base, &world->mainPlayer);
 	renderScore((UINT16 *)base, &world->mainPlayer.score);
@@ -251,7 +254,7 @@ void renderPlayers(UINT32* base, const World* const world)
 	}
 }
 
-void renderMainPlayer(UINT32* base, const Player* const player)
+void renderMainPlayer(UINT32* const base, const Player* const player)
 {
 	UINT32 playerAlpha[PLAYER_HEIGHT];
 	UINT32 playerBitmap[PLAYER_HEIGHT];
@@ -268,9 +271,10 @@ void renderMainPlayer(UINT32* base, const Player* const player)
 				FALSE);
 }
 
-void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen)
+void renderLabel(UINT16* const base, const Label* const label,
+				 BOOL blackScreen)
 {
-	const UINT16 *currFont16Char;
+	const UINT16* currFont16Char;
 
 	int index;
 	int x;
@@ -295,7 +299,7 @@ void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen)
  * @param blackScrn Indicates whether the InfoBar will be rendered on a black
  * or white area.
  */
-void renderInfoBar(UINT16* base, InfoBar* const infoBar, BOOL blackScrn)
+void renderInfoBar(UINT16* const base, InfoBar* const infoBar, BOOL blackScrn)
 {
 	const int INFO_BAR_LINES = infoBar->numLabels *
 							   (FONT16_HEIGHT + infoBar->spacingBetweenLabels) -
@@ -327,7 +331,7 @@ void renderInfoBar(UINT16* base, InfoBar* const infoBar, BOOL blackScrn)
 	}
 }
 
-void renderScore(UINT16* base, Score* const score)
+void renderScore(UINT16* const base, Score* const score)
 {
 	UINT32 value = score->value;
 	int index = MAX_NUM_DIGITS_IN_SCORE - 1;
@@ -354,7 +358,7 @@ void renderScore(UINT16* base, Score* const score)
 	}
 }
 
-void renderLives(UINT16* base, Lives* const lives)
+void renderLives(UINT16* const base, Lives* const lives)
 {
 	if (!lives->labelRendered)
 	{
@@ -373,7 +377,7 @@ void renderLives(UINT16* base, Lives* const lives)
  * @param blackScreen When set to true indicates that button is being rendered 
  * on top of a black background.
  */
-void renderButton(UINT32* base, Button* button, BOOL blackScreen)
+void renderButton(UINT32* const base, Button* button, BOOL blackScreen)
 {
 	const int BORDER_WIDTH  = 3;
 	const int BORDER_HEIGHT = 3;
@@ -414,7 +418,7 @@ void renderButton(UINT32* base, Button* button, BOOL blackScreen)
 	}
 }
 
-void renderTitle(UINT32* base, int x, int y)
+void renderTitle(UINT32* const base, int x, int y)
 {
 	UINT32 titleBitmap[TITLE_HEIGHT];
 
@@ -424,7 +428,7 @@ void renderTitle(UINT32* base, int x, int y)
 	}
 }
 
-void renderGameOver(UINT32* base, int x, int y)
+void renderGameOver(UINT32* const base, int x, int y)
 {
 	UINT32 goverBitmap[GAME_OVER_HEIGHT];
 
@@ -434,7 +438,7 @@ void renderGameOver(UINT32* base, int x, int y)
 	}
 }
 
-void renderCursor(UINT16* base, int x, int y)
+void renderCursor(UINT16* const base, int x, int y)
 {
 	UINT16 mouseCursor[CURSOR_HEIGHT];
 
@@ -444,7 +448,7 @@ void renderCursor(UINT16* base, int x, int y)
 	}
 }
 
-void renderMenu(UINT32* base, Menu* menu)
+void renderMenu(UINT32* const base, Menu* menu)
 {
 	int index;
 
