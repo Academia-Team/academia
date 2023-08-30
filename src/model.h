@@ -777,6 +777,15 @@ int addButton(Menu* menu, int x, int y, int height, int width, LabelStr text);
 #define hasSelectedButton(menu) ((menu)->buttonSel != NO_BTN_SEL)
 
 /**
+ * @brief Returns if the state of the buttons in a given Menu will change the
+ * next time it is processed.
+ * 
+ * @param menu A pointer to the Menu object to check for a state change in.
+ * @return TRUE if the state will change; FALSE otherwise.
+ */
+#define buttonStateChange(menu) ((menu)->futureButtonSel != (menu)->buttonSel)
+
+/**
  * @brief Process changes to the state of the buttons in the given Menu.
  * @details If no button changes have occurred since the last call to the
  * function, the currently selected button will be preserved.
