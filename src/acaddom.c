@@ -71,6 +71,10 @@ int    loopCounter     =  1;
 int    deathCounter    =  1;
 UINT8  gameStart       =  FALSE;
 
+/* The menu object is defined outside of any functions as it tends to cause
+   alignment issues when placed on the stack. */
+Menu   menu;
+
 /**
  * @brief Temporarily pauses any game-related operations.
  */
@@ -103,9 +107,10 @@ UINT8  gameStart       =  FALSE;
  */
 #define dupScrnBuffer(dest, src) copyScrnBuffer(dest, src, 0, SCRN_MAX_Y)
 
-void titleScreen(UINT32* const screenBuffer, BOOL* exitPgrm, int* numPlayers);
+void titleScreen(UINT32* const screenBuffer, BOOL* exitPgrm, int* numPlayers,
+				 Menu* titleScrn);
 void gameOverScreen(UINT32* const screenBuffer, BOOL* goToTitleScrn,
-					World* gameWorld);
+					World* gameWorld, Menu* goverScrn);
 void getGoverScoreCoord(int numPlayers, int playerNum, int* x, int* y);
 void menuLoop(UINT32* const screenBuffer, Menu* menu);
 void mainGameLoop(World* gameWorld, UINT32* const screenBuffer,
@@ -166,7 +171,7 @@ int main(int argc, char **argv)
 	{
 		if (goToTitleScrn)
 		{
-			titleScreen(screenBuffer, &exitPgrm, &numPlayers);
+			titleScreen(screenBuffer, &exitPgrm, &numPlayers, &menu);
 		}
 
 		if (!exitPgrm)
@@ -177,7 +182,7 @@ int main(int argc, char **argv)
 
 			if (!goToTitleScrn && !isPlayerAlive(gameWorld.mainPlayer))
 			{
-				gameOverScreen(screenBuffer, &goToTitleScrn, &gameWorld);
+				gameOverScreen(screenBuffer, &goToTitleScrn, &gameWorld, &menu);
 			}
 		}
 	}
@@ -204,11 +209,11 @@ int main(int argc, char **argv)
  * @param exitPgrm Returns by reference TRUE if player quits the title screen. 
  * @param numPlayers Returns by reference 1 for 1-player mode and 2 for 2-player
  * mode.
+ * @param titleScrn A pointer to a menu object to use as the Title Screen.
  */
-void titleScreen(UINT32* const screenBuffer, BOOL* exitPgrm, int* numPlayers)
+void titleScreen(UINT32* const screenBuffer, BOOL* exitPgrm, int* numPlayers,
+				 Menu* titleScrn)
 {
-	Menu      titleScrn;
-
 	const int X_TITLE           =  27;
 	const int Y_TITLE           =  77;
 
@@ -241,33 +246,33 @@ void titleScreen(UINT32* const screenBuffer, BOOL* exitPgrm, int* numPlayers)
 	*exitPgrm   = FALSE;
 	update_video_base(screenBuffer);
 
-	initMenu(&titleScrn, FALSE, BORDER_WIDTH, BORDER_HEIGHT);
+	initMenu(titleScrn, FALSE, BORDER_WIDTH, BORDER_HEIGHT);
 
-	oneBtnID = addButton(&titleScrn, X_1P_BUTTON, Y_1P_BUTTON,
+	oneBtnID = addButton(titleScrn, X_1P_BUTTON, Y_1P_BUTTON,
 						 HEIGHT_1P_BUTTON, WIDTH_1P_BUTTON, "1-Player");
 
-	twoBtnID = addButton(&titleScrn, X_2P_BUTTON, Y_2P_BUTTON,
+	twoBtnID = addButton(titleScrn, X_2P_BUTTON, Y_2P_BUTTON,
 						 HEIGHT_2P_BUTTON, WIDTH_2P_BUTTON, "2-Player");
 
-	fleeBtnID = addButton(&titleScrn, X_FLEE_BUTTON, Y_FLEE_BUTTON,
+	fleeBtnID = addButton(titleScrn, X_FLEE_BUTTON, Y_FLEE_BUTTON,
 						 HEIGHT_FLEE_BUTTON, WIDTH_FLEE_BUTTON, "FLEE");
 
-	infoBarID = addInfoBar(&titleScrn, Y_INFO_BAR_START, INFO_BAR_VSPACE);
+	infoBarID = addInfoBar(titleScrn, Y_INFO_BAR_START, INFO_BAR_VSPACE);
 	
-	addInfoText(&titleScrn, infoBarID, COPR_INFO);
-	addInfoText(&titleScrn, infoBarID, VER_INFO);
-	addInfoText(&titleScrn, infoBarID, LICENSE_INFO);
+	addInfoText(titleScrn, infoBarID, COPR_INFO);
+	addInfoText(titleScrn, infoBarID, VER_INFO);
+	addInfoText(titleScrn, infoBarID, LICENSE_INFO);
 
-	renderMenu(screenBuffer, &titleScrn);
+	renderMenu(screenBuffer, titleScrn);
 	renderTitle(screenBuffer, X_TITLE, Y_TITLE);
 
-	menuLoop(screenBuffer, &titleScrn);
+	menuLoop(screenBuffer, titleScrn);
 
-	*exitPgrm = (!hasSelectedButton(&titleScrn) ||
-				 isButtonSelected(&titleScrn, fleeBtnID));
+	*exitPgrm = (!hasSelectedButton(titleScrn) ||
+				 isButtonSelected(titleScrn, fleeBtnID));
 
-	if (isButtonSelected(&titleScrn, oneBtnID))  {*numPlayers = 1;}
-	if (isButtonSelected(&titleScrn, twoBtnID))  {*numPlayers = 2;}
+	if (isButtonSelected(titleScrn, oneBtnID))  {*numPlayers = 1;}
+	if (isButtonSelected(titleScrn, twoBtnID))  {*numPlayers = 2;}
 }
 
 /**
@@ -282,12 +287,11 @@ void titleScreen(UINT32* const screenBuffer, BOOL* exitPgrm, int* numPlayers)
  * @param goToTitleScrn Returns by reference TRUE if the game is to return to
  * the title screen state.
  * @param gameWorld The world object which holds all game data.
+ * @param goverScrn A pointer to a menu object to use as the Game Over Screen.
  */
 void gameOverScreen(UINT32* const screenBuffer, BOOL* goToTitleScrn,
-					World* gameWorld)
-{
-	Menu            goverScrn;
-	
+					World* gameWorld, Menu* goverScrn)
+{	
 	const int       X_PLAY_AGAIN_BUTTON      = 150;
 	const int       Y_PLAY_AGAIN_BUTTON      = 281;
 	const int       HEIGHT_PLAY_AGAIN_BUTTON =  40;
@@ -326,15 +330,15 @@ void gameOverScreen(UINT32* const screenBuffer, BOOL* goToTitleScrn,
 
 	update_video_base(screenBuffer);
 
-	initMenu(&goverScrn, TRUE, 0, 0);
+	initMenu(goverScrn, TRUE, 0, 0);
 
-	addButton(&goverScrn, X_PLAY_AGAIN_BUTTON, Y_PLAY_AGAIN_BUTTON,
+	addButton(goverScrn, X_PLAY_AGAIN_BUTTON, Y_PLAY_AGAIN_BUTTON,
 			  HEIGHT_PLAY_AGAIN_BUTTON, WIDTH_PLAY_AGAIN_BUTTON, "PLAY AGAIN");
 
-	reBtnID = addButton(&goverScrn, X_RETREAT_BUTTON, Y_RETREAT_BUTTON,
+	reBtnID = addButton(goverScrn, X_RETREAT_BUTTON, Y_RETREAT_BUTTON,
 			  			HEIGHT_RETREAT_BUTTON, WIDTH_RETREAT_BUTTON, "RETREAT");
 
-	renderMenu(screenBuffer, &goverScrn);
+	renderMenu(screenBuffer, goverScrn);
 	renderGameOver(screenBuffer, X_GAME_OVER, Y_GAME_OVER);
 
 	getGoverScoreCoord(gameWorld->numPlayers, 1, &xScore1P, &yScore1P);
@@ -371,10 +375,10 @@ void gameOverScreen(UINT32* const screenBuffer, BOOL* goToTitleScrn,
 		renderLabel((UINT16 *)screenBuffer, &winner, TRUE);
 	}
 
-	menuLoop(screenBuffer, &goverScrn);
+	menuLoop(screenBuffer, goverScrn);
 
-	*goToTitleScrn = (!hasSelectedButton(&goverScrn) ||
-					  isButtonSelected(&goverScrn, reBtnID));
+	*goToTitleScrn = (!hasSelectedButton(goverScrn) ||
+					  isButtonSelected(goverScrn, reBtnID));
 }
 
 /**
