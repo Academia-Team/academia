@@ -14,6 +14,40 @@
 #include "move.h"
 #include "super.h"
 
+/**
+ * @brief Checks if the given coordinates intersects with a button.
+ * 
+ * @param xCoord The x coordinate (in pixels starting at zero) to check for an
+ * intersection with a button.
+ * @param yCoord The y coordinate (in pixels starting at zero) to check for an
+ * intersection with a button.
+ * @param button The button object to check for an intersection.
+ * 
+ * @return TRUE if the coordinates intersect with the given button; false
+ * otherwise.
+*/
+#define coordInBtn(xCoord, yCoord, button) \
+	(xCoord >= button.x && xCoord <= (button.x + button.width - 1) \
+	&& yCoord >= button.y && yCoord <= (button.y + button.height - 1))
+
+int btnCollision(const Menu* const menu, int x, int y)
+{
+	int index;
+	int ID;
+
+	for (index = 0, ID = NO_BTN_SEL;
+		 index < menu->buttonFillLevel && ID == NO_BTN_SEL;
+		 index++)
+	{
+		if (coordInBtn(x, y, menu->buttons[index]))
+		{
+			ID = index;
+		}
+	}
+
+	return ID;
+}
+
 int handleHazardCollision(World* world, Player* player)
 {
 	int immunityTime = -1;

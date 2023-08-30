@@ -113,3 +113,8 @@ void show_cursor(void)
 	}
 	set_ipl(oldIpl);
 }
+
+BOOL cursor_shown(void)
+{
+	return plotMouse;
+}

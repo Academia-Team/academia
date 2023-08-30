@@ -150,7 +150,7 @@
 /**
  * @brief The maximum number of characters that can be in a label.
  */
-#define MAX_LABEL_LEN 32
+#define MAX_LABEL_LEN 35
 
 
 #define MAX_OBSTACLE_IN_ROW 6
@@ -168,6 +168,10 @@
 #define MIN_VIS_X_CAR MIN_CELL_X
 #define MIN_VIS_X_FEATHERS MIN_CELL_X
 #define MIN_VIS_X_TRAIN -48
+
+#define MAX_NUM_INFOBAR      2
+#define MAX_NUM_MENU_BUTTON  6
+#define NO_BTN_SEL          -1
 
 typedef enum
 {
@@ -233,11 +237,32 @@ typedef struct
 
 typedef struct
 {
-	int y;
-	int spacingBetweenLabels;
-	int numLabels;
+	int   y;
+	int   spacingBetweenLabels;
+	int   numLabels;
+	BOOL  needsUpdate;
 	Label labels[MAX_INFO_LABELS];
 } InfoBar;
+
+typedef struct
+{
+	Button buttons[MAX_NUM_MENU_BUTTON];
+	int buttonFillLevel;
+
+	int oldButtonSel;
+	int buttonSel;
+	int futureButtonSel;
+
+	InfoBar infoBars[MAX_NUM_INFOBAR];
+	int infobarFillLevel;
+
+	int  borderWidth;
+	int  borderHeight;
+	BOOL initialRender;
+
+	BOOL blackScreen;
+} Menu;
+
 
 typedef struct
 {
@@ -434,48 +459,56 @@ void getPlayerNextMove(const Player * const player, MoveFrame *nextMovement);
 	(playerObj).immune = !((playerObj).immune)
 
 /**
- * @brief Initializes a InfoBar object.
+ * @brief Add a InfoBar to the given Menu object.
  * @details The InfoBar will generate and manage labels corresponding to the
  * given text. All the labels will be given values such that they will be
  * horizontally centered on screen. Any invalid values entered will result in
  * the given object entering an undefined state.
  * 
- * @param infoBar A pointer to the InfoBar object to be initialized.
+ * If the maximum number of info bars in an object has been reached, nothing
+ * will be added.
+ * 
+ * @param menu A pointer to the Menu object where the InfoBar will be added.
  * @param y The starting y pixel coordinate for the InfoBar object. Any value
  * that results in coordinates that are out of bounds is invalid.
  * @param spacing The amount of vertical space (in pixels) between each label
  * in the infoBar. Any value that results in coordinates that are out of bounds
  * in invalid.
- * @param numLabels The number of labels to place into the object. It must be a
- * positive number that is less than the currently defined MAX_INFO_LABELS.
+ * @param numLabels The number of labels to place into the InfoBar object. It
+ * must be a positive number that is less than the currently defined
+ * MAX_INFO_LABELS.
  * @param ... The null-terminated strings that will be stored within the
  * infoBar. The number of strings must correspond to the value of numLabels.
+ * 
+ * @return A integral ID correspond to the InfoBar or -1 if a InfoBar couldn't
+ * be added.
  */
-void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels, ...);
+int addInfoBar(Menu* menu, int y, int spacing, int numLabels, ...);
 
 /**
- * @brief Adds the given text to the InfoBar object.
+ * @brief Adds the given text to the InfoBar object in a given menu.
  * @details The text must not cause the InfoBar object to exceed the confines of
  * the screen. The object will not be modified if there is no more room to add
  * the text.
  * 
- * @param infoBar A pointer to the InfoBar object to be given more text.
+ * @param menu The menu where the InfoBar object resides.
+ * @param ID The identifier for the InfoBar object.
  * @param string The text that should be added to the InfoBar object. Must be
  * null-terminated.
  */
-void addInfoText(InfoBar* infoBar, char* string);
+void addInfoText(Menu* menu, int ID, char* string);
 
 /**
  * @brief Removes the label at the given index from the InfoBar object.
  * @details The object will not be modified if the index is out of range.
  * 
- * @param infoBar A pointer to the InfoBar object that needs to have text
- * removed.
+ * @param menu The menu where the InfoBar object resides.
+ * @param ID The identifier for the InfoBar object.
  * @param index The zero-indexed value corresponding to text that was previously
  * added to the object. The largest index always corresponds to the most
  * recently added text. Any negative index is invalid.
  */
-void removeInfoText(InfoBar* infoBar, int index);
+void removeInfoText(Menu* menu, int ID, int index);
 
 /**
  * @brief Initializes a CorePlayer object.
@@ -603,6 +636,28 @@ void initLabel(Label* label, int x, int y, char *text);
 void updateScore (UINT32 value, Score* scoreBox);
 
 /**
+ * @brief Copy the score values from one object to another.
+ * 
+ * @param dest The Score object whose value will be changed.
+ * @param src The Score object which contains the desired value.
+ */
+void copyScore(Score* dest, const Score* const src);
+
+/**
+ * @brief Compares the scores given to each other and returns the result.
+ * @details The magnitude of the returned value corresponds to the difference
+ * in value between the two Score objects.
+ * 
+ * @param s1 The first Score object to compare.
+ * @param s2 The second Score object to compare.
+ * @return An integral value corresponding to the value difference between the
+ * two objects. Zero will be returned if the two Score objects have the same
+ * value, positive if the first object is greater than the second, and negative
+ * if the first object is less than the second.
+ */
+UINT32 cmpScore(const Score* const s1, const Score* const s2);
+
+/**
  * @brief Returns true if a hazard can theoretically be placed based off of
  * probability.
  * 
@@ -648,19 +703,114 @@ void lostCoreLife (CorePlayer* player);
 void coordToIndex(const World* const world, int* row, int* column, int x, int y);
 
 /**
- * @brief Initializes a Button with the given coordinates, size, and string.
+ * @brief Adds a Button with the given coordinates, size, and string to a Menu
+ * object.
  * @details The x, y coordinate is the top left corner of the button. Height 
  * grows downwards and width grows rightwards. Text will be centered on the 
  * button.
  * 
- * @param button A pointer to the Button object to initialize.
+ * If the maximum number of info bars in an object has been reached, nothing
+ * will be added.
+ * 
+ * @param menu A pointer to the Menu object to add a button to.
  * @param x The x coordinate of the Button (in pixels).
  * @param y The y coordinate of the Button (in pixels). 
  * @param height The height of the Button (in pixels).
  * @param width The width of the Button (in pixels).
  * @param text The text that should be a part of the Button.
+ * 
+ * @return A integral ID correspond to the button or -1 if a button couldn't be
+ * added.
  */
-void initButton(Button* button, int x, int y, int height, int width,
-				LabelStr text);
+int addButton(Menu* menu, int x, int y, int height, int width, LabelStr text);
+
+/**
+ * @brief Selects the button in a Menu with the specified ID.
+ * @details If the ID is invalid, nothing will be selected. As well, nothing
+ * will take effect before the state of the buttons are processed.
+ * 
+ * @param menu A pointer to the Menu object to select the buttons for.
+ * @param buttonID The identifier for a button.
+ */
+#define selectButton(menu, buttonID) \
+	if (buttonID >= 0 && buttonID < menu->buttonFillLevel) \
+	{ \
+		(menu)->futureButtonSel = buttonID; \
+	}
+
+/**
+ * @brief Selects the button in a Menu with an ID sequential to the currently
+ * selected button.
+ * @details Nothing will take effect before the state of the buttons are
+ * processed.
+ * 
+ * @param menu A pointer to the Menu object to select the buttons for.
+ */
+#define selectNextButton(menu) \
+	(menu)->futureButtonSel = ((menu)->buttonSel + 1) % (menu)->buttonFillLevel
+
+/**
+ * @brief Unselects the currently selected button.
+ * @details Nothing will take effect before the state of the buttons are
+ * processed.
+ * 
+ * @param menu A pointer to the Menu object to deselect the button in.
+ */
+#define unselectButton(menu) (menu)->futureButtonSel = NO_BTN_SEL
+
+/**
+ * @brief Returns if the button with the given button identifier is selected.
+ * 
+ * @param menu A pointer to the Menu object to check for the button in.
+ * @param buttonID The ID of the button to check.
+ * @return TRUE if the button is selected; FALSE otherwise.
+ */
+#define isButtonSelected(menu, buttonID) \
+	(hasSelectedButton(menu) && (menu)->buttonSel == buttonID)
+
+/**
+ * @brief Returns if a button in the given menu is selected.
+ * 
+ * @param menu A pointer to the Menu object to check for selected buttons in.
+ * @return TRUE if the button is selected; FALSE otherwise.
+ */
+#define hasSelectedButton(menu) ((menu)->buttonSel != NO_BTN_SEL)
+
+/**
+ * @brief Returns if the state of the buttons in a given Menu will change the
+ * next time it is processed.
+ * 
+ * @param menu A pointer to the Menu object to check for a state change in.
+ * @return TRUE if the state will change; FALSE otherwise.
+ */
+#define buttonStateChange(menu) ((menu)->futureButtonSel != (menu)->buttonSel)
+
+/**
+ * @brief Process changes to the state of the buttons in the given Menu.
+ * @details If no button changes have occurred since the last call to the
+ * function, the currently selected button will be preserved.
+ * 
+ * @param menu A pointer to the Menu object to process.
+ */
+#define processButtonState(menu) \
+	menu->oldButtonSel = menu->buttonSel; \
+	menu->buttonSel    = menu->futureButtonSel; \
+	\
+	menu->buttons[menu->oldButtonSel].selected = FALSE; \
+	menu->buttons[menu->buttonSel].selected    = TRUE
+
+/**
+ * @brief Initializes a Menu with the given values.
+ * 
+ * @param menu The Menu object to initialize.
+ * @param blackScreen When TRUE, the border will be white and the rest of the
+ * screen where the menu will be rendered will be black. If FALSE, the inverse
+ * will be true.
+ * @param borderWidth The length of the border desired. Cannot be negative, but
+ * may be zero.
+ * @param borderHeight The height of the border desired. Cannot be negative, but
+ * may be zero.
+ */
+void initMenu(Menu* menu, BOOL blackScreen, int borderWidth, int borderHeight);
 
 #endif

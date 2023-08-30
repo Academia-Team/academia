@@ -270,13 +270,46 @@ void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen)
 	}
 }
 
-void renderInfoBar(UINT16* base, const InfoBar* const infoBar)
+/**
+ * @brief Renders a InfoBar to the screen.
+ * @details Every character stored in the infoBar are rendered as 16x16
+ * character sprites. Each string stored within the object is horizontally
+ * centered on the screen at the object's provided y pixel position.
+ * 
+ * @param base The location in memory to plot at.
+ * @param infoBar The infoBar that is to be rendered to the screen.
+ * @param blackScrn Indicates whether the InfoBar will be rendered on a black
+ * or white area.
+ */
+void renderInfoBar(UINT16* base, InfoBar* const infoBar, BOOL blackScrn)
 {
+	const int INFO_BAR_LINES = infoBar->numLabels *
+							   (FONT16_HEIGHT + infoBar->spacingBetweenLabels) -
+							   infoBar->spacingBetweenLabels;
+	int counter;
 	int index;
 
-	for (index = 0; index < infoBar->numLabels; index++)
+	if (infoBar->needsUpdate)
 	{
-		renderLabel(base, &infoBar->labels[index], TRUE);
+		if (blackScrn)
+		{
+			for (counter = infoBar->y; counter < infoBar->y + INFO_BAR_LINES;
+				counter++)
+			{
+				hline((UINT32 *)base, 0, SCRN_MAX_X, counter);
+			}
+		}
+		else
+		{
+			clr_area((UINT32 *)base, 0, SCRN_LEN, infoBar->y, INFO_BAR_LINES);
+		}
+
+		for (index = 0; index < infoBar->numLabels; index++)
+		{
+			renderLabel(base, &infoBar->labels[index], blackScrn);
+		}
+
+		infoBar->needsUpdate = FALSE;
 	}
 }
 
@@ -318,6 +351,14 @@ void renderLives(UINT16* base, Lives* const lives)
 				getFont16Digit(lives->value, NULL), TRUE, TRUE);
 }
 
+/**
+ * @brief Renders a button to the screen.
+ * 
+ * @param base The location in memory to plot at.
+ * @param button The Button that is to be rendered to the screen.
+ * @param blackScreen When set to true indicates that button is being rendered 
+ * on top of a black background.
+ */
 void renderButton(UINT32* base, Button* button, BOOL blackScreen)
 {
 	const int BORDER_WIDTH  = 3;
@@ -386,6 +427,61 @@ void renderCursor(UINT16* base, int x, int y)
 	if (getMouseCursor(mouseCursor) != NULL)
 	{
 		plot_rast16(base, x, y, CURSOR_HEIGHT, mouseCursor, FALSE, TRUE);
+	}
+}
+
+void renderMenu(UINT32* base, Menu* menu)
+{
+	int index;
+
+	if (!menu->initialRender)
+	{
+		if (menu->blackScreen)
+		{
+			fill_scrn(base);
+			clr_area(base, 0, menu->borderWidth, 0, menu->borderHeight);
+		}
+		else
+		{
+			fill_scrn(base);
+			clr_area(base, menu->borderWidth, SCRN_LEN - menu->borderWidth * 2,
+					menu->borderHeight, SCRN_HEIGHT - menu->borderHeight * 2);
+		}
+
+		for (index = 0; index < menu->buttonFillLevel; index++)
+		{
+			renderButton(base, &menu->buttons[index], menu->blackScreen);
+		}
+
+		menu->initialRender = TRUE;
+	}
+	else
+	{
+		/* If both variables hold the same value, then the same button is still
+		selected, so no need to re-render. */
+		if (menu->buttonSel != menu->oldButtonSel)
+		{
+			if (menu->buttonSel != NO_BTN_SEL)
+			{
+				renderButton(base, &menu->buttons[menu->buttonSel],
+						 	menu->blackScreen);
+			}
+
+			if (menu->oldButtonSel != NO_BTN_SEL)
+			{
+				renderButton(base, &menu->buttons[menu->oldButtonSel],
+						 	menu->blackScreen);
+			}
+		}
+	}
+
+	for (index = 0; index < menu->infobarFillLevel; index++)
+	{
+		/* InfoBar should be distinct from rest of menu. Hence, why InfoBar will
+		   be rendered with a black background when the rest of the menu is white
+		   and vice-versa. */
+		renderInfoBar((UINT16 *)base, &menu->infoBars[index],
+					  !menu->blackScreen);
 	}
 }
 

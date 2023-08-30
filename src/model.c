@@ -32,12 +32,56 @@
 
 BOOL probPlaceHazard(HazType hazard);
 
-void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels, ...)
+void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels,
+				 va_list *strList);
+void infoTextAdder(InfoBar* infoBar, char* string);
+
+void initButton(Button* button, int x, int y, int height, int width,
+				LabelStr text);
+
+int addInfoBar(Menu* menu, int y, int spacing, int numLabels, ...)
+{
+	va_list strList;
+	int     returnVal = -1;
+
+	va_start(strList, numLabels);
+
+	if (menu->infobarFillLevel < MAX_NUM_INFOBAR)
+	{
+		returnVal = menu->infobarFillLevel;
+		initInfoBar(&menu->infoBars[menu->infobarFillLevel++], y, spacing,
+					numLabels, &strList);
+	}
+
+	va_end(strList);
+
+	return returnVal;
+}
+
+/**
+ * @brief Initializes a InfoBar object.
+ * @details The InfoBar will generate and manage labels corresponding to the
+ * given text. All the labels will be given values such that they will be
+ * horizontally centered on screen. Any invalid values entered will result in
+ * the given object entering an undefined state.
+ * 
+ * @param infoBar A pointer to the InfoBar object to be initialized.
+ * @param y The starting y pixel coordinate for the InfoBar object. Any value
+ * that results in coordinates that are out of bounds is invalid.
+ * @param spacing The amount of vertical space (in pixels) between each label
+ * in the infoBar. Any value that results in coordinates that are out of bounds
+ * in invalid.
+ * @param numLabels The number of labels to place into the object. It must be a
+ * positive number that is less than the currently defined MAX_INFO_LABELS.
+ * @param strList The null-terminated strings that will be stored within the
+ * infoBar. The number of strings must correspond to the value of numLabels.
+ */
+void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels,
+				 va_list *strList)
 {
 	const int FINAL_Y = y + (numLabels * (INFO_BAR_FONT_HEIGHT + spacing) -
 						spacing - 1);
-
-	va_list argList;
+	
 	int     index;
 
 	infoBar->numLabels = 0;
@@ -47,21 +91,36 @@ void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels, ...)
 	{
 		infoBar->y = y;
 		infoBar->spacingBetweenLabels = spacing;
-		va_start(argList, numLabels);
+		infoBar->needsUpdate = TRUE;
 
 		for (index = 0; index < numLabels; index++)
 		{
-			addInfoText(infoBar, va_arg(argList, char *));
+			infoTextAdder(infoBar, va_arg(*strList, char *));
 		}
 	}
-
-	va_end(argList);
 }
 
-void addInfoText(InfoBar* infoBar, char* string)
+void addInfoText(Menu* menu, int ID, char* string)
 {
-	const int NEW_X = SCRN_MID_X - ((strlen(string) * INFO_BAR_FONT_WIDTH) >>
-					  1);
+	if (ID >= 0 && ID < menu->infobarFillLevel)
+	{
+		infoTextAdder(&menu->infoBars[ID], string);
+	}
+}
+
+/**
+ * @brief Adds the given text to the InfoBar object.
+ * @details The text must not cause the InfoBar object to exceed the confines of
+ * the screen. The object will not be modified if there is no more room to add
+ * the text.
+ * 
+ * @param infoBar A pointer to the target InfoBar object.
+ * @param string The text that should be added to the InfoBar object. Must be
+ * null-terminated.
+ */
+void infoTextAdder(InfoBar* infoBar, char* string)
+{
+	const int NEW_X = horzCentreScrn(string, INFO_BAR_FONT_WIDTH);
 	const int NEW_Y = (infoBar->numLabels == 0 ? infoBar->y :
 					   infoBar->labels[infoBar->numLabels - 1].y +
 					   INFO_BAR_FONT_HEIGHT + infoBar->spacingBetweenLabels);
@@ -71,11 +130,15 @@ void addInfoText(InfoBar* infoBar, char* string)
 	{
 		initLabel(&infoBar->labels[infoBar->numLabels++],
 				  (NEW_X < 0 ? 0 : NEW_X), NEW_Y, string);
+
+		infoBar->needsUpdate = TRUE;
 	}
 }
 
-void removeInfoText(InfoBar* infoBar, int index)
+void removeInfoText(Menu* menu, int ID, int index)
 {
+	InfoBar* const infoBar = &menu->infoBars[ID];
+
 	int replaceIndex;
 
 	if (index >= 0 && index < infoBar->numLabels)
@@ -87,6 +150,7 @@ void removeInfoText(InfoBar* infoBar, int index)
 		}
 
 		infoBar->numLabels--;
+		infoBar->needsUpdate = TRUE;
 	}
 }
 
@@ -363,6 +427,16 @@ void updateScore (UINT32 value, Score* scoreBox)
 	}
 }
 
+void copyScore(Score* dest, const Score* const src)
+{
+	dest->value = src->value;
+}
+
+UINT32 cmpScore(const Score* const s1, const Score* const s2)
+{
+	return s1->value - s2->value;
+}
+
 void initLives (int x, int y, Lives* lifeBox)
 {
 	lifeBox->value = START_LIVES;
@@ -465,6 +539,33 @@ void coordToIndex(const World* const world, int* row, int* column, int x, int y)
 		   world->usableRows;
 }
 
+int addButton(Menu* menu, int x, int y, int height, int width, LabelStr text)
+{
+	int returnVal = -1;
+
+	if (menu->buttonFillLevel < MAX_NUM_MENU_BUTTON)
+	{
+		returnVal = menu->buttonFillLevel;
+		initButton(&menu->buttons[menu->buttonFillLevel++], x, y, height, width,
+				   text);
+	}
+
+	return returnVal;
+}
+
+/**
+ * @brief Initializes a Button with the given coordinates, size, and string.
+ * @details The x, y coordinate is the top left corner of the button. Height 
+ * grows downwards and width grows rightwards. Text will be centered on the 
+ * button.
+ * 
+ * @param button A pointer to the Button object to initialize.
+ * @param x The x coordinate of the Button (in pixels).
+ * @param y The y coordinate of the Button (in pixels). 
+ * @param height The height of the Button (in pixels).
+ * @param width The width of the Button (in pixels).
+ * @param text The text that should be a part of the Button.
+ */
 void initButton(Button* button, int x, int y, int height, int width,
 				LabelStr text)
 {
@@ -476,6 +577,7 @@ void initButton(Button* button, int x, int y, int height, int width,
 	button->height = height;
 	button->width = width;
 
+	/* Center the label vertically and horizontally on the button. */
 	textX = x + ((width / 2 - 1) - ((strlen(text) / 2) * INFO_BAR_FONT_WIDTH));
 	textY = y + ((height / 2 - 1) - ((INFO_BAR_FONT_HEIGHT >> 1) - 1));
 	initLabel(&button->label, textX, textY, text);
@@ -483,3 +585,14 @@ void initButton(Button* button, int x, int y, int height, int width,
 	button->selected = FALSE;
 }
 
+void initMenu(Menu* menu, BOOL blackScreen, int borderWidth, int borderHeight)
+{
+	menu->buttonFillLevel = 0;
+	menu->oldButtonSel = menu->buttonSel = menu->futureButtonSel = NO_BTN_SEL;
+	menu->infobarFillLevel = 0;
+
+	menu->blackScreen    = blackScreen;
+	menu->borderWidth    = (borderWidth < 0 ? 0 : borderWidth);
+	menu->borderHeight   = (borderHeight < 0 ? 0 : borderHeight);
+	menu->initialRender = FALSE;
+}

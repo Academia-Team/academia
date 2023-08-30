@@ -9,6 +9,8 @@
 #ifndef IN_VBL_H
 #define IN_VBL_H
 
+#include "bool.h"
+
 /**
  * @brief Stops the VBL ISR from showing a cursor on the screen.
  * @details Any remaining cursors on screen will be erased.
@@ -27,5 +29,12 @@ void hide_cursor(void);
  * @brief Allows the VBL ISR to show a cursor on the screen.
  */
 void show_cursor(void);
+
+/**
+ * @brief Indicates whether the cursor is currently rendered on screen or not.
+ * 
+ * @return TRUE if cursor is on screen; FALSE otherwise.
+ */
+BOOL cursor_shown(void);
 
 #endif
