@@ -6,7 +6,6 @@
  * @copyright Copyright Academia Team 2023
  */
 
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -16,6 +15,8 @@
 #include "num_util.h"
 #include "scrn.h"
 #include "types.h"
+
+#define MAX_INFO_BAR_Y (SCRN_MAX_Y - (INFO_BAR_FONT_HEIGHT - 1))
 
 /**
  * @brief Randomly chooses between LEFT and RIGHT.
@@ -32,106 +33,58 @@
 
 BOOL probPlaceHazard(HazType hazard);
 
-void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels,
-				 va_list *strList);
-void infoTextAdder(InfoBar* infoBar, char* string);
-
 void initButton(Button* button, int x, int y, int height, int width,
 				LabelStr text);
 
-int addInfoBar(Menu* menu, int y, int spacing, int numLabels, ...)
+int addInfoBar(Menu* menu, int y, int spacing)
 {
-	va_list strList;
-	int     returnVal = -1;
+	int ID = -1;
 
-	va_start(strList, numLabels);
-
-	if (menu->infobarFillLevel < MAX_NUM_INFOBAR)
+	if (menu->infobarFillLevel < MAX_NUM_INFOBAR && y >= 0 &&
+		y <= MAX_INFO_BAR_Y && spacing >= 0 && spacing < SCRN_HEIGHT)
 	{
-		returnVal = menu->infobarFillLevel;
-		initInfoBar(&menu->infoBars[menu->infobarFillLevel++], y, spacing,
-					numLabels, &strList);
+		ID = menu->infobarFillLevel++;
+		
+		menu->infoBars[ID].y = y;
+		menu->infoBars[ID].spacingBetweenLabels = spacing;
+		menu->infoBars[ID].numLabels = 0;
+		menu->infoBars[ID].needsUpdate = TRUE;
 	}
 
-	va_end(strList);
-
-	return returnVal;
-}
-
-/**
- * @brief Initializes a InfoBar object.
- * @details The InfoBar will generate and manage labels corresponding to the
- * given text. All the labels will be given values such that they will be
- * horizontally centered on screen. Any invalid values entered will result in
- * the given object entering an undefined state.
- * 
- * @param infoBar A pointer to the InfoBar object to be initialized.
- * @param y The starting y pixel coordinate for the InfoBar object. Any value
- * that results in coordinates that are out of bounds is invalid.
- * @param spacing The amount of vertical space (in pixels) between each label
- * in the infoBar. Any value that results in coordinates that are out of bounds
- * in invalid.
- * @param numLabels The number of labels to place into the object. It must be a
- * positive number that is less than the currently defined MAX_INFO_LABELS.
- * @param strList The null-terminated strings that will be stored within the
- * infoBar. The number of strings must correspond to the value of numLabels.
- */
-void initInfoBar(InfoBar* infoBar, int y, int spacing, int numLabels,
-				 va_list *strList)
-{
-	const int FINAL_Y = y + (numLabels * (INFO_BAR_FONT_HEIGHT + spacing) -
-						spacing - 1);
-	
-	int     index;
-
-	infoBar->numLabels = 0;
-	
-	if (numLabels > 0 && numLabels <= MAX_INFO_LABELS &&
-		y >= 0 && y <= SCRN_MAX_Y && FINAL_Y <= SCRN_MAX_Y)
-	{
-		infoBar->y = y;
-		infoBar->spacingBetweenLabels = spacing;
-		infoBar->needsUpdate = TRUE;
-
-		for (index = 0; index < numLabels; index++)
-		{
-			infoTextAdder(infoBar, va_arg(*strList, char *));
-		}
-	}
+	return ID;
 }
 
 void addInfoText(Menu* menu, int ID, char* string)
 {
+	const int NEW_X = horzCentreScrn(string, INFO_BAR_FONT_WIDTH);
+
+	int newY;
+	int prevY;
+	int endY;
+	int textIdx;
+
 	if (ID >= 0 && ID < menu->infobarFillLevel)
 	{
-		infoTextAdder(&menu->infoBars[ID], string);
-	}
-}
+		textIdx = menu->infoBars[ID].numLabels;
+		newY = menu->infoBars[ID].y;
 
-/**
- * @brief Adds the given text to the InfoBar object.
- * @details The text must not cause the InfoBar object to exceed the confines of
- * the screen. The object will not be modified if there is no more room to add
- * the text.
- * 
- * @param infoBar A pointer to the target InfoBar object.
- * @param string The text that should be added to the InfoBar object. Must be
- * null-terminated.
- */
-void infoTextAdder(InfoBar* infoBar, char* string)
-{
-	const int NEW_X = horzCentreScrn(string, INFO_BAR_FONT_WIDTH);
-	const int NEW_Y = (infoBar->numLabels == 0 ? infoBar->y :
-					   infoBar->labels[infoBar->numLabels - 1].y +
-					   INFO_BAR_FONT_HEIGHT + infoBar->spacingBetweenLabels);
-	const int END_Y = NEW_Y + INFO_BAR_FONT_HEIGHT - 1;
+		if (menu->infoBars[ID].numLabels > 0)
+		{
+			prevY = menu->infoBars[ID].labels[textIdx - 1].y;
 
-	if (infoBar->numLabels < MAX_INFO_LABELS - 1 && END_Y <= SCRN_MAX_Y)
-	{
-		initLabel(&infoBar->labels[infoBar->numLabels++],
-				  (NEW_X < 0 ? 0 : NEW_X), NEW_Y, string);
+			newY = prevY + INFO_BAR_FONT_HEIGHT +
+				   menu->infoBars[ID].spacingBetweenLabels;
+		}
 
-		infoBar->needsUpdate = TRUE;
+		endY = newY + INFO_BAR_FONT_HEIGHT - 1;
+
+		if (textIdx < MAX_INFO_LABELS && endY <= SCRN_MAX_Y)
+		{
+			initLabel(&menu->infoBars[ID].labels[textIdx], NEW_X, newY, string);
+
+			menu->infoBars[ID].needsUpdate = TRUE;
+			menu->infoBars[ID].numLabels++;
+		}
 	}
 }
 

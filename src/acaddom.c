@@ -230,12 +230,12 @@ void titleScreen(UINT32* const screenBuffer, BOOL* exitPgrm, int* numPlayers)
 	const int BORDER_HEIGHT      =   3;
 	const int BORDER_WIDTH       =   3;
 	const int INFO_BAR_VSPACE    =   0;
-	const int NUM_INFO_BAR_TEXT  =   3;
 	const int Y_INFO_BAR_START   =   BORDER_HEIGHT;
 
 	int       oneBtnID;
 	int       twoBtnID;
 	int       fleeBtnID;
+	int       infoBarID;
 
 	*numPlayers = 0;
 	*exitPgrm   = FALSE;
@@ -252,8 +252,11 @@ void titleScreen(UINT32* const screenBuffer, BOOL* exitPgrm, int* numPlayers)
 	fleeBtnID = addButton(&titleScrn, X_FLEE_BUTTON, Y_FLEE_BUTTON,
 						 HEIGHT_FLEE_BUTTON, WIDTH_FLEE_BUTTON, "FLEE");
 
-	addInfoBar(&titleScrn, Y_INFO_BAR_START, INFO_BAR_VSPACE,
-			   NUM_INFO_BAR_TEXT, COPR_INFO, VER_INFO, LICENSE_INFO);
+	infoBarID = addInfoBar(&titleScrn, Y_INFO_BAR_START, INFO_BAR_VSPACE);
+	
+	addInfoText(&titleScrn, infoBarID, COPR_INFO);
+	addInfoText(&titleScrn, infoBarID, VER_INFO);
+	addInfoText(&titleScrn, infoBarID, LICENSE_INFO);
 
 	renderMenu(screenBuffer, &titleScrn);
 	renderTitle(screenBuffer, X_TITLE, Y_TITLE);
