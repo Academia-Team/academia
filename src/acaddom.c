@@ -470,6 +470,7 @@ void menuLoop(UINT32 *screenBuffer, Menu *menu)
 			if (btnSelected != NO_BTN_SEL)
 			{
 				selectButton(menu, btnSelected);
+				btnSelected = NO_BTN_SEL;
 			}
 			else
 			{
@@ -485,24 +486,24 @@ void menuLoop(UINT32 *screenBuffer, Menu *menu)
 			exitLoop = TRUE;
 		}
 		
-		processButtonState(menu);
-
-		/* It is necessary to temporarily disable the cursor if it is above any
-		   buttons. Otherwise, a image of the cursor could become embedded
-		   into a button. */
-		if (btnSelected != NO_BTN_SEL)
+		if (buttonStateChange(menu))
 		{
-			hide_cursor();
+			processButtonState(menu);
+
+			/* Hide the cursor when rendering in order to avoid the cursor image
+			   becoming embedded in elements such as buttons. */
+			if (useMouse)
+			{
+				hide_cursor();
+			}
+
+			renderMenu(screenBuffer, menu);
+
+			if (useMouse)
+			{
+				show_cursor();
+			}
 		}
-
-		renderMenu(screenBuffer, menu);
-
-		if (btnSelected != NO_BTN_SEL)
-		{
-			show_cursor();
-		}
-
-		btnSelected = NO_BTN_SEL;
 	}
 
 	hide_cursor();
