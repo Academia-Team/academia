@@ -286,32 +286,17 @@ void initHazard(Row* row)
 		placementLimit = 0;
 	}
 
-	for (index = 0; index < MAX_HAZARD_IN_ROW; index++)
-	{
-		row->hazards[index].hazardType = NO_HAZ;
-		if (hazard == TRAIN_HAZ)
-		{
-			row->hazards[index].orientation = M_NONE;
-		}
-		else
-		{
-			row->hazards[index].orientation = (row->horzDirection == M_LEFT ?
-										 	   M_WEST : M_EAST);
-		}
-	}
-	
-	index = 0;
-	while (index < placementLimit && hazX <= MAX_CELL_X)
+	for (index = 0; index < placementLimit && hazX <= MAX_CELL_X;
+		 hazX += CELL_LEN)
 	{
 		if (probPlaceHazard(hazard))
 		{
 			row->hazards[index].x          = hazX;
 			row->hazards[index].hazardType = hazard;
+			row->hazards[index].orientation = getHazOrientFromRow(row, hazard);
 			row->hazardCount++;
 			index++;
 		}
-
-		hazX += CELL_LEN;
 	}
 }
 

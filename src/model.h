@@ -436,6 +436,15 @@ typedef char HazName[MAX_HAZ_NAME_LEN + 1];
 	(playerObj).alive
 
 /**
+ * @brief Get the orientation for the given hazard type on the given row.
+ * 
+ * @param rowPtr A pointer to a row to use to get hazard direction.
+ * @param hazType The type of hazard to get the direction of.
+ */
+#define getHazOrientFromRow(rowPtr, hazType) \
+	(hazType == TRAIN_HAZ ? M_NONE : (rowPtr)->horzDirection)
+
+/**
  * @brief Determines whether a player may move or change orientation.
  * @param playerObj The Player object which may be moving.
  * @return A BOOL of TRUE if the given player could be moving; false otherwise.
