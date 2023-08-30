@@ -8,12 +8,14 @@
 						include scrn_asm.i
 
 						xdef	_IKBD_isr
+						xdef	_keyPressed
 
 						xref	_addToShiftBuffer
 						xref	_addToKeyBuffer
 						xref	_handleSpecialAction
 						xref	_hasSpecial
 						xref	_isKeyMod
+						xref	_mask_level_toggle
 						xref	_setRelMousePos
 
 IKBD_STATUS_REG:		equ		$FFFFFC00
@@ -24,6 +26,7 @@ IRQ_BIT:				equ		7
 IKBD_BREAK_BIT:			equ		7
 IKBD_MAX_SCANCODE:		equ		$72
 IKBD_MIN_SCANCODE:		equ		$01
+IKBD_PRIORITY_LEV:		equ		6
 
 IKBD_MIN_MOUSE_PKT_VAL:	equ		$F8
 MOUSE_RCLICK_BIT:		equ		0
@@ -219,6 +222,30 @@ MOUSE_THIRD_PKT:		ext.w	d0
 
 MOUSE_RETURN:			movem.l	(sp)+,d0-d7/a0-a6
 						unlk	a6
+						rts
+
+; UINT8 keyPressed(void)
+;
+; Brief: Returns if a key is being pressed or not.
+;
+; Register Table:
+; ---------------
+; d0	-	Holds the BOOLEAN value to be returned.
+
+_keyPressed:			move.w	#IKBD_PRIORITY_LEV,-(sp)
+						jsr		_mask_level_toggle
+						addq.l	#2,sp
+
+						tst.b	keys_pressed
+						beq		KEYP_NOT_PRESSED
+						move.b	#TRUE,d0
+						bra		KEYP_RETURN
+KEYP_NOT_PRESSED:		move.b	#FALSE,d0
+
+KEYP_RETURN:			move.w	#IKBD_PRIORITY_LEV,-(sp)
+						jsr		_mask_level_toggle
+						addq.l	#2,sp
+
 						rts
 
 delta_mouse_x:			dc.w	0

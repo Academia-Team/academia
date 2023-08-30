@@ -178,6 +178,13 @@ IKBD_Scancode getKey(void);
 IKBD_Scancode getBKey(void);
 
 /**
+ * @brief Returns if a key is being pressed or not.
+ * 
+ * @return TRUE if a key is being pressed; FALSE otherwise.
+ */
+UINT8 keyPressed(void);
+
+/**
  * @brief Checks if a left mouse click has happened.
  * @details The mouse's left click status will be reset after being checked.
  * 
