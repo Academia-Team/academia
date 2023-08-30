@@ -12,7 +12,7 @@
 					xref			_Su
 
 
-; void clr_scrn(UINT32 *base)
+; void clr_scrn(UINT32* const base)
 ;
 ; quick clear (uses movem to reduce fetch-execute cycle overhead)
 ; runs in about 1/100th of a second (at 8MHz)
@@ -36,7 +36,7 @@ clr_scrn_fill_loop:	movem.l			d1-7/a1-6,-(a0)
 clr_scrn_zeros:		ds.l			13
 
 
-; void fill_scrn(UINT32 *base)
+; void fill_scrn(UINT32* const base)
 ;
 ; quick fill (uses movem to reduce fetch-execute cycle overhead)
 ; runs in about 1/100th of a second (at 8MHz) instead of 1/50th
@@ -114,7 +114,7 @@ G_VBASE_RETURN:		move.l			d3,d0
 					rts
 
 
-;void set_video_base(UINT16 *base)
+;void set_video_base(UINT16* const base)
 ;
 ; Sets the frame buffer start address.
 ;

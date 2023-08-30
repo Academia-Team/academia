@@ -233,7 +233,7 @@
  * @param x The column to plot a pixel (starting at pixel zero).
  * @param y The row to plot a pixel (starting at pixel zero).
  */
-void plot_px(UINT8 *base, int x, int y);
+void plot_px(UINT8* const base, int x, int y);
 
 /**
  * @brief Plots a horizontal line.
@@ -262,7 +262,7 @@ void plot_px(UINT8 *base, int x, int y);
  * @param y The row in which to plot the horizontal line (in pixels starting at
  * zero).
  */
-void hline(UINT32 *base, int x1, int x2, int y);
+void hline(UINT32* const base, int x1, int x2, int y);
 
 /**
  * @brief Plots a 32-bit wide bitmap of any height.
@@ -309,8 +309,9 @@ void hline(UINT32 *base, int x1, int x2, int y);
  * black background. This will do an XOR with the black screen resulting in the 
  * bitmap being shown in white on the black background.
  */
-void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap, 
-				 BOOL destructive, BOOL blackScreen);
+void plot_rast32(UINT32* const base, int x, int y, int height,
+				 const UINT32* const bitmap, BOOL destructive,
+				 BOOL blackScreen);
 
 /**
  * @brief Plots a 32-bit wide alpha bitmap of any height.
@@ -345,7 +346,8 @@ void plot_rast32(UINT32 *base, int x, int y, int height, const UINT32 *bitmap,
  * @param height The height of the alpha bitmap. Must be one or greater.
  * @param bitmap The alpha bitmap that is to be plotted on screen.
  */
-void plot_alpha(UINT32 *base, int x, int y, int height, const UINT32 *bitmap);
+void plot_alpha(UINT32* const base, int x, int y, int height,
+				const UINT32* const bitmap);
 
 /**
  * @brief Plots a 16-bit wide bitmap of any height.
@@ -392,8 +394,9 @@ void plot_alpha(UINT32 *base, int x, int y, int height, const UINT32 *bitmap);
  * black background. This will do an XOR with the black screen resulting in the 
  * bitmap being shown in white on the black background.
  */
-void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
-				 BOOL destructive, BOOL blackScreen);
+void plot_rast16(UINT16* const base, int x, int y, int height,
+				 const UINT16* const bitmap, BOOL destructive,
+				 BOOL blackScreen);
 
 /**
  * @brief Plots a 8-bit wide bitmap of any height.
@@ -440,8 +443,8 @@ void plot_rast16(UINT16 *base, int x, int y, int height, const UINT16 *bitmap,
  * black background. This will do an XOR with the black screen resulting in the 
  * bitmap being shown in white on the black background.
  */
-void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
-				BOOL destructive, BOOL blackScreen);
+void plot_rast8(UINT8* const base, int x, int y, int height,
+				const UINT8* const bitmap, BOOL destructive, BOOL blackScreen);
 
 /**
  * @brief Plots a black rectangular area at the given memory location.
@@ -465,7 +468,7 @@ void plot_rast8(UINT8 *base, int x, int y, int height, const UINT8 *bitmap,
  * @param height The number of columns that should make up the rectangular area.
  * Must be one or greater.
  */
-void rect_area(UINT32 *base, int x, int length, int y, int height);
+void rect_area(UINT32* const base, int x, int length, int y, int height);
 
 /**
  * @brief Clears a rectangular area at the given memory location.
@@ -488,7 +491,7 @@ void rect_area(UINT32 *base, int x, int length, int y, int height);
  * @param height The number of columns that should make up the rectangular area.
  * Must be one or greater.
  */
-void clr_area(UINT32 *base, int x, int length, int y, int height);
+void clr_area(UINT32* const base, int x, int length, int y, int height);
 
 /**
  * @brief Sets all the pixels on the screen, thus setting the screen to black.
@@ -496,14 +499,14 @@ void clr_area(UINT32 *base, int x, int length, int y, int height);
  * @author Marc Schroeder
  * @author Richard Johnston
  */
-void fill_scrn(UINT32 *base);
+void fill_scrn(UINT32* const base);
 
 /**
  * @brief Clears all the pixels on the screen, thus setting the screen to white.
  * @param base The location in memory to plot at.
  * @author Marc Schroeder
  */
-void clr_scrn(UINT32 *base);
+void clr_scrn(UINT32* const base);
 
 /** 
  * @return UINT16* Returns the current frame buffer start address.
@@ -517,6 +520,6 @@ UINT16 *get_video_base(void);
  * 
  * @param base The desired frame buffer start address.
  */
-void set_video_base(UINT16 *base);
+void set_video_base(UINT16* const base);
 
 #endif
