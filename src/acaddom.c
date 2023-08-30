@@ -103,23 +103,26 @@ UINT8  gameStart       =  FALSE;
  */
 #define dupScrnBuffer(dest, src) copyScrnBuffer(dest, src, 0, SCRN_MAX_Y)
 
-void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers);
-void gameOverScreen(UINT32 *screenBuffer, BOOL *goToTitleScrn, World *gameWorld);
-void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y);
-void menuLoop(UINT32 *screenBuffer, Menu *menu);
-void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
-				  UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
-				  BOOL *quitToTitleScrn, int *numPlayers, BOOL *dead);
-void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer, 
-				UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
-				World *gameWorld);
-void copyScrnBuffer(UINT8 *dest, const UINT8 * const src, int startRow,
+void titleScreen(UINT32* const screenBuffer, BOOL* exitPgrm, int* numPlayers);
+void gameOverScreen(UINT32* const screenBuffer, BOOL* goToTitleScrn,
+					World* gameWorld);
+void getGoverScoreCoord(int numPlayers, int playerNum, int* x, int* y);
+void menuLoop(UINT32* const screenBuffer, Menu* menu);
+void mainGameLoop(World* gameWorld, UINT32* const screenBuffer,
+				  UINT32* const otherScreenBuffer,
+				  UINT32* const worldScreenBuffer,
+				  BOOL* quitToTitleScrn, int* numPlayers, BOOL* dead);
+void renderGame(ScreenBufferChoice* nextScreenBuffer,
+				UINT32* const screenBuffer, 
+				UINT32* const otherScreenBuffer,
+				UINT32* const worldScreenBuffer, World *gameWorld);
+void copyScrnBuffer(UINT8* dest, const UINT8* const src, int startRow,
 					int endRow);
-void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow, 
-				 UINT32 *timeDesired, UINT32 *immunityTimer,
-				 UINT32 *playerMoveTimer, int *loopCounter,
-				 int *deathCounter);
-void processAsync(BOOL *quitToTitleScrn, World *gameWorld);
+void processSync(World* gameWorld, BOOL* dead, UINT32* timeNow, 
+				 UINT32* timeDesired, UINT32* immunityTimer,
+				 UINT32* playerMoveTimer, int* loopCounter,
+				 int* deathCounter);
+void processAsync(BOOL* quitToTitleScrn, World* gameWorld);
 
 void game_end(void);
 void game_start(void);
@@ -142,16 +145,16 @@ int main(int argc, char **argv)
 	BOOL exitPgrm      = FALSE;
 	int  numPlayers;
 
-	UINT32 const * screenBuffer = (UINT32 *)get_video_base();
+	UINT32* const screenBuffer = (UINT32 *)get_video_base();
 
 	int otherFBOffset = (SCRN_ALIGN -
 						(UINT32)(&otherFrameBufferMEM[0]) % SCRN_ALIGN);
-	UINT32 const *otherScreenBuffer =
+	UINT32* const otherScreenBuffer =
 					(UINT32 *)(&otherFrameBufferMEM[otherFBOffset]);
 
 	int worldFBOffset = (SCRN_ALIGN -
 						(UINT32)(&worldFrameBufferMEM[0]) % SCRN_ALIGN);
-	UINT32 const *worldScreenBuffer =
+	UINT32* const worldScreenBuffer =
 					(UINT32 *)(&worldFrameBufferMEM[worldFBOffset]);
 
 	const Vector sysVbl  = vbl_init();
@@ -202,7 +205,7 @@ int main(int argc, char **argv)
  * @param numPlayers Returns by reference 1 for 1-player mode and 2 for 2-player
  * mode.
  */
-void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
+void titleScreen(UINT32* const screenBuffer, BOOL* exitPgrm, int* numPlayers)
 {
 	Menu      titleScrn;
 
@@ -277,7 +280,8 @@ void titleScreen(UINT32 *screenBuffer, BOOL *exitPgrm, int *numPlayers)
  * the title screen state.
  * @param gameWorld The world object which holds all game data.
  */
-void gameOverScreen(UINT32 *screenBuffer, BOOL *goToTitleScrn, World *gameWorld)
+void gameOverScreen(UINT32* const screenBuffer, BOOL* goToTitleScrn,
+					World* gameWorld)
 {
 	Menu            goverScrn;
 	
@@ -380,7 +384,7 @@ void gameOverScreen(UINT32 *screenBuffer, BOOL *goToTitleScrn, World *gameWorld)
  * @param y The y coordinate to return by reference. Will be -1 if invalid
  * values are given.
  */
-void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y)
+void getGoverScoreCoord(int numPlayers, int playerNum, int* x, int* y)
 {
 	const int X_1P_SCORE    = 150;
 	const int Y_1P_SCORE    = 166;
@@ -421,7 +425,7 @@ void getGoverScoreCoord(int numPlayers, int playerNum, int *x, int *y)
  * @param screenBuffer The framebuffer to plot to.
  * @param menu The Menu to manage.
  */
-void menuLoop(UINT32 *screenBuffer, Menu *menu)
+void menuLoop(UINT32* const screenBuffer, Menu* menu)
 {
 	IKBD_Scancode kybdKey;
 	BOOL          exitLoop = FALSE;
@@ -526,9 +530,10 @@ void menuLoop(UINT32 *screenBuffer, Menu *menu)
  * @param dead A boolean value indicating whether the player is dead (TRUE) or
  * not (FALSE).
  */
-void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
-				  UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
-				  BOOL *quitToTitleScrn, int *numPlayers, BOOL *dead)
+void mainGameLoop(World* gameWorld, UINT32* const screenBuffer,
+				  UINT32* const otherScreenBuffer,
+				  UINT32* const worldScreenBuffer,
+				  BOOL* quitToTitleScrn, int* numPlayers, BOOL* dead)
 {
 	ScreenBufferChoice nextScreenBuffer = OTHER_SCREEN_BUFFER;
 
@@ -573,7 +578,7 @@ void mainGameLoop(World *gameWorld, UINT32 *screenBuffer,
  * to the Game Over screen).
  * @param gameWorld The world object which holds all game data.
  */
-void processAsync(BOOL *quitToTitleScrn, World *gameWorld)
+void processAsync(BOOL* quitToTitleScrn, World* gameWorld)
 {
 	IKBD_Scancode kybdKey;
 	Direction     dirRequest = M_NONE;
@@ -656,10 +661,10 @@ void processAsync(BOOL *quitToTitleScrn, World *gameWorld)
  * @param deathCounter The time that is desired before officially declaring a
  * player dead (as opposed to the process of dying).
  */
-void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow, 
-				 UINT32 *timeDesired, UINT32 *immunityTimer,
-				 UINT32 *playerMoveTimer, int *loopCounter,
-				 int *deathCounter)
+void processSync(World* gameWorld, BOOL* dead, UINT32* timeNow, 
+				 UINT32* timeDesired, UINT32* immunityTimer,
+				 UINT32* playerMoveTimer, int* loopCounter,
+				 int* deathCounter)
 {
 	*timeNow = get_time();
 
@@ -756,9 +761,10 @@ void processSync(World *gameWorld, BOOL *dead, UINT32 *timeNow,
  * that make up the world.
  * @param gameWorld The world object which holds all game data.
  */
-void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer, 
-				UINT32 *otherScreenBuffer, UINT32 *worldScreenBuffer,
-				World *gameWorld)
+void renderGame(ScreenBufferChoice* nextScreenBuffer,
+				UINT32* const screenBuffer, 
+				UINT32* const otherScreenBuffer,
+				UINT32* const worldScreenBuffer, World *gameWorld)
 {
 	const BOOL IS_SUPER = isSu();
 
@@ -839,7 +845,7 @@ void renderGame(ScreenBufferChoice *nextScreenBuffer, UINT32 *screenBuffer,
  * @param startRow The Row to start copying from (starting at zero).
  * @param endRow The last Row to copy from (starting at zero).
  */
-void copyScrnBuffer(UINT8 *dest, const UINT8 * const src, int startRow,
+void copyScrnBuffer(UINT8* dest, const UINT8* const src, int startRow,
 					int endRow)
 {
 	const int COPY_OFFSET      = startRow * SCRN_LEN_BYTES;
