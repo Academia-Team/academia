@@ -312,7 +312,7 @@ void gameOverScreen(UINT32* const screenBuffer, BOOL* goToTitleScrn,
 
 	Score           score1P;
 	Score           score2P;
-	UINT32          scoreValDiff;
+	SINT32          scoreValDiff;
 
 	int             xScore1P;
 	int             yScore1P;

@@ -432,9 +432,12 @@ void copyScore(Score* dest, const Score* const src)
 	dest->value = src->value;
 }
 
-UINT32 cmpScore(const Score* const s1, const Score* const s2)
+SINT32 cmpScore(const Score* const s1, const Score* const s2)
 {
-	return s1->value - s2->value;
+	SINT32 scoreVal1 = (s1->value > SINT32_MAX ? SINT32_MAX : s1->value);
+	SINT32 scoreVal2 = (s2->value > SINT32_MAX ? SINT32_MAX : s2->value);
+
+	return scoreVal1 - scoreVal2;
 }
 
 void initLives (int x, int y, Lives* lifeBox)
