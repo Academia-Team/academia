@@ -202,46 +202,46 @@ typedef char LabelStr[MAX_LABEL_LEN + 1];
 
 typedef struct
 {
-	int x;
-	int y;
 	LabelStr text;
+	int      x;
+	int      y;
 } Label;
 
 typedef struct
 {
-	int    x;
-	int    y;
 	Label  label;
 	UINT32 value;
 	BOOL   labelRendered;
+	int    x;
+	int    y;
 } Score;
 
 typedef struct
 {
-	int x;
-	int y;
 	Label label;
-	int value;
-	BOOL labelRendered;
+	BOOL  labelRendered;
+	int   value;
+	int   x;
+	int   y;
 } Lives;
 
 typedef struct
 {
-	int x;
-	int y;
-	int height;
-	int width;
 	Label label;
-	BOOL selected;
+	int   x;
+	int   y;
+	int   height;
+	int   width;
+	BOOL  selected;
 } Button;
 
 typedef struct
 {
+	Label labels[MAX_INFO_LABELS];
+	BOOL  needsUpdate;
 	int   y;
 	int   spacingBetweenLabels;
 	int   numLabels;
-	BOOL  needsUpdate;
-	Label labels[MAX_INFO_LABELS];
 } InfoBar;
 
 typedef struct
@@ -280,14 +280,16 @@ typedef struct
 
 typedef struct
 {
+	Cell      cells[MAX_CELLS];
+	CellType  cellType;
+
 	int       y;
 	Direction horzDirection;
+	
+	Hazard    hazards[MAX_HAZARD_IN_ROW];
 	int       hazardCount;
 	int       hedgeCount;
 	int       spikeCount;
-	CellType  cellType;
-	Cell      cells[MAX_CELLS];
-	Hazard    hazards[MAX_HAZARD_IN_ROW];
 } Row;
 
 typedef struct
