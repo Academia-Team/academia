@@ -760,7 +760,11 @@ void flushKybd(void)
 
 void restoreKybd(Vector sysKybdVec)
 {
+	while (keyPressed());
+	
+	mask_level_toggle(KYBD_CHANNEL_LEV);
 	install_vector(KYBD_VECTOR, sysKybdVec);
+	mask_level_toggle(KYBD_CHANNEL_LEV);
 }
 
 /**
