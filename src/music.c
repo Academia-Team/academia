@@ -91,7 +91,7 @@ const NoteInfo song[NUM_NOTES_IN_SONG] =
  * @param noteInfo The information pertaining to the note to be loaded into the
  * PSG.
  */
-void load_note(NoteInfo* noteInfo)
+void load_note(const NoteInfo* noteInfo)
 {
 	disable_channel(MUSIC_CHANNEL);
 
