@@ -33,9 +33,6 @@
 
 BOOL probPlaceHazard(HazType hazard);
 
-void initButton(Button* button, int x, int y, int height, int width,
-				LabelStr text);
-
 int addInfoBar(Menu* menu, int y, int spacing)
 {
 	int ID = -1;
@@ -497,48 +494,31 @@ void coordToIndex(const World* const world, int* row, int* column, int x, int y)
 
 int addButton(Menu* menu, int x, int y, int height, int width, LabelStr text)
 {
-	int returnVal = -1;
+	int ID = -1;
 
-	if (menu->buttonFillLevel < MAX_NUM_MENU_BUTTON)
-	{
-		returnVal = menu->buttonFillLevel;
-		initButton(&menu->buttons[menu->buttonFillLevel++], x, y, height, width,
-				   text);
-	}
-
-	return returnVal;
-}
-
-/**
- * @brief Initializes a Button with the given coordinates, size, and string.
- * @details The x, y coordinate is the top left corner of the button. Height 
- * grows downwards and width grows rightwards. Text will be centered on the 
- * button.
- * 
- * @param button A pointer to the Button object to initialize.
- * @param x The x coordinate of the Button (in pixels).
- * @param y The y coordinate of the Button (in pixels). 
- * @param height The height of the Button (in pixels).
- * @param width The width of the Button (in pixels).
- * @param text The text that should be a part of the Button.
- */
-void initButton(Button* button, int x, int y, int height, int width,
-				LabelStr text)
-{
 	int textX;
 	int textY;
 
-	button->x = x;
-	button->y = y;
-	button->height = height;
-	button->width = width;
+	if (menu->buttonFillLevel < MAX_NUM_MENU_BUTTON)
+	{
+		ID = menu->buttonFillLevel++;
+		
+		menu->buttons[ID].x        = x;
+		menu->buttons[ID].y        = y;
+		menu->buttons[ID].height   = height;
+		menu->buttons[ID].width    = width;
+		menu->buttons[ID].selected = FALSE;
 
-	/* Center the label vertically and horizontally on the button. */
-	textX = x + ((width / 2 - 1) - ((strlen(text) / 2) * INFO_BAR_FONT_WIDTH));
-	textY = y + ((height / 2 - 1) - ((INFO_BAR_FONT_HEIGHT >> 1) - 1));
-	initLabel(&button->label, textX, textY, text);
+		/* Center the label vertically and horizontally on the button. */
+		textX = x + ((width / 2 - 1) - ((strlen(text) / 2) *
+				INFO_BAR_FONT_WIDTH));
 
-	button->selected = FALSE;
+		textY = y + ((height / 2 - 1) - ((INFO_BAR_FONT_HEIGHT >> 1) - 1));
+
+		initLabel(&menu->buttons[ID].label, textX, textY, text);
+	}
+
+	return ID;
 }
 
 void initMenu(Menu* menu, BOOL blackScreen, int borderWidth, int borderHeight)
