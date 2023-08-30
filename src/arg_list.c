@@ -25,11 +25,13 @@ BOOL appendArgToList(const char *argName, const void * const arg,
 					 ArgList *argList)
 {
 	int  index;
-	BOOL status;
+	BOOL status = FALSE;
 
-	if (status = (argList->numArgs < MAX_ARGS_IN_LIST && argName != NULL &&
-				  arg != NULL && argList != NULL))
+	if (argList->numArgs < MAX_ARGS_IN_LIST && argName != NULL && arg != NULL &&
+		argList != NULL)
 	{
+		status = TRUE;
+		
 		for (index = 0; index < argList->numArgs && !status; index++)
 		{
 			status = (strcmp(argName, argList->names[index]));
