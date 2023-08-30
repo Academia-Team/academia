@@ -90,8 +90,16 @@ IKBD_MANAGE_MOUSE:		move.b	d5,-(sp)
 IKBD_HANDLE_KEYS:		bclr.l	#IKBD_BREAK_BIT,d5
 						bne		IKBD_BREAK_CODE
 						move.l	#TRUE,d6
+						addq.b	#1,keys_pressed
 						bra		IKBD_CHK_SCANCODE
+
+						; If no keys have been pressed, then the break code is
+						; from before the current keyboard ISR was activated. In
+						; that case, the value will be ignored.
 IKBD_BREAK_CODE:		move.l	#FALSE,d6
+						tst.b	keys_pressed
+						beq		IKBD_RETURN
+						subq.b	#1,keys_pressed
 
 						; Check if the scancode is valid.
 IKBD_CHK_SCANCODE:		cmpi.b	#IKBD_MAX_SCANCODE,d5
@@ -214,4 +222,5 @@ MOUSE_RETURN:			movem.l	(sp)+,d0-d7/a0-a6
 						rts
 
 delta_mouse_x:			dc.w	0
+keys_pressed:			dc.b	0
 mouse_packets_received:	dc.b	0
