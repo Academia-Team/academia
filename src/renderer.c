@@ -209,15 +209,32 @@ void renderFeathers(UINT32 *base, int x, int y, Direction orientation)
  */
 void renderTrain(UINT32 *base, int x, int y)
 {
+	const int CLR_Y_POS = y + TRAIN_Y_OFFSET;
+
 	UINT32 trainBitmap[TRAIN_HEIGHT];
+	int    trainPart;
 
-	clrPlayAreaSect(base, 1, x + TRAIN_X_OFFSET, TRAIN_LEN, y + TRAIN_Y_OFFSET,
-					TRAIN_SMALLEST_HEIGHT);
-
-	for(; getTrainBitmap(trainBitmap) != NULL; x += CELL_LEN)
+	for(trainPart = 1; getTrainBitmap(trainBitmap) != NULL;
+		x += CELL_LEN, trainPart++)
 	{
 		if (x <= MAX_CELL_X && x >= MIN_CELL_X)
 		{
+			switch(trainPart)
+			{
+				case 1:
+					clr_area(base, x + TRAIN_X_OFFSET, TRAIN_FIRST_PART_LEN,
+							 CLR_Y_POS, TRAIN_SMALLEST_HEIGHT);
+					break;
+				case NUM_TRAIN_PARTS:
+					clr_area(base, x, TRAIN_LAST_PART_LEN, CLR_Y_POS,
+							 TRAIN_SMALLEST_HEIGHT);
+					break;
+				default:
+					clr_area(base, x, CELL_LEN, CLR_Y_POS,
+							 TRAIN_SMALLEST_HEIGHT);
+					break;
+			}
+
 			plot_rast32(base, x, y, TRAIN_HEIGHT, trainBitmap, FALSE, FALSE);
 		}
 	}

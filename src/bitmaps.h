@@ -70,6 +70,8 @@
 
 #define NUM_TRAIN_PARTS 3
 #define TRAIN_LEN 85
+#define TRAIN_FIRST_PART_LEN 25
+#define TRAIN_LAST_PART_LEN 28
 
 /**
  * @brief The offset from which the train actually appears horizontally (as
