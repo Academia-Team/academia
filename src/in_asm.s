@@ -284,7 +284,7 @@ JOY_RECORD_PARAM:		equ		8
 JOY_TRIGGER_BIT:		equ		7
 
 handle_joy:				link	a6,#0
-						movem.l	d0/a3,-(sp)
+						movem.l	a3,-(sp)
 						lea		_joy,a3
 
 						bclr.b	#JOY_TRIGGER_BIT,JOY_RECORD_PARAM(a6)
@@ -293,7 +293,7 @@ handle_joy:				link	a6,#0
 
 JOY_GET_POS:			move.b	JOY_RECORD_PARAM(a6),JOY_POS(a3)
 
-						movem.l	(sp)+,d0/a3
+						movem.l	(sp)+,a3
 						unlk	a6
 						rts
 
