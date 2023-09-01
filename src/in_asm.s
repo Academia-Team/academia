@@ -78,30 +78,36 @@ IKBD_READ_MIDI:			tst.b	MIDI_RDR_REG
 IKBD_GET_VAL:			clr.l	d5
 						move.b	IKBD_RDR_REG,d5
 
-						; Check if a joystick header has previously been
+						; Check if a joystick event marker has previously been
 						; received and handle accordingly.
 						cmpi.b	#TRUE,joy_record
-						beq		IKBD_MANAGE_JOY
-						cmpi.b	#IKBD_MIN_JOY_REC_VAL,d5
-						blo		IKBD_CHK_MOUSE
+						bne		IKBD_CHK_PREV_M_PKT
+						move.b	#FALSE,joy_record
+						move.b	d5,-(sp)
+						bsr		handle_joy
+						addq.l	#2,sp
+						bra		IKBD_RETURN
+
+						; Check if a mouse packet has previously been received
+						; and handle accordingly.
+IKBD_CHK_PREV_M_PKT:	tst.b	mouse_packets_received
+						beq		IKBD_CHK_JOY_HEADER
+						move.b	d5,-(sp)
+						bsr		handle_mouse
+						addq.l	#2,sp
+						bra		IKBD_RETURN
+
+						; Check for a joystick event marker.
+IKBD_CHK_JOY_HEADER:	cmpi.b	#IKBD_MIN_JOY_REC_VAL,d5
+						blo		IKBD_CHK_MOUSE_HEADER
 						move.b	#TRUE,joy_record
 						bra		IKBD_RETURN
 
-IKBD_MANAGE_JOY:		move.b	d5,-(sp)
-						jsr		handle_joy
-						addq.l	#2,sp
-						move.b	#FALSE,joy_record
-						bra		IKBD_RETURN
-
-						; Check if a mouse packet has previously been received.
-						; If no mouse packets have been processed before, check
-						; for a mouse header packet.
-IKBD_CHK_MOUSE:			tst.b	mouse_packets_received
-						bhi		IKBD_MANAGE_MOUSE
-						cmpi.b	#IKBD_MIN_MOUSE_PKT_VAL,d5
+						; Check for a mouse header packet.
+IKBD_CHK_MOUSE_HEADER:	cmpi.b	#IKBD_MIN_MOUSE_PKT_VAL,d5
 						blo		IKBD_HANDLE_KEYS
-IKBD_MANAGE_MOUSE:		move.b	d5,-(sp)
-						jsr		handle_mouse
+						move.b	d5,-(sp)
+						bsr		handle_mouse
 						addq.l	#2,sp
 						bra		IKBD_RETURN
 
