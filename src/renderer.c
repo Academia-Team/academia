@@ -168,10 +168,9 @@ void renderCar(UINT32 *base, int x, int y, Direction orientation)
 {
 	UINT32 carBitmap[CAR_HEIGHT];
 
-	clrPlayAreaSect(base, 1, x, CAR_LEN, y + CAR_Y_OFFSET, CAR_SMALLEST_HEIGHT);
-
 	if (getCarBitmap(orientation, carBitmap) != NULL)
 	{
+		clr_area(base, x, CAR_LEN, y + CAR_Y_OFFSET, CAR_SMALLEST_HEIGHT);
 		plot_rast32(base, x, y, CAR_HEIGHT, carBitmap, FALSE, FALSE);
 	}
 }
