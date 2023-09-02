@@ -162,6 +162,13 @@ typedef DirName OrientName;
 	(((dir1) != (dir2)) && (abs(dir1) == abs(dir2)))
 
 /**
+ * @brief Returns TRUE if the given direction is diagonal; FALSE otherwise.
+ */
+#define isDirDiagonal(dir) \
+	((dir) == M_NORTHEAST || (dir) == M_NORTHWEST || (dir) == M_SOUTHEAST || \
+	 (dir) == M_SOUTHWEST)
+
+/**
  * @brief A object that stores information about movement in an
  * environment-defined time frame.
  */
