@@ -50,6 +50,12 @@
 #define OTHER_WIN_MSG_IDX            1
 #define TIED_WIN_MSG_IDX             2
 
+/**
+ * @brief The number of pixels to move the mouse cursor when utilizing the
+ * joystick.
+ */
+#define JOY_M_MOVE_DIST 8
+
 typedef enum
 {
 	PRIMARY_SCREEN_BUFFER = 0,
@@ -436,6 +442,7 @@ void menuLoop(UINT32* const screenBuffer, Menu* menu)
 {
 	IKBD_Scancode kybdKey;
 	BOOL          exitLoop = FALSE;
+	Direction     joyPos;
 
 	int          mouseX;
 	int          mouseY;
@@ -446,6 +453,47 @@ void menuLoop(UINT32* const screenBuffer, Menu* menu)
 
 	while (!exitLoop)
 	{
+		joyPos = getJoyPos();
+
+		if (joyPos != M_NONE)
+		{
+			switch(joyPos)
+			{
+				case M_NORTH:
+					setRelMousePos(0, -JOY_M_MOVE_DIST);
+					break;
+				case M_SOUTH:
+					setRelMousePos(0, +JOY_M_MOVE_DIST);
+					break;
+				case M_EAST:
+					setRelMousePos(+JOY_M_MOVE_DIST, 0);
+					break;
+				case M_WEST:
+					setRelMousePos(-JOY_M_MOVE_DIST, 0);
+					break;
+				case M_NORTHEAST:
+					setRelMousePos(+JOY_M_MOVE_DIST, -JOY_M_MOVE_DIST);
+					break;
+				case M_NORTHWEST:
+					setRelMousePos(-JOY_M_MOVE_DIST, -JOY_M_MOVE_DIST);
+					break;
+				case M_SOUTHEAST:
+					setRelMousePos(+JOY_M_MOVE_DIST, +JOY_M_MOVE_DIST);
+					break;
+				case M_SOUTHWEST:
+					setRelMousePos(-JOY_M_MOVE_DIST, +JOY_M_MOVE_DIST);
+					break;
+			}
+
+			useMouse = TRUE;
+			show_cursor();
+		}
+
+		if (joyButtonPressed())
+		{
+			exitLoop = hasSelectedButton(menu);
+		}
+
 		kybdKey = getKey();
 
 		if (kybdKey != NO_KEY)
@@ -492,9 +540,9 @@ void menuLoop(UINT32* const screenBuffer, Menu* menu)
 			show_cursor();
 		}
 
-		if (mouseClick() && useMouse && hasSelectedButton(menu))
+		if (mouseClick() && useMouse)
 		{
-			exitLoop = TRUE;
+			exitLoop = hasSelectedButton(menu);
 		}
 		
 		if (buttonStateChange(menu))
