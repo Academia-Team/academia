@@ -141,12 +141,12 @@ typedef DirName OrientName;
 /**
  * @brief The direction that has the highest value in the Direction enum.
  */
-#define MOVE_MAX_DIR M_NORTH
+#define MOVE_MAX_DIR M_NORTHWEST
 
 /**
  * @brief The direction that has the smallest value in the Direction enum.
  */
-#define MOVE_MIN_DIR M_SOUTH
+#define MOVE_MIN_DIR M_SOUTHWEST
 
 /**
  * @brief Maximum number of items that can be placed in a MoveQueue without the
