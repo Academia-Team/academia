@@ -44,7 +44,7 @@ typedef enum
 /**
  * @brief The maximum number of characters returned by getDirName().
  */
-#define MAX_DIR_NAME_LEN 7
+#define MAX_DIR_NAME_LEN 11
 
 /**
  * @brief A type of string guaranteed to be able to hold the string returned by
@@ -77,7 +77,15 @@ typedef DirName OrientName;
 		(dirValue == M_DOWN ? "DOWN" : \
 			(dirValue == M_LEFT ? "LEFT" : \
 				(dirValue == M_RIGHT ? "RIGHT" : \
-					(dirValue == M_NONE ? "NONE" : "UNKNOWN") \
+					(dirValue == M_TOPLEFT ? "TOPLEFT" : \
+						(dirValue == M_TOPRIGHT ? "TOPRIGHT" : \
+							(dirValue == M_BOTTOMLEFT ? "BOTTOMLEFT" : \
+								(dirValue == M_BOTTOMRIGHT ? "BOTTOMRIGHT" : \
+									(dirValue == M_NONE ? "NONE" : "UNKNOWN") \
+								) \
+							) \
+						) \
+					) \
 				) \
 			) \
 		) \
@@ -96,7 +104,15 @@ typedef DirName OrientName;
 		(dirValue == M_SOUTH ? "SOUTH" : \
 			(dirValue == M_WEST ? "WEST" : \
 				(dirValue == M_EAST ? "EAST" : \
-					(dirValue == M_NONE ? "NONE" : "UNKNOWN") \
+					(dirValue == M_NORTHWEST ? "NORTHWEST" : \
+						(dirValue == M_NORTHEAST ? "NORTHEAST" : \
+							(dirValue == M_SOUTHWEST ? "SOUTHWEST" : \
+								(dirValue == M_SOUTHEAST ? "SOUTHEAST" : \
+									(dirValue == M_NONE ? "NONE" : "UNKNOWN") \
+								) \
+							) \
+						) \
+					) \
 				) \
 			) \
 		) \
