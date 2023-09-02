@@ -447,7 +447,7 @@ void initLives (int x, int y, Lives* lifeBox)
 	lifeBox->labelRendered = FALSE;
 }
 
-void initLabel(Label* label, int x, int y, char *text)
+void initLabel(Label* label, int x, int y, const char* text)
 {
 	label->x = x;
 	label->y = y;

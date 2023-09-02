@@ -46,7 +46,7 @@
  * @param world The game world that is to have all of its inhabitants updated on
  * the screen.
  */
-void renderUpdate(UINT32* base, const World* const world);
+void renderUpdate(UINT32* const base, const World* const world);
 
 /**
  * @brief Renders the initial frame of the entire game play area. 
@@ -58,7 +58,7 @@ void renderUpdate(UINT32* base, const World* const world);
  * @param base The location in memory to plot at.
  * @param world The game world that is to be rendered to the screen.
  */
-void renderPlayArea(UINT32* base, const World* const world);
+void renderPlayArea(UINT32* const base, const World* const world);
 
 /**
  * @brief Renders the world to the screen. 
@@ -67,7 +67,7 @@ void renderPlayArea(UINT32* base, const World* const world);
  * @param base The location in memory to plot at.
  * @param world The game world that is to be rendered to the screen.
  */
-void renderWorld(UINT32* base, const World* const world);
+void renderWorld(UINT32* const base, const World* const world);
 
 /**
  * @brief Renders a row to the screen.
@@ -76,7 +76,7 @@ void renderWorld(UINT32* base, const World* const world);
  * @param base The location in memory to plot at.
  * @param row The row that is to be rendered to the screen.
  */
-void renderRow(UINT32* base, const Row* const row);
+void renderRow(UINT32* const base, const Row* const row);
 
 /**
  * @brief Renders a cell to the screen.
@@ -88,7 +88,7 @@ void renderRow(UINT32* base, const Row* const row);
  * @param cell The cell that is to be rendered to the screen.
  * @param y The y pixel position of the row on screen.
  */
-void renderCell(UINT32* base, const Cell* const cell, int y);
+void renderCell(UINT32* const base, const Cell* const cell, int y);
 
 /**
  * @brief Renders all the hazards for a given row to the screen.
@@ -99,7 +99,7 @@ void renderCell(UINT32* base, const Cell* const cell, int y);
  * @param row The row that the hazards belong to that is to be rendered to the 
  * screen.
  */
-void renderHazards(UINT32* base, const Row* const row);
+void renderHazards(UINT32* const base, const Row* const row);
 
 /**
  * @brief Renders main player, players scores and lives to the screen.
@@ -111,7 +111,7 @@ void renderHazards(UINT32* base, const Row* const row);
  * @param world The world that is to have its player(s) sprite, score, and lives
  * to the screen.
  */
-void renderPlayers(UINT32* base, const World* const world);
+void renderPlayers(UINT32* const base, const World* const world);
 
 /**
  * @brief Renders the main players sprite to the screen.
@@ -122,7 +122,7 @@ void renderPlayers(UINT32* base, const World* const world);
  * @param player The player that is have their sprite, score and lives rendered 
  * to the screen.
  */
-void renderMainPlayer(UINT32* base, const Player* const player);
+void renderMainPlayer(UINT32* const base, const Player* const player);
 
 /**
  * @brief Renders a label to the screen.
@@ -133,7 +133,8 @@ void renderMainPlayer(UINT32* base, const Player* const player);
  * @param label The label that is to be rendered to the screen.
  * @param blackScreen Set to true if text is being rendered on black background.
  */
-void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen);
+void renderLabel(UINT16* const base, const Label* const label,
+				 BOOL blackScreen);
 
 /**
  * @brief Renders a score to the screen.
@@ -143,7 +144,7 @@ void renderLabel(UINT16* base, const Label* const label, BOOL blackScreen);
  * @param base The location in memory to plot at.
  * @param Score The score of a player that is to be rendered to the screen.
  */
-void renderScore(UINT16* base, Score* const Score);
+void renderScore(UINT16* const base, Score* const Score);
 
 /**
  * @brief Renders lives to the screen.
@@ -153,7 +154,7 @@ void renderScore(UINT16* base, Score* const Score);
  * @param base The location in memory to plot at.
  * @param lives The lives of a player that is to be rendered to the screen.
  */
-void renderLives(UINT16* base, Lives* const lives);
+void renderLives(UINT16* const base, Lives* const lives);
 
 /**
  * @brief Renders a title to the screen at the specified location.
@@ -170,7 +171,7 @@ void renderLives(UINT16* base, Lives* const lives);
  * @param y The vertical pixel location (starting at zero) to plot the top-most
  * pixel of the title.
  */
-void renderTitle(UINT32* base, int x, int y);
+void renderTitle(UINT32* const base, int x, int y);
 
 /**
  * @brief Renders "Game Over" to the screen at the specified location.
@@ -184,7 +185,7 @@ void renderTitle(UINT32* base, int x, int y);
  * @param y The vertical pixel location (starting at zero) to plot the top-most
  * pixel of the text.
  */
-void renderGameOver(UINT32* base, int x, int y);
+void renderGameOver(UINT32* const base, int x, int y);
 
 /**
  * @brief Renders the cursor on the screen at the given x-y coordinates.
@@ -196,7 +197,7 @@ void renderGameOver(UINT32* base, int x, int y);
  * @param y The vertical pixel location (starting at zero) to plot the top-most
  * pixel of the cursor.
  */
-void renderCursor(UINT16* base, int x, int y);
+void renderCursor(UINT16* const base, int x, int y);
 
 /**
  * @brief Renders a menu on the screen.
@@ -204,6 +205,6 @@ void renderCursor(UINT16* base, int x, int y);
  * @param base The location in memory to plot at.
  * @param menu The menu to render.
  */
-void renderMenu(UINT32* base, Menu* menu);
+void renderMenu(UINT32* const base, Menu* menu);
 
 #endif

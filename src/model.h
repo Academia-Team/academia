@@ -626,7 +626,7 @@ void initScore (int x, int y, Score* scoreBox);
  * @param y The y coordinate of the label (in pixels).
  * @param text The text that should be a part of the label.
  */
-void initLabel(Label* label, int x, int y, char *text);
+void initLabel(Label* label, int x, int y, const char* text);
 
 /**
  * @brief Increments the score by a given amount.
