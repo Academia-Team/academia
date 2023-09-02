@@ -20,15 +20,25 @@
  */
 typedef enum
 {
-	M_NORTH =  2,
-	M_UP    =  2,
-	M_SOUTH = -2,
-	M_DOWN  = -2,
-	M_NONE  =  0,
-	M_EAST  =  1,
-	M_RIGHT =  1,
-	M_WEST  = -1,
-	M_LEFT  = -1
+	M_NORTH       =  2,
+	M_UP          =  2,
+	M_SOUTH       = -2,
+	M_DOWN        = -2,
+	M_NONE        =  0,
+	M_EAST        =  1,
+	M_RIGHT       =  1,
+	M_WEST        = -1,
+	M_LEFT        = -1,
+
+	M_NORTHEAST   =  3,
+	M_SOUTHEAST   = -3,
+	M_TOPRIGHT    =  3,
+	M_BOTTOMRIGHT = -3,
+
+	M_NORTHWEST   =  4,
+	M_SOUTHWEST   = -4,
+	M_TOPLEFT     =  4,
+	M_BOTTOMLEFT  = -4
 } Direction;
 
 /**
