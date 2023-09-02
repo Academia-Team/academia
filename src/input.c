@@ -39,6 +39,7 @@
  */
 #define SCANCODE_BUFFER_SHIFT_VAL 24
 
+#define JOY_NONE        0
 #define JOY_UP          1
 #define JOY_DOWN        2
 #define JOY_LEFT        4
@@ -734,7 +735,7 @@ Mouse mouse = {INITIAL_MOUSE_X, INITIAL_MOUSE_Y, FALSE, FALSE, FALSE};
 
 Direction kybdMouseMov = M_NONE;
 
-Joy joy = {0, FALSE};
+Joy joy = {JOY_NONE, FALSE};
 
 void IKBD_isr(void);
 
