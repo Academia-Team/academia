@@ -50,6 +50,12 @@
 #define OTHER_WIN_MSG_IDX            1
 #define TIED_WIN_MSG_IDX             2
 
+/**
+ * @brief The number of pixels to move the mouse cursor when utilizing the
+ * joystick.
+ */
+#define JOY_M_MOVE_DIST 8
+
 typedef enum
 {
 	PRIMARY_SCREEN_BUFFER = 0,
@@ -131,6 +137,7 @@ void processAsync(BOOL* quitToTitleScrn, World* gameWorld);
 
 void game_end(void);
 void game_start(void);
+BOOL game_running(void);
 void sync_events_vbl(void);
 
 UINT8	otherFrameBufferMEM[SCRN_BYTES + SCRN_ALIGN];
@@ -436,6 +443,7 @@ void menuLoop(UINT32* const screenBuffer, Menu* menu)
 {
 	IKBD_Scancode kybdKey;
 	BOOL          exitLoop = FALSE;
+	Direction     joyPos;
 
 	int          mouseX;
 	int          mouseY;
@@ -446,6 +454,47 @@ void menuLoop(UINT32* const screenBuffer, Menu* menu)
 
 	while (!exitLoop)
 	{
+		joyPos = getJoyPos();
+
+		if (joyPos != M_NONE)
+		{
+			switch(joyPos)
+			{
+				case M_NORTH:
+					setRelMousePos(0, -JOY_M_MOVE_DIST);
+					break;
+				case M_SOUTH:
+					setRelMousePos(0, +JOY_M_MOVE_DIST);
+					break;
+				case M_EAST:
+					setRelMousePos(+JOY_M_MOVE_DIST, 0);
+					break;
+				case M_WEST:
+					setRelMousePos(-JOY_M_MOVE_DIST, 0);
+					break;
+				case M_NORTHEAST:
+					setRelMousePos(+JOY_M_MOVE_DIST, -JOY_M_MOVE_DIST);
+					break;
+				case M_NORTHWEST:
+					setRelMousePos(-JOY_M_MOVE_DIST, -JOY_M_MOVE_DIST);
+					break;
+				case M_SOUTHEAST:
+					setRelMousePos(+JOY_M_MOVE_DIST, +JOY_M_MOVE_DIST);
+					break;
+				case M_SOUTHWEST:
+					setRelMousePos(-JOY_M_MOVE_DIST, +JOY_M_MOVE_DIST);
+					break;
+			}
+
+			useMouse = TRUE;
+			show_cursor();
+		}
+
+		if (joyButtonPressed())
+		{
+			exitLoop = hasSelectedButton(menu);
+		}
+
 		kybdKey = getKey();
 
 		if (kybdKey != NO_KEY)
@@ -492,9 +541,9 @@ void menuLoop(UINT32* const screenBuffer, Menu* menu)
 			show_cursor();
 		}
 
-		if (mouseClick() && useMouse && hasSelectedButton(menu))
+		if (mouseClick() && useMouse)
 		{
-			exitLoop = TRUE;
+			exitLoop = hasSelectedButton(menu);
 		}
 		
 		if (buttonStateChange(menu))
@@ -587,51 +636,70 @@ void mainGameLoop(World* gameWorld, UINT32* const screenBuffer,
  */
 void processAsync(BOOL* quitToTitleScrn, World* gameWorld)
 {
-	IKBD_Scancode kybdKey;
+	IKBD_Scancode kybdKey    = getKey();
 	Direction     dirRequest = M_NONE;
+	Direction     joyPos     = getJoyPos();
+	BOOL          joyPressed = joyButtonPressed();
+	BOOL          msePressed = mouseClick();
 
-	kybdKey = getKey();
-
-	if (kybdKey != NO_KEY)
+	if (kybdKey == IKBD_ESC_SCANCODE || joyPressed || msePressed)
 	{
-		switch(kybdKey)
+		stop_sound();
+		pause_music();
+		game_pause();
+
+		while (((kybdKey = getKey()) != IKBD_Q_SCANCODE &&
+				kybdKey != IKBD_ESC_SCANCODE) &&
+				!(joyPressed = joyButtonPressed()) &&
+				!(msePressed = mouseClick()));
+
+		if (kybdKey != IKBD_Q_SCANCODE)
 		{
-			case IKBD_ESC_SCANCODE:
-				pause_music();
-				game_pause();
+			game_resume();
+			resume_music();
+		}
+	}
+	
+	if (kybdKey == IKBD_Q_SCANCODE || !game_running())
+	{
+		stop_sound();
+		stop_music();
+		game_end();
 
-				while ((kybdKey = getKey()) != IKBD_Q_SCANCODE &&
-						kybdKey != IKBD_ESC_SCANCODE);
-				
-				if (kybdKey == IKBD_Q_SCANCODE)
-				{
-					*quitToTitleScrn = TRUE;
-				}
-				else
-				{
-					game_resume();
-					resume_music();
-				}
-
-				break;
-				
-			case IKBD_Q_SCANCODE:
-				*quitToTitleScrn = TRUE;
-				break;
-			case IKBD_UP_SCANCODE:
-				dirRequest = M_UP;
-				break;
-			case IKBD_LEFT_SCANCODE:
-				dirRequest = M_LEFT;
-				break;
-			case IKBD_RIGHT_SCANCODE:
-				dirRequest = M_RIGHT;
-				break;
-			case IKBD_DOWN_SCANCODE:
-				dirRequest = M_DOWN;
-				break;
-			default:
+		*quitToTitleScrn = TRUE;
+	}
+	else
+	{
+		if (joyPos != M_NONE)
+		{
+			if (!isDirDiagonal(joyPos))
+			{
+				dirRequest = joyPos;
+			}
+			else
+			{
 				handleInvalidKeyPress();
+			}
+		}
+		else if (kybdKey != M_NONE)
+		{
+			switch(kybdKey)
+			{
+				case IKBD_UP_SCANCODE:
+					dirRequest = M_UP;
+					break;
+				case IKBD_LEFT_SCANCODE:
+					dirRequest = M_LEFT;
+					break;
+				case IKBD_RIGHT_SCANCODE:
+					dirRequest = M_RIGHT;
+					break;
+				case IKBD_DOWN_SCANCODE:
+					dirRequest = M_DOWN;
+					break;
+				default:
+					handleInvalidKeyPress();
+			}
 		}
 	}
 
@@ -903,6 +971,25 @@ void game_start(void)
 
 		set_ipl(oldIpl);
 	}
+}
+
+/**
+ * @brief Returns if the game is currently running or not.
+ * 
+ * @return TRUE if the game is running; FALSE otherwise.
+ */
+BOOL game_running(void)
+{
+	BOOL   gameState;
+	int    oldIpl;
+
+	oldIpl = set_ipl(MASK_ALL_INTERRUPTS);
+
+	gameState = gameStart;
+
+	set_ipl(oldIpl);
+
+	return gameState;
 }
 
 /**

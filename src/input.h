@@ -83,8 +83,15 @@ typedef struct
 	BOOL posChange;
 } Mouse;
 
+typedef struct
+{
+	UINT8 pos;
+	UINT8 trigger;
+} Joy;
+
 extern Mouse     mouse;
 extern Direction kybdMouseMov;
+extern Joy       joy;
 
 /**
  * @brief Checks if a left or right mouse click has happened with the given
@@ -188,7 +195,6 @@ UINT8 keyPressed(void);
  * @brief Checks if a left mouse click has happened.
  * @details The mouse's left click status will be reset after being checked.
  * 
- * @param mouse The mouse object to check for clicking.
  * @return TRUE if the mouse has been clicked; FALSE otherwise.
  */
 BOOL mouseLclick(void);
@@ -237,5 +243,20 @@ BOOL setMousePos(int x, int y);
  * @param deltaY The desired adjustment of the y position of the mouse.
  */
 void setRelMousePos(int deltaX, int deltaY);
+
+/**
+ * @brief Returns the joystick's current position.
+ * 
+ * @return The position of the joystick.
+ */
+Direction getJoyPos(void);
+
+/**
+ * @brief Checks if a button on a joystick has been pressed.
+ * @details The joystick's button status will be reset after being checked.
+ * 
+ * @return TRUE if a joystick button has been pressed; FALSE otherwise.
+ */
+BOOL joyButtonPressed(void);
 
 #endif

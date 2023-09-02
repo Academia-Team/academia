@@ -5,6 +5,12 @@ tests: tst_bmp tst_mdl tst_mse tst_mus tst_psg tst_shp tst_sfx
 
 all: acaddom tests
 
+tst_joy: src\tst_joy.o src\arg_list.o src\in_asm.o src\input.o src\ints_asm.o src\move.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o
+	cc68x -g src\tst_joy.o src\arg_list.o src\in_asm.o src\input.o src\ints_asm.o src\move.o src\su_asm.o src\test.o src\tst_hndl.o src\vector.o -o bin\tst_joy.tos
+
+src\tst_joy.o: src\tst_joy.c src\arg_list.h src\input.h src\test.h src\tst_hndl.h src\types.h src\vector.h
+	cc68x -g -c src\tst_joy.c
+
 tst_mdl: src\model.o src\arg_list.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\psg.o src\psg_asm.o src\rast_asm.o src\su_asm.o src\tst_hndl.o src\tst_mdl.o src\move.o src\test.o src\vector.o
 	cc68x -g src\model.o src\arg_list.o src\effects.o src\events.o src\input.o src\in_asm.o src\ints_asm.o src\move.o src\num_util.o src\psg.o src\psg_asm.o src\rast_asm.o src\su_asm.o src\tst_hndl.o src\tst_mdl.o src\test.o src\vector.o -o bin\tst_mdl.tos
 
