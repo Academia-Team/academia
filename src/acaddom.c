@@ -136,6 +136,12 @@ void sync_events_vbl(void);
 UINT8	otherFrameBufferMEM[SCRN_BYTES + SCRN_ALIGN];
 UINT8	worldFrameBufferMEM[SCRN_BYTES + SCRN_ALIGN];
 
+/* Without this, VBCC will complain that argc and argv aren't used. They are
+   needed for SDL2 to function properly. */
+#ifdef __VBCC__
+#pragma dontwarn 65
+#endif
+
 /**
  * @brief Handles program loop.
  * @details Initializes all three frame buffers. Handles switching between the 
@@ -197,6 +203,10 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
+#ifdef __VBCC__
+#pragma popwarn
+#endif
 
 /**
  * @brief Displays the title screen for Academia Dreams of Madness.

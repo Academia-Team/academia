@@ -5,6 +5,7 @@
 		"cschlosser.doxdocgen",
 		"editorconfig.editorconfig",
 		"gigabates.68kcounter",
-		"gigabates.m68k-lsp"
+		"gigabates.m68k-lsp",
+		"mesonbuild.mesonbuild"
 	]
 }
