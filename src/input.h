@@ -249,7 +249,7 @@ void setRelMousePos(int deltaX, int deltaY);
  * 
  * @return The position of the joystick.
  */
-UINT8 getJoyPos(void);
+Direction getJoyPos(void);
 
 /**
  * @brief Checks if a button on a joystick has been pressed.

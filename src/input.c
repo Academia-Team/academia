@@ -39,6 +39,15 @@
  */
 #define SCANCODE_BUFFER_SHIFT_VAL 24
 
+#define JOY_UP          1
+#define JOY_DOWN        2
+#define JOY_LEFT        4
+#define JOY_RIGHT       8
+#define JOY_TOPLEFT     (JOY_UP + JOY_LEFT)
+#define JOY_TOPRIGHT    (JOY_UP + JOY_RIGHT)
+#define JOY_BOTTOMLEFT  (JOY_DOWN + JOY_LEFT)
+#define JOY_BOTTOMRIGHT (JOY_DOWN + JOY_RIGHT)
+
 enum
 {
 	CAPS_IDLE     = 0,
@@ -1131,15 +1140,47 @@ void setRelMousePos(int deltaX, int deltaY)
 	}
 }
 
-UINT8 getJoyPos(void)
+Direction getJoyPos(void)
 {
-	UINT8 joyPos;
+	UINT8     rawJoyPos;
+	Direction joyPos;
 
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 
-	joyPos = joy.pos;
+	rawJoyPos = joy.pos;
 
 	mask_level_toggle(KYBD_CHANNEL_LEV);
+
+	switch(rawJoyPos)
+	{
+		case JOY_UP:
+			joyPos = M_UP;
+			break;
+		case JOY_DOWN:
+			joyPos = M_DOWN;
+			break;
+		case JOY_LEFT:
+			joyPos = M_LEFT;
+			break;
+		case JOY_RIGHT:
+			joyPos = M_RIGHT;
+			break;
+		case JOY_TOPLEFT:
+			joyPos = M_TOPLEFT;
+			break;
+		case JOY_TOPRIGHT:
+			joyPos = M_TOPRIGHT;
+			break;
+		case JOY_BOTTOMLEFT:
+			joyPos = M_BOTTOMLEFT;
+			break;
+		case JOY_BOTTOMRIGHT:
+			joyPos = M_BOTTOMRIGHT;
+			break;
+		default:
+			joyPos = M_NONE;
+			break;
+	}
 
 	return joyPos;
 }
