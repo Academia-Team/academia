@@ -20,8 +20,6 @@
 
 #define MAX_NUM_DIGITS_IN_SCORE UINT32_MAX_DIGITS
 
-void clrPlayAreaSect(UINT32 *base, int numPlayers, int x, int length,
-					 int y, int height);
 void renderCar(UINT32 *base, int x, int y, Direction orientation);
 void renderFeathers(UINT32 *base, int x, int y, Direction orientation);
 void renderTrain(UINT32 *base, int x, int y);
@@ -168,10 +166,9 @@ void renderCar(UINT32 *base, int x, int y, Direction orientation)
 {
 	UINT32 carBitmap[CAR_HEIGHT];
 
-	clrPlayAreaSect(base, 1, x, CAR_LEN, y + CAR_Y_OFFSET, CAR_SMALLEST_HEIGHT);
-
 	if (getCarBitmap(orientation, carBitmap) != NULL)
 	{
+		clr_area(base, x, CAR_LEN, y + CAR_Y_OFFSET, CAR_SMALLEST_HEIGHT);
 		plot_rast32(base, x, y, CAR_HEIGHT, carBitmap, FALSE, FALSE);
 	}
 }
@@ -210,15 +207,32 @@ void renderFeathers(UINT32 *base, int x, int y, Direction orientation)
  */
 void renderTrain(UINT32 *base, int x, int y)
 {
+	const int CLR_Y_POS = y + TRAIN_Y_OFFSET;
+
 	UINT32 trainBitmap[TRAIN_HEIGHT];
+	int    trainPart;
 
-	clrPlayAreaSect(base, 1, x + TRAIN_X_OFFSET, TRAIN_LEN, y + TRAIN_Y_OFFSET,
-					TRAIN_SMALLEST_HEIGHT);
-
-	for(; getTrainBitmap(trainBitmap) != NULL; x += CELL_LEN)
+	for(trainPart = 1; getTrainBitmap(trainBitmap) != NULL;
+		x += CELL_LEN, trainPart++)
 	{
 		if (x <= MAX_CELL_X && x >= MIN_CELL_X)
 		{
+			switch(trainPart)
+			{
+				case 1:
+					clr_area(base, x + TRAIN_X_OFFSET, TRAIN_FIRST_PART_LEN,
+							 CLR_Y_POS, TRAIN_SMALLEST_HEIGHT);
+					break;
+				case NUM_TRAIN_PARTS:
+					clr_area(base, x, TRAIN_LAST_PART_LEN, CLR_Y_POS,
+							 TRAIN_SMALLEST_HEIGHT);
+					break;
+				default:
+					clr_area(base, x, CELL_LEN, CLR_Y_POS,
+							 TRAIN_SMALLEST_HEIGHT);
+					break;
+			}
+
 			plot_rast32(base, x, y, TRAIN_HEIGHT, trainBitmap, FALSE, FALSE);
 		}
 	}
@@ -482,89 +496,5 @@ void renderMenu(UINT32* base, Menu* menu)
 		   and vice-versa. */
 		renderInfoBar((UINT16 *)base, &menu->infoBars[index],
 					  !menu->blackScreen);
-	}
-}
-
-/**
- * @brief Clears a rectangular area within the bounds of the play area.
- * @details The rectangular area's top-left corner will be defined by the given
- * x and y pixel coordinates. x and y may intersect the left and top borders
- * respectively, in which case, an area will be cleared as long as the length
- * and height are big enough. The length and height cannot be less than zero.
- * However, the length and width can be bigger than the length and height of the
- * play area. In the former case, the entire length of the play area will be
- * cleared, while in the latter case, the entire height of the play area will be
- * cleared. If both exceed the play area size, then the entire play area will be
- * cleared.
- * 
- * @param base The location in memory to plot at.
- * @param numPlayers The number of players in the world.
- * @param x The left-most column to start clearing the rectangular area (in
- * pixels starting at zero).
- * @param length The number of rows that should make up the rectangular area.
- * Must be one or greater.
- * @param y The top-most row to start clearing the rectangular area (in pixels
- * starting at zero).
- * @param height The number of columns that should make up the rectangular area.
- * Must be one or greater.
- */
-void clrPlayAreaSect(UINT32 *base, int numPlayers, int x, int length,
-					 int y, int height)
-{
-	const int CUR_BORDER_HEIGHT = getTopBorderHeight(numPlayers);
-	const int FINAL_X = x + length - 1;
-	const int FINAL_Y = y + height - 1;
-	const int PLAY_AREA_LEN = RIGHT_BORDER - LEFT_BORDER + 1;
-	const int PLAY_AREA_HEIGHT = BOTTOM_BORDER - CUR_BORDER_HEIGHT;
-
-	if (x < RIGHT_BORDER && y < BOTTOM_BORDER && length > 0 && height > 0)
-	{
-		if (x < SIDE_BORDER_WIDTH)
-		{
-			if (x < 0)
-			{
-				length -= SIDE_BORDER_WIDTH + abs(x);
-			}
-			else
-			{
-				length -= SIDE_BORDER_WIDTH - x;
-			}
-			x = SIDE_BORDER_WIDTH;
-		}
-
-		if (FINAL_X >= RIGHT_BORDER)
-		{
-			length -= FINAL_X - RIGHT_BORDER + 1;
-		}
-
-		if (y < CUR_BORDER_HEIGHT)
-		{
-			if (y < 0)
-			{
-				height -= CUR_BORDER_HEIGHT + abs(y);
-			}
-			else
-			{
-				height -= CUR_BORDER_HEIGHT - y;
-			}
-			y = CUR_BORDER_HEIGHT;
-		}
-
-		if (FINAL_Y >= BOTTOM_BORDER)
-		{
-			height -= FINAL_Y - BOTTOM_BORDER + 1;
-		}
-
-		if (length > PLAY_AREA_LEN)
-		{
-			length = PLAY_AREA_LEN;
-		}
-
-		if (height > PLAY_AREA_HEIGHT)
-		{
-			height = PLAY_AREA_HEIGHT;
-		}
-
-		clr_area(base, x, length, y, height);
 	}
 }
