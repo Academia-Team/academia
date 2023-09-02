@@ -154,6 +154,7 @@ void updateTrain(World* world)
 
 void addHazard(Row* row)
 {
+	BOOL hazardAdded = FALSE;
 	int startingX;
 
 	if (row->cellType == GRASS_CELL && row->hazardCount < MAX_FEATHERS)
@@ -164,7 +165,9 @@ void addHazard(Row* row)
 						 MAX_CELL_X : MIN_VIS_X_FEATHERS);
 			
 			row->hazards[row->hazardCount].hazardType = FEATHERS_HAZ;
-			row->hazards[row->hazardCount++].x        = startingX;
+			row->hazards[row->hazardCount].x          = startingX;
+
+			hazardAdded = TRUE;
 		}
 	}
 	else if (row->cellType == TRACK_CELL && row->hazardCount < MAX_TRAINS)
@@ -175,7 +178,9 @@ void addHazard(Row* row)
 						 MAX_CELL_X : MIN_VIS_X_TRAIN);
 
 			row->hazards[row->hazardCount].hazardType = TRAIN_HAZ;
-			row->hazards[row->hazardCount++].x        = startingX;
+			row->hazards[row->hazardCount].x        = startingX;
+
+			hazardAdded = TRUE;
 			play_train();
 		}
 	}
@@ -187,8 +192,16 @@ void addHazard(Row* row)
 						 MAX_CELL_X : MIN_VIS_X_CAR);
 
 			row->hazards[row->hazardCount].hazardType = CAR_HAZ;
-			row->hazards[row->hazardCount++].x        = startingX;
+			row->hazards[row->hazardCount].x        = startingX;
+
+			hazardAdded = TRUE;
 		}
+	}
+
+	if (hazardAdded)
+	{
+		row->hazards[row->hazardCount++].orientation =
+			getHazOrientFromRow(row, row->hazards[row->hazardCount].hazardType);
 	}
 }
 

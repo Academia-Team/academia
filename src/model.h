@@ -436,6 +436,15 @@ typedef char HazName[MAX_HAZ_NAME_LEN + 1];
 	(playerObj).alive
 
 /**
+ * @brief Get the orientation for the given hazard type on the given row.
+ * 
+ * @param rowPtr A pointer to a row to use to get hazard direction.
+ * @param hazType The type of hazard to get the direction of.
+ */
+#define getHazOrientFromRow(rowPtr, hazType) \
+	(hazType == TRAIN_HAZ ? M_NONE : (rowPtr)->horzDirection)
+
+/**
  * @brief Determines whether a player may move or change orientation.
  * @param playerObj The Player object which may be moving.
  * @return A BOOL of TRUE if the given player could be moving; false otherwise.
@@ -459,31 +468,23 @@ void getPlayerNextMove(const Player * const player, MoveFrame *nextMovement);
 	(playerObj).immune = !((playerObj).immune)
 
 /**
- * @brief Add a InfoBar to the given Menu object.
+ * @brief Add a empty InfoBar to the given Menu object.
  * @details The InfoBar will generate and manage labels corresponding to the
  * given text. All the labels will be given values such that they will be
  * horizontally centered on screen. Any invalid values entered will result in
- * the given object entering an undefined state.
- * 
- * If the maximum number of info bars in an object has been reached, nothing
- * will be added.
+ * nothing being added.
  * 
  * @param menu A pointer to the Menu object where the InfoBar will be added.
  * @param y The starting y pixel coordinate for the InfoBar object. Any value
  * that results in coordinates that are out of bounds is invalid.
  * @param spacing The amount of vertical space (in pixels) between each label
  * in the infoBar. Any value that results in coordinates that are out of bounds
- * in invalid.
- * @param numLabels The number of labels to place into the InfoBar object. It
- * must be a positive number that is less than the currently defined
- * MAX_INFO_LABELS.
- * @param ... The null-terminated strings that will be stored within the
- * infoBar. The number of strings must correspond to the value of numLabels.
+ * is invalid.
  * 
  * @return A integral ID correspond to the InfoBar or -1 if a InfoBar couldn't
  * be added.
  */
-int addInfoBar(Menu* menu, int y, int spacing, int numLabels, ...);
+int addInfoBar(Menu* menu, int y, int spacing);
 
 /**
  * @brief Adds the given text to the InfoBar object in a given menu.
@@ -645,17 +646,16 @@ void copyScore(Score* dest, const Score* const src);
 
 /**
  * @brief Compares the scores given to each other and returns the result.
- * @details The magnitude of the returned value corresponds to the difference
- * in value between the two Score objects.
+ * @details The magnitude of the returned value corresponds to the relative
+ * difference in value between the two Score objects.
  * 
  * @param s1 The first Score object to compare.
  * @param s2 The second Score object to compare.
- * @return An integral value corresponding to the value difference between the
- * two objects. Zero will be returned if the two Score objects have the same
- * value, positive if the first object is greater than the second, and negative
- * if the first object is less than the second.
+ * @return An integral value. Zero will be returned if the two Score objects
+ * have the same value, positive if the first object is greater than the second,
+ * and negative if the first object is less than the second.
  */
-UINT32 cmpScore(const Score* const s1, const Score* const s2);
+SINT32 cmpScore(const Score* const s1, const Score* const s2);
 
 /**
  * @brief Returns true if a hazard can theoretically be placed based off of
