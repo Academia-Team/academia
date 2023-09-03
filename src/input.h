@@ -246,6 +246,13 @@ BOOL setMousePos(int x, int y);
 void setRelMousePos(int deltaX, int deltaY);
 
 /**
+ * @brief Returns the internal representation of joystick state.
+ * 
+ * @return A byte representing the state of the joystick.
+ */
+UINT8 getJoyRaw(void);
+
+/**
  * @brief Returns the joystick's current position.
  * @details The boolean specifying if the joystick position has changed will be
  * reset.

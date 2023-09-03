@@ -735,7 +735,7 @@ Mouse mouse = {INITIAL_MOUSE_X, INITIAL_MOUSE_Y, FALSE, FALSE, FALSE};
 
 Direction kybdMouseMov = M_NONE;
 
-Joy joy = {JOY_NONE, FALSE};
+Joy joy = {JOY_NONE, FALSE, FALSE};
 
 void IKBD_isr(void);
 
@@ -1141,10 +1141,9 @@ void setRelMousePos(int deltaX, int deltaY)
 	}
 }
 
-Direction getJoyPos(void)
+UINT8 getJoyRaw(void)
 {
-	UINT8     rawJoyPos;
-	Direction joyPos;
+	UINT8 rawJoyPos;
 
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 
@@ -1152,6 +1151,14 @@ Direction getJoyPos(void)
 	joy.posChanged = FALSE;
 
 	mask_level_toggle(KYBD_CHANNEL_LEV);
+
+	return rawJoyPos;
+}
+
+Direction getJoyPos(void)
+{
+	UINT8     rawJoyPos = getJoyRaw();
+	Direction joyPos;
 
 	switch(rawJoyPos)
 	{
