@@ -10,6 +10,7 @@
 
 #include "arg_list.h"
 #include "input.h"
+#include "move.h"
 #include "test.h"
 #include "tst_hndl.h"
 #include "types.h"
@@ -59,11 +60,15 @@ void t1Joy(ArgList *args)
 	SINT8 joyPos;
 	SINT8 prevJoyPos = -1;
 
+	joyPos = getJoyPos();
+	printf("Joystick Pos is currently %s\n", getBodyRelDir(joyPos));
+	prevJoyPos = joyPos;
+
 	do
 	{
 		if ((joyPos = getJoyPos()) != prevJoyPos)
 		{
-			printf("Joystick Pos Changed To: %i\n", joyPos);
+			printf("Joystick Pos Changed To: %s\n", getBodyRelDir(joyPos));
 			prevJoyPos = joyPos;
 		}
 		if (joyButtonPressed())
