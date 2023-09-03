@@ -87,6 +87,7 @@ typedef struct
 {
 	UINT8 pos;
 	UINT8 trigger;
+	UINT8 posChanged;
 } Joy;
 
 extern Mouse     mouse;
@@ -246,6 +247,8 @@ void setRelMousePos(int deltaX, int deltaY);
 
 /**
  * @brief Returns the joystick's current position.
+ * @details The boolean specifying if the joystick position has changed will be
+ * reset.
  * 
  * @return The position of the joystick.
  */
@@ -258,5 +261,12 @@ Direction getJoyPos(void);
  * @return TRUE if a joystick button has been pressed; FALSE otherwise.
  */
 BOOL joyButtonPressed(void);
+
+/**
+ * @brief Returns if the joystick has changed position or not.
+ * 
+ * @return TRUE if the position has changed; FALSE otherwise.
+ */
+BOOL joyPosChanged(void);
 
 #endif

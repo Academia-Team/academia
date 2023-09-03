@@ -1148,7 +1148,8 @@ Direction getJoyPos(void)
 
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 
-	rawJoyPos = joy.pos;
+	rawJoyPos      = joy.pos;
+	joy.posChanged = FALSE;
 
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 
@@ -1198,4 +1199,15 @@ BOOL joyButtonPressed(void)
 	mask_level_toggle(KYBD_CHANNEL_LEV);
 
 	return buttonPressed;
+}
+
+BOOL joyPosChanged(void)
+{
+	BOOL hasChanged;
+
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+	hasChanged = joy.posChanged;
+	mask_level_toggle(KYBD_CHANNEL_LEV);
+
+	return hasChanged;
 }

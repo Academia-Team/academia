@@ -284,16 +284,21 @@ JOY_RECORD_PARAM:		equ		8
 JOY_TRIGGER_BIT:		equ		7
 
 handle_joy:				link	a6,#0
-						movem.l	a3,-(sp)
+						movem.l	a3/d0,-(sp)
 						lea		_joy,a3
 
 						bclr.b	#JOY_TRIGGER_BIT,JOY_RECORD_PARAM(a6)
 						beq		JOY_GET_POS
 						move.b	#TRUE,JOY_TRIGGER(a3)
 
-JOY_GET_POS:			move.b	JOY_RECORD_PARAM(a6),JOY_POS(a3)
+JOY_GET_POS:			move.b	JOY_RECORD_PARAM(a6),d0
+						cmp.b	prev_joy_pos,d0
+						beq		JOY_RETURN
+						move.b	d0,JOY_POS(a3)
+						move.b	d0,prev_joy_pos
+						move.b	#TRUE,JOY_POS_CHANGE(a3)
 
-						movem.l	(sp)+,a3
+JOY_RETURN:				movem.l	(sp)+,a3/d0
 						unlk	a6
 						rts
 
@@ -301,3 +306,4 @@ delta_mouse_x:			dc.w	0
 keys_pressed:			dc.b	0
 mouse_packets_received:	dc.b	0
 joy_record:				dc.b	FALSE
+prev_joy_pos:			dc.b	0

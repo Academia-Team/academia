@@ -7,3 +7,4 @@
 
 JOY_POS:				equ		0
 JOY_TRIGGER:			equ		1
+JOY_POS_CHANGE:			equ		2

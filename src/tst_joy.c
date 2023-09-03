@@ -58,18 +58,15 @@ void t1Joy(ArgList *args)
 {
 	UINT8 asciiKybdVal;
 	SINT8 joyPos;
-	SINT8 prevJoyPos = -1;
 
 	joyPos = getJoyPos();
 	printf("Joystick Pos is currently %s\n", getBodyRelDir(joyPos));
-	prevJoyPos = joyPos;
 
 	do
 	{
-		if ((joyPos = getJoyPos()) != prevJoyPos)
+		if (joyPosChanged())
 		{
 			printf("Joystick Pos Changed To: %s\n", getBodyRelDir(joyPos));
-			prevJoyPos = joyPos;
 		}
 		if (joyButtonPressed())
 		{
