@@ -56,6 +56,7 @@ void joyTstMgr(void (*tstFunc)(ArgList *args))
  */
 void t1Joy(ArgList *args)
 {
+	BOOL      joyChange;
 	UINT8     asciiKybdVal;
 	UINT8     joyVal;
 	Direction joyPos;
@@ -67,10 +68,11 @@ void t1Joy(ArgList *args)
 
 	do
 	{
+		joyChange = joyPosChanged();
 		joyPos = getJoyPos();
 		joyVal = getJoyRaw();
 
-		if (joyPosChanged())
+		if (joyChange)
 		{
 			printf("Joystick Pos Changed To: %s (Raw: %i)\n",
 				   getBodyRelDir(joyPos), joyVal);
